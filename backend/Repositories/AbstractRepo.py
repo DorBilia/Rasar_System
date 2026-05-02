@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from abc import ABC, abstractmethod
 
@@ -13,15 +15,15 @@ class AbstractRepo(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int):
+    async def get_by_id(self, id: int) -> Optional[object]:
         pass
 
     @abstractmethod
-    async def get_all_for_soldier(self, soldier_id: int):
+    async def get_all(self) -> List[object]:
         pass
 
     @abstractmethod
-    async def update(self, id: int, **updates):
+    async def update(self, id: int, **updates) -> Optional[object]:
         pass
 
     @abstractmethod
