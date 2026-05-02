@@ -19,8 +19,8 @@ class PtorType(Base):
 class Ptor(Base):
     __tablename__ = "ptorim"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"))
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"), index=True)
     ptor_id: Mapped[int] = mapped_column(ForeignKey("ptor_types.id"))
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)

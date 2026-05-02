@@ -16,11 +16,11 @@ class IndicationType(Base):
     indications: Mapped[List["SoldierIndication"]] = relationship(back_populates="indication_type")
 
 
-class SoldierIndication(Base):
+class Indication(Base):
     __tablename__ = "soldier_indications"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"))
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"), index=True)
     indication_id: Mapped[int] = mapped_column(ForeignKey("indication_types.id"))
     start_time: Mapped[datetime] = mapped_column(DateTime)
     end_time: Mapped[datetime] = mapped_column(DateTime)

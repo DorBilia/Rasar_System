@@ -18,8 +18,8 @@ class BirorType(Base):
 class Biror(Base):
     __tablename__ = "birorim"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"))
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"), index=True)
     biror_type_id: Mapped[int] = mapped_column(ForeignKey("bir_types.id"))
     date: Mapped[date] = mapped_column(Date)
     description: Mapped[Optional[str]] = mapped_column(Text)

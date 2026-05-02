@@ -21,10 +21,10 @@ class Misdar(Base):
 class MisdarAttendance(Base):
     __tablename__ = "misdar_attendance"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"))
-    misdar_id: Mapped[int] = mapped_column(ForeignKey("misdarim.misdar_id"))
-    date: Mapped[date] = mapped_column(Date)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldier.id"), index=True)
+    misdar_id: Mapped[int] = mapped_column(ForeignKey("misdarim.misdar_id"), index=True)
+    date: Mapped[date] = mapped_column(Date, index=True)
 
     soldier: Mapped["Soldier"] = relationship(back_populates="attendances")
     misdar: Mapped["Misdar"] = relationship(back_populates="attendances")
