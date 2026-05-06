@@ -9,12 +9,12 @@ from sqlalchemy import Date, Enum as SAEnum, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from db.models.enums import BirorResultEnum, BirorTypeEnum
+from core.enums import BirorResultEnum, BirorTypeEnum
 
 __all__ = ["Biror", "BirorResult", "BirorType"]
 
 if TYPE_CHECKING:
-    from db.models.soldier import Soldier
+    from db.models.Soldier import Soldier
 
 
 class BirorType(Base):

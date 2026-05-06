@@ -9,7 +9,7 @@ from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from db.models.enums import GuardingTypeEnum, TaskAssignedByEnum
+from core.enums import GuardingTypeEnum, TaskAssignedByEnum
 
 __all__ = ["Guarding", "GuardingType", "Task", "TaskType"]
 

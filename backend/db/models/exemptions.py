@@ -12,7 +12,7 @@ from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, Integer, Strin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from db.models.enums import BeardStatementTypeEnum
+from core.enums import BeardStatementTypeEnum
 
 __all__ = ["BeardStatement", "BeardStatementType", "MedicalPtor", "MedicalPtorType"]
 

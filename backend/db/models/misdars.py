@@ -9,7 +9,7 @@ from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String, Time, 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from db.models.enums import MisdarNameEnum
+from core.enums import MisdarNameEnum
 
 __all__ = ["Misdar", "MisdarAttendanceRecord", "MisdarType"]
 

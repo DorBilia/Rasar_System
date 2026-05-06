@@ -9,7 +9,7 @@ from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from db.models.enums import RoleNameEnum
+from core.enums import RoleNameEnum
 
 __all__ = ["Role", "User"]
 
