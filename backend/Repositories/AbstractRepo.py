@@ -1,31 +1,48 @@
-from typing import Optional, List
-
+from typing import Generic, TypeVar, Optional, Type, Sequence
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from abc import ABC, abstractmethod
+from Repositories.Interfaces.base_repo import IBaseRepo
+
+T = TypeVar("T")
 
 
-class AbstractRepo(ABC):
-    db: AsyncSession
+class AbstractRepoI(IBaseRepo[T], Generic[T]):
+    def __init__(self, model: Type[T]):
+        super().__init__(self.db)
+        self.model = model
 
-    def __init__(self, db: AsyncSession):
-        self.db = db
+    async def create(self, **kwargs) -> T:
+        new_entity = self.model(**kwargs)
+        self.db.add(new_entity)
+        await self.db.commit()
+        await self.db.refresh(new_entity)
+        return new_entity
 
-    @abstractmethod
-    async def create(self, **kwargs):
-        pass
+    async def get_by_id(self, entity_id: int) -> Optional[T]:
+        # Using getattr(self.model, 'id') makes it generic for models with 'id' column
+        query = select(self.model).where(self.model.id == entity_id)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
 
-    @abstractmethod
-    async def get_by_id(self, id: int) -> Optional[object]:
-        pass
+    async def get_all(self) -> Sequence[T]:
+        query = select(self.model)
+        result = await self.db.execute(query)
+        return result.scalars().all()
 
-    @abstractmethod
-    async def get_all(self) -> List[object]:
-        pass
+    async def update(self, entity_id: int, **updates) -> Optional[T]:
+        query = (
+            update(self.model)
+            .where(self.model.id == entity_id)
+            .values(**updates)
+            .execution_options(synchronize_session=False)
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        return await self.get_by_id(entity_id)
 
-    @abstractmethod
-    async def update(self, id: int, **updates) -> Optional[object]:
-        pass
-
-    @abstractmethod
-    async def delete(self, biror_id: int) -> bool:
-        pass
+    async def delete(self, entity_id: int) -> bool:
+        # Returns how many rows were affected, if 0 then object is not found
+        query = delete(self.model).where(self.model.id == entity_id)
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0  # check whether if this is valid
