@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from db.models.duties import Guarding, Task
     from db.models.ptor import BeardStatement, MedicalPtor
     from db.models.indications import Indication
-    from db.models.misdars import Misdar, MisdarAttendanceRecord
+    from db.models.misdar import Misdar, MisdarAttendance
     from db.models.users import User
 
 
@@ -43,7 +43,7 @@ class Soldier(Base):
     medical_ptors: Mapped[List["MedicalPtor"]] = relationship(back_populates="soldier")
     beard_statements: Mapped[List["BeardStatement"]] = relationship(back_populates="soldier")
     misdars: Mapped[List["Misdar"]] = relationship(back_populates="soldier")
-    misdar_attendance_records: Mapped[List["MisdarAttendanceRecord"]] = relationship(
+    misdar_attendance_records: Mapped[List["MisdarAttendance"]] = relationship(
         back_populates="soldier"
     )
     birors: Mapped[List["Biror"]] = relationship(back_populates="soldier")

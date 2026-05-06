@@ -12,7 +12,7 @@ from core.enums import BeardStatementTypeEnum
 
 __all__ = ["BeardStatement", "BeardStatementType", "MedicalPtor", "MedicalPtorType"]
 
-from db.models.Soldier import Soldier
+from db.models.soldier import Soldier
 
 
 class MedicalPtorType(Base):
