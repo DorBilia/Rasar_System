@@ -1,0 +1,51 @@
+"""Authentication/authorization models (users and roles)."""
+
+from __future__ import annotations
+
+from datetime import date
+from typing import List
+
+from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.db import Base
+from db.models.enums import RoleNameEnum
+
+
+class Role(Base):
+    __tablename__ = "roles"
+
+    role_id: Mapped[int] = mapped_column(primary_key=True)
+    role_name: Mapped[RoleNameEnum] = mapped_column(
+        SAEnum(RoleNameEnum, native_enum=False), nullable=False
+    )
+    description: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    users: Mapped[List["User"]] = relationship(back_populates="role")
+
+    def __repr__(self) -> str:
+        return f"Role(role_id={self.role_id!r})"
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    soldier_id: Mapped[int] = mapped_column(
+        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+    )
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    role_id: Mapped[int] = mapped_column(
+        ForeignKey("roles.role_id", ondelete="RESTRICT"), nullable=False
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[date] = mapped_column(Date, nullable=False)
+
+    soldier: Mapped["Soldier"] = relationship(back_populates="user")
+    role: Mapped["Role"] = relationship(back_populates="users")
+
+    def __repr__(self) -> str:
+        return f"User(soldier_id={self.soldier_id!r})"
+
+
+from db.models.soldier import Soldier  # noqa: E402
+
