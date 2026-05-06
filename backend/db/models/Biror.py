@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from db.models.biror import Biror, BirorResult, BirorType
 
 __all__ = ["Biror", "BirorResult", "BirorType"]
 
@@ -14,7 +13,6 @@ This module exists only to avoid import issues on case-sensitive analyzers.
 
 from __future__ import annotations
 
-from db.models.biror import Biror, BirorResult, BirorType
 
 __all__ = ["Biror", "BirorResult", "BirorType"]
 

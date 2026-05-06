@@ -82,5 +82,4 @@ class Task(Base):
         return f"Task(task_id={self.task_id!r})"
 
 
-from db.models.soldier import Soldier  # noqa: E402
 
