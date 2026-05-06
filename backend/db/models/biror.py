@@ -1,3 +1,5 @@
+"""Biror (clarification/disciplinary) models and lookup tables."""
+
 from __future__ import annotations
 
 from datetime import date
@@ -20,7 +22,8 @@ class BirorType(Base):
 
     biror_type_id: Mapped[int] = mapped_column(primary_key=True)
     biror_type_description: Mapped[BirorTypeEnum] = mapped_column(
-        SAEnum(BirorTypeEnum, native_enum=False), nullable=False
+        SAEnum(BirorTypeEnum, native_enum=False),
+        nullable=False,
     )
 
     birors: Mapped[List["Biror"]] = relationship(back_populates="biror_type_ref")

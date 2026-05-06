@@ -1,6 +1,6 @@
 from sqlalchemy import select, update, delete
 from typing import Optional, List
-from db.models.Biror import Biror, BirorType
+from db.models.biror import Biror, BirorType
 from Repositories import AbstractRepo
 
 
