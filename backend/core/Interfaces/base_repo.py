@@ -1,10 +1,12 @@
-from typing import Optional, List
+from typing import Optional, List, Generic, TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from abc import ABC, abstractmethod
 
+T = TypeVar("T")
 
-class AbstractRepo(ABC):
+
+class BaseRepo(ABC, Generic[T]):
     db: AsyncSession
 
     def __init__(self, db: AsyncSession):
