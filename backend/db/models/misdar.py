@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, time
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,9 +12,6 @@ from db.db import Base
 from core.enums import MisdarNameEnum
 
 __all__ = ["Misdar", "MisdarAttendanceRecord", "MisdarType"]
-
-if TYPE_CHECKING:
-    from db.models.soldier import Soldier
 
 
 class MisdarType(Base):

@@ -1,7 +1,7 @@
 from sqlalchemy import select, update, delete
 from typing import Optional, Sequence
 from db.models.Soldier import Soldier
-from Repositories import AbstractRepo
+from Repositories import abstract_repo
 
 
 class SoldierRepository(AbstractRepo):

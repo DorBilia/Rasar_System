@@ -1,5 +1,5 @@
 from db.models.ptor import MedicalPtor, MedicalPtorType, BeardStatement, BeardStatementType
-from AbstractRepo import AbstractRepo
+from abstract_repo import AbstractRepo
 
 
 class MedicalPtorRepository(AbstractRepo[MedicalPtor]):

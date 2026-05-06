@@ -1,6 +1,6 @@
 from typing import Sequence
 from db.models.biror import Biror, BirorType
-from AbstractRepo import AbstractRepo
+from abstract_repo import AbstractRepo
 from Interfaces.biror import IBirorRepo
 
 
