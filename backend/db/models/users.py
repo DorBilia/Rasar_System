@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Role(Base):
     __tablename__ = "roles"
 
-    role_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     role_name: Mapped[RoleNameEnum] = mapped_column(
         SAEnum(RoleNameEnum, native_enum=False), nullable=False
     )
@@ -29,18 +29,18 @@ class Role(Base):
     users: Mapped[List["User"]] = relationship(back_populates="role")
 
     def __repr__(self) -> str:
-        return f"Role(role_id={self.role_id!r})"
+        return f"Role(id={self.id!r})"
 
 
 class User(Base):
     __tablename__ = "users"
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role_id: Mapped[int] = mapped_column(
-        ForeignKey("roles.role_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False
     )
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[date] = mapped_column(Date, nullable=False)

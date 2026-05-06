@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class MisdarType(Base):
     __tablename__ = "misdar_types"
 
-    misdar_type_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     misdar_name: Mapped[MisdarNameEnum] = mapped_column(
         SAEnum(MisdarNameEnum, native_enum=False), nullable=False
     )
@@ -30,18 +30,18 @@ class MisdarType(Base):
     misdars: Mapped[List["Misdar"]] = relationship(back_populates="misdar_type_ref")
 
     def __repr__(self) -> str:
-        return f"MisdarType(misdar_type_id={self.misdar_type_id!r})"
+        return f"MisdarType(id={self.id!r})"
 
 
 class Misdar(Base):
     __tablename__ = "misdars"
 
-    misdar_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     misdar_type: Mapped[int] = mapped_column(
-        ForeignKey("misdar_types.misdar_type_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("misdar_types.id", ondelete="RESTRICT"), nullable=False
     )
     misdar_date: Mapped[date] = mapped_column(Date, nullable=False)
     is_open: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -54,7 +54,7 @@ class Misdar(Base):
     )
 
     def __repr__(self) -> str:
-        return f"Misdar(misdar_id={self.misdar_id!r})"
+        return f"Misdar(id={self.id!r})"
 
 
 class MisdarAttendanceRecord(Base):
@@ -64,10 +64,10 @@ class MisdarAttendanceRecord(Base):
     )
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     misdar_id: Mapped[int] = mapped_column(
-        ForeignKey("misdars.misdar_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("misdars.id", ondelete="RESTRICT"), primary_key=True
     )
     scan_time: Mapped[time] = mapped_column(Time, nullable=False)
 

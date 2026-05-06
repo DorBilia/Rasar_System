@@ -1,7 +1,8 @@
 from sqlalchemy import select, update, delete
 from typing import Optional, List
-from db.models.Misdar import MisdarAttendance,Misdar
-from Repositories import AbstractRepo
+from db.models.misdars import Misdar as Misdar
+from db.models.misdars import MisdarAttendanceRecord as MisdarAttendance
+from Repositories.AbstractRepo import AbstractRepo
 
 
 class MisdarAttendanceRepository(AbstractRepo):
@@ -15,8 +16,12 @@ class MisdarAttendanceRepository(AbstractRepo):
         await self.db.refresh(new_misdarAttendance)
         return new_misdarAttendance
 
-    async def get_by_id(self, MisdarAttendance_id: int) -> Optional[MisdarAttendance]:
-        result = await self.db.execute(select(MisdarAttendance).where(MisdarAttendance.id == MisdarAttendance_id))
+    async def get_by_id(self, soldier_id: int, misdar_id: int) -> Optional[MisdarAttendance]:
+        result = await self.db.execute(
+            select(MisdarAttendance).where(
+                MisdarAttendance.soldier_id == soldier_id, MisdarAttendance.misdar_id == misdar_id
+            )
+        )
         return result.scalar_one_or_none()
 
     async def get_all(self) -> List[MisdarAttendance]:
@@ -27,19 +32,21 @@ class MisdarAttendanceRepository(AbstractRepo):
         result = await self.db.execute(select(MisdarAttendance).where(MisdarAttendance.soldier_id == soldier_id))
         return result.scalars().all()
 
-    async def update(self, MisdarAttendance_id: int, **updates) -> Optional[MisdarAttendance]:
+    async def update(self, soldier_id: int, misdar_id: int, **updates) -> Optional[MisdarAttendance]:
         query = (
             update(MisdarAttendance)
-            .where(MisdarAttendance.id == MisdarAttendance_id)
+            .where(MisdarAttendance.soldier_id == soldier_id, MisdarAttendance.misdar_id == misdar_id)
             .values(**updates)
             .execution_options(synchronize_session=False)
         )
         await self.db.execute(query)
         await self.db.commit()
-        return await self.get_by_id(MisdarAttendance_id)
+        return await self.get_by_id(soldier_id, misdar_id)
 
-    async def delete(self, MisdarAttendance_id: int) -> bool:
-        query = delete(MisdarAttendance).where(MisdarAttendance.id == MisdarAttendance_id)
+    async def delete(self, soldier_id: int, misdar_id: int) -> bool:
+        query = delete(MisdarAttendance).where(
+            MisdarAttendance.soldier_id == soldier_id, MisdarAttendance.misdar_id == misdar_id
+        )
         result = await self.db.execute(query)
         await self.db.commit()
         return result.rowcount > 0
