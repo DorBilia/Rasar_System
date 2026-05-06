@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 T = TypeVar("T")
 
 
-class BaseRepo(ABC, Generic[T]):
+class IBaseRepo(ABC, Generic[T]):
     db: AsyncSession
 
     def __init__(self, db: AsyncSession):
@@ -26,6 +26,7 @@ class BaseRepo(ABC, Generic[T]):
 
     @abstractmethod
     async def update(self, id: int, **updates) -> Optional[object]:
+        # Gets key-value attribute in a dict form and updates the relevant fields in the object
         pass
 
     @abstractmethod

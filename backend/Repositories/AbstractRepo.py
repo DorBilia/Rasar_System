@@ -1,15 +1,14 @@
-from typing import Generic, TypeVar, List, Optional, Type, Any, Sequence
-from sqlalchemy import select, update, delete, Row, RowMapping
+from typing import Generic, TypeVar, Optional, Type, Sequence
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.Interfaces.base_repo import BaseRepo
+from Repositories.Interfaces.base_repo import IBaseRepo
 
 T = TypeVar("T")
 
 
-class AbstractRepo(BaseRepo[T], Generic[T]):
-    def __init__(self, db: AsyncSession, model: Type[T]):
-        super().__init__(db)
-        self.db = db
+class AbstractRepoI(IBaseRepo[T], Generic[T]):
+    def __init__(self, model: Type[T]):
+        super().__init__(self.db)
         self.model = model
 
     async def create(self, **kwargs) -> T:
@@ -31,7 +30,6 @@ class AbstractRepo(BaseRepo[T], Generic[T]):
         return result.scalars().all()
 
     async def update(self, entity_id: int, **updates) -> Optional[T]:
-        # Gets key-value attribute in a dict form and updates the relevant fields in the object
         query = (
             update(self.model)
             .where(self.model.id == entity_id)
