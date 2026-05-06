@@ -16,9 +16,6 @@ from core.enums import BeardStatementTypeEnum
 
 __all__ = ["BeardStatement", "BeardStatementType", "MedicalPtor", "MedicalPtorType"]
 
-if TYPE_CHECKING:
-    from db.models.soldier import Soldier
-
 
 class MedicalPtorType(Base):
     __tablename__ = "medical_ptor_types"

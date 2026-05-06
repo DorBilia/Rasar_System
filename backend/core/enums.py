@@ -29,13 +29,14 @@ class RankEnum(str, Enum):
     TAAL = "תא\"ל"
     ALOF = "אלוף"
     RAAL = "רא\"ל"
-    
+
 
 class ServiceTypeEnum(str, Enum):
     MANDATORY = "חובה"
     CAREER = "קבע"
     RESERVE = "מילואים"
     CITIZEN = "אע\"ץ"
+
 
 class Doh1ValueEnum(str, Enum):
     PRESENT = "נוכח ביחידה"
@@ -78,11 +79,11 @@ class BirorResultEnum(str, Enum):
     EDUCATIONAL_PUNISHMENT = "עונש חינוכי"
 
 
-
 class BeardStatementTypeEnum(str, Enum):
     FULL_BEARD = "זקן מלא"
     FREANCH_BEARD = "זקן צרפתי"
     MOUSTACHE = "שפם"
+
 
 class GuardingTypeEnum(str, Enum):
     GUARD = "לילה"
@@ -103,4 +104,3 @@ class RoleNameEnum(str, Enum):
     UNIT_COMMANDER = "מפקד יחידה"
     RASAR = "רס\"ר"
     VIEWER = "צופה"
-
