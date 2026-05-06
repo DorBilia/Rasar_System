@@ -1,10 +1,10 @@
 from typing import Sequence
 from db.models.biror import Biror, BirorType
-from AbstractRepo import AbstractRepoI
-from Interfaces.biror import IBirorRepoI
+from AbstractRepo import AbstractRepo
+from Interfaces.biror import IBirorRepo
 
 
-class BirorRepository(AbstractRepoI[Biror], IBirorRepoI):
+class BirorRepository(AbstractRepo[Biror], IBirorRepo):
 
     def __init__(self):
         super().__init__(Biror)
@@ -14,7 +14,7 @@ class BirorRepository(AbstractRepoI[Biror], IBirorRepoI):
         pass
 
 
-class BirorTypeRepository(AbstractRepoI[BirorType]):
+class BirorTypeRepository(AbstractRepo[BirorType]):
     # This doesn't have any unique functions... yet
     def __init__(self):
         super().__init__(BirorType)

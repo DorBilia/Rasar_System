@@ -6,7 +6,7 @@ from Repositories.Interfaces.base_repo import IBaseRepo
 T = TypeVar("T")
 
 
-class AbstractRepoI(IBaseRepo[T], Generic[T]):
+class AbstractRepo(IBaseRepo[T], Generic[T]):
     def __init__(self, model: Type[T]):
         super().__init__(self.db)
         self.model = model

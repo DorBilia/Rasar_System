@@ -4,7 +4,7 @@ from typing import Sequence
 from abc import abstractmethod
 
 
-class IBirorRepoI(IBaseRepo[Biror]):
+class IBirorRepo(IBaseRepo[Biror]):
 
     @abstractmethod
     async def get_for_soldier(self, soldier_id: int) -> Sequence[Biror]:

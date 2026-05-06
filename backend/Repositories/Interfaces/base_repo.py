@@ -1,5 +1,4 @@
 from typing import Optional, List, Generic, TypeVar
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from abc import ABC, abstractmethod
 
