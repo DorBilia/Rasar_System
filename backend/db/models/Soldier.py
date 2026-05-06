@@ -16,7 +16,7 @@ __all__ = ["Doh1", "Soldier"]
 if TYPE_CHECKING:
     from db.models.biror import Biror
     from db.models.duties import Guarding, Task
-    from db.models.exemptions import BeardStatement, MedicalPtor
+    from db.models.ptor import BeardStatement, MedicalPtor
     from db.models.indications import Indication
     from db.models.misdars import Misdar, MisdarAttendanceRecord
     from db.models.users import User

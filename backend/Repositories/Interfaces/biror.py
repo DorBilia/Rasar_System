@@ -1,5 +1,5 @@
 from base_repo import IBaseRepo
-from db.models.biror import Biror, BirorType
+from db.models.biror import Biror
 from typing import Sequence
 from abc import abstractmethod
 
