@@ -1,8 +1,4 @@
-"""Re-export models and enums for the Rasar system.
-
-Other parts of the app can import from `backend.db.models`, e.g.:
-`from backend.db.models import Soldier, RankEnum`.
-"""
+"""Re-export models and enums for the Rasar system."""
 
 from db.models.base import Base
 from db.models.enums import (
@@ -33,9 +29,7 @@ from db.models.system import SystemVariable
 from db.models.users import Role, User
 
 __all__ = [
-    # Base
     "Base",
-    # Enums
     "RankEnum",
     "ServiceTypeEnum",
     "Doh1ValueEnum",
@@ -46,37 +40,28 @@ __all__ = [
     "BeardStatementTypeEnum",
     "GuardingTypeEnum",
     "RoleNameEnum",
-    # Organization
     "Unit",
     "Branch",
     "Department",
-    # Soldier + Doh1
     "Soldier",
     "Doh1",
-    # Exemptions
     "MedicalPtorType",
     "MedicalPtor",
     "BeardStatementType",
     "BeardStatement",
-    # Misdars
     "MisdarType",
     "Misdar",
     "MisdarAttendanceRecord",
-    # Biror
     "BirorType",
     "BirorResult",
     "Biror",
-    # Indications
     "IndicationType",
     "Indication",
-    # Duties
     "GuardingType",
     "Guarding",
     "TaskType",
     "Task",
-    # System
     "SystemVariable",
-    # Users
     "Role",
     "User",
 ]

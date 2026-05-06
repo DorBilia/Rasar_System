@@ -6,13 +6,18 @@ Contains models for medical exemptions (ptorim) and beard statements management.
 from __future__ import annotations
 
 from datetime import date
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
 from db.models.enums import BeardStatementTypeEnum
+
+__all__ = ["BeardStatement", "BeardStatementType", "MedicalPtor", "MedicalPtorType"]
+
+if TYPE_CHECKING:
+    from db.models.soldier import Soldier
 
 
 class MedicalPtorType(Base):
@@ -83,7 +88,3 @@ class BeardStatement(Base):
 
     def __repr__(self) -> str:
         return f"BeardStatement(soldier_id={self.soldier_id!r})"
-
-
-from db.models.soldier import Soldier  # noqa: E402
-

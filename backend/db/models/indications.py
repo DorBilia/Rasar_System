@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import Date, Enum as SAEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
 from db.models.enums import IndicationDescriptionEnum
+
+if TYPE_CHECKING:
+    from db.models.soldier import Soldier
+
+__all__ = ["Indication", "IndicationType"]
 
 
 class IndicationType(Base):
@@ -47,7 +52,3 @@ class Indication(Base):
 
     def __repr__(self) -> str:
         return f"Indication(indication_id={self.indication_id!r})"
-
-
-from db.models.soldier import Soldier  # noqa: E402
-

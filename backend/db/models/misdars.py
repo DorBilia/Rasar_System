@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 from datetime import date, time
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
 from db.models.enums import MisdarNameEnum
+
+__all__ = ["Misdar", "MisdarAttendanceRecord", "MisdarType"]
+
+if TYPE_CHECKING:
+    from db.models.soldier import Soldier
 
 
 class MisdarType(Base):
@@ -75,7 +80,3 @@ class MisdarAttendanceRecord(Base):
             f"soldier_id={self.soldier_id!r}, misdar_id={self.misdar_id!r}"
             ")"
         )
-
-
-from db.models.soldier import Soldier  # noqa: E402
-
