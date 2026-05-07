@@ -30,7 +30,7 @@ class Branch(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     unit_id: Mapped[int] = mapped_column(
-        ForeignKey("units.unit_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("units.id", ondelete="RESTRICT"), nullable=False
     )
     branch_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
@@ -46,12 +46,12 @@ class Department(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     branch_id: Mapped[int] = mapped_column(
-        ForeignKey("branches.branch_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("branches.id", ondelete="RESTRICT"), nullable=False
     )
     department_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     branch: Mapped["Branch"] = relationship(back_populates="departments")
 
     def __repr__(self) -> str:
-        return f"Department(department_id={self.department_id!r})"
+        return f"Department(id={self.id!r})"
 

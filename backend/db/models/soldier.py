@@ -60,7 +60,7 @@ class Doh1(Base):
     __tablename__ = "doh1_records"
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     doh1_date: Mapped[date] = mapped_column(Date, primary_key=True, nullable=False)
     doh1_value: Mapped[Doh1ValueEnum] = mapped_column(

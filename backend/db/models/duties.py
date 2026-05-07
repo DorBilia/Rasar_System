@@ -37,10 +37,10 @@ class Guarding(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     guarding_type: Mapped[int] = mapped_column(
-        ForeignKey("guarding_types.guarding_type_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("guarding_types.id", ondelete="RESTRICT"), nullable=False
     )
     guarding_start_date: Mapped[date] = mapped_column(Date, nullable=False)
     guarding_end_date: Mapped[date] = mapped_column(Date, nullable=False)
@@ -72,10 +72,10 @@ class Task(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     task_type: Mapped[int] = mapped_column(
-        ForeignKey("task_types.task_type_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("task_types.id", ondelete="RESTRICT"), nullable=False
     )
     task_start_date: Mapped[date] = mapped_column(Date, nullable=False)
     task_end_date: Mapped[date] = mapped_column(Date, nullable=False)
@@ -84,4 +84,4 @@ class Task(Base):
     task_type_ref: Mapped["TaskType"] = relationship(back_populates="tasks")
 
     def __repr__(self) -> str:
-        return f"Task(task_id={self.task_id!r})"
+        return f"Task(id={self.id!r})"

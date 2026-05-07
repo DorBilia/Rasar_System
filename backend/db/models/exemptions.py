@@ -36,10 +36,10 @@ class MedicalPtor(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     med_ptor_type: Mapped[int] = mapped_column(
-        ForeignKey("medical_ptor_types.med_ptor_type_id", ondelete="RESTRICT"),
+        ForeignKey("medical_ptor_types.id", ondelete="RESTRICT"),
         nullable=False,
     )
     given_by: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -73,10 +73,10 @@ class BeardStatement(Base):
     __tablename__ = "beard_statements"
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     beard_statement_type: Mapped[int] = mapped_column(
-        ForeignKey("beard_statement_types.beard_statement_type_id", ondelete="RESTRICT"),
+        ForeignKey("beard_statement_types.id", ondelete="RESTRICT"),
         nullable=False,
     )
     is_canceled: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)

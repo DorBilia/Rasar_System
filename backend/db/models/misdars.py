@@ -38,10 +38,10 @@ class Misdar(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     misdar_type: Mapped[int] = mapped_column(
-        ForeignKey("misdar_types.misdar_type_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("misdar_types.id", ondelete="RESTRICT"), nullable=False
     )
     misdar_date: Mapped[date] = mapped_column(Date, nullable=False)
     is_open: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -64,10 +64,10 @@ class MisdarAttendanceRecord(Base):
     )
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     misdar_id: Mapped[int] = mapped_column(
-        ForeignKey("misdars.misdar_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("misdars.id", ondelete="RESTRICT"), primary_key=True
     )
     scan_time: Mapped[time] = mapped_column(Time, nullable=False)
 

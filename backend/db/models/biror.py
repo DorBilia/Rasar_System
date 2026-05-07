@@ -14,7 +14,7 @@ from core.enums import BirorResultEnum, BirorTypeEnum
 __all__ = ["Biror", "BirorResult", "BirorType"]
 
 if TYPE_CHECKING:
-    from db.models.Soldier import Soldier
+    from db.models.soldier import Soldier
 
 
 class BirorType(Base):
@@ -52,16 +52,16 @@ class Biror(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     biror_type: Mapped[int] = mapped_column(
-        ForeignKey("biror_types.biror_type_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("biror_types.id", ondelete="RESTRICT"), nullable=False
     )
     biror_date: Mapped[date] = mapped_column(Date, nullable=False)
     biror_description: Mapped[str] = mapped_column(Text, nullable=False)
     comments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     biror_result: Mapped[int] = mapped_column(
-        ForeignKey("biror_results.biror_result_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("biror_results.id", ondelete="RESTRICT"), nullable=False
     )
 
     soldier: Mapped["Soldier"] = relationship(back_populates="birors")
@@ -69,4 +69,4 @@ class Biror(Base):
     biror_result_ref: Mapped["BirorResult"] = relationship(back_populates="birors")
 
     def __repr__(self) -> str:
-        return f"Biror(biror_id={self.biror_id!r})"
+        return f"Biror(id={self.id!r})"

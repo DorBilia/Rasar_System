@@ -1,7 +1,8 @@
 from sqlalchemy import select, update, delete
 from typing import Optional, List
-from db.models.Ptor import Ptor, PtorType
-from Repositories import AbstractRepo
+from db.models.exemptions import MedicalPtor as Ptor
+from db.models.exemptions import MedicalPtorType as PtorType
+from Repositories.AbstractRepo import AbstractRepo
 
 
 class PtorRepository(AbstractRepo):

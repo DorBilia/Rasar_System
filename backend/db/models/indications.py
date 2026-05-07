@@ -38,10 +38,10 @@ class Indication(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     indication_type: Mapped[int] = mapped_column(
-        ForeignKey("indication_types.indication_type_id", ondelete="RESTRICT"),
+        ForeignKey("indication_types.id", ondelete="RESTRICT"),
         nullable=False,
     )
     indication_start_date: Mapped[date] = mapped_column(Date, nullable=False)
@@ -51,4 +51,4 @@ class Indication(Base):
     indication_type_ref: Mapped["IndicationType"] = relationship(back_populates="indications")
 
     def __repr__(self) -> str:
-        return f"Indication(indication_id={self.indication_id!r})"
+        return f"Indication(id={self.id!r})"
