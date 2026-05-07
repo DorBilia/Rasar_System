@@ -20,7 +20,7 @@ __all__ = ["Indication", "IndicationType"]
 class IndicationType(Base):
     __tablename__ = "indication_types"
 
-    indication_type_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     indication_description: Mapped[IndicationDescriptionEnum] = mapped_column(
         SAEnum(IndicationDescriptionEnum, native_enum=False), nullable=False
     )
@@ -29,13 +29,13 @@ class IndicationType(Base):
     indications: Mapped[List["Indication"]] = relationship(back_populates="indication_type_ref")
 
     def __repr__(self) -> str:
-        return f"IndicationType(indication_type_id={self.indication_type_id!r})"
+        return f"IndicationType(id={self.id!r})"
 
 
 class Indication(Base):
     __tablename__ = "indications"
 
-    indication_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Role(Base):
     __tablename__ = "roles"
 
-    role_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     role_name: Mapped[RoleNameEnum] = mapped_column(
         SAEnum(RoleNameEnum, native_enum=False), nullable=False
     )
@@ -29,7 +29,7 @@ class Role(Base):
     users: Mapped[List["User"]] = relationship(back_populates="role")
 
     def __repr__(self) -> str:
-        return f"Role(role_id={self.role_id!r})"
+        return f"Role(id={self.id!r})"
 
 
 class User(Base):

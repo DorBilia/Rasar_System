@@ -16,19 +16,19 @@ from db.db import Base
 class Unit(Base):
     __tablename__ = "units"
 
-    unit_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     unit_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     branches: Mapped[List["Branch"]] = relationship(back_populates="unit")
 
     def __repr__(self) -> str:
-        return f"Unit(unit_id={self.unit_id!r})"
+        return f"Unit(id={self.id!r})"
 
 
 class Branch(Base):
     __tablename__ = "branches"
 
-    branch_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     unit_id: Mapped[int] = mapped_column(
         ForeignKey("units.unit_id", ondelete="RESTRICT"), nullable=False
     )
@@ -38,13 +38,13 @@ class Branch(Base):
     departments: Mapped[List["Department"]] = relationship(back_populates="branch")
 
     def __repr__(self) -> str:
-        return f"Branch(branch_id={self.branch_id!r})"
+        return f"Branch(id={self.id!r})"
 
 
 class Department(Base):
     __tablename__ = "departments"
 
-    department_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     branch_id: Mapped[int] = mapped_column(
         ForeignKey("branches.branch_id", ondelete="RESTRICT"), nullable=False
     )

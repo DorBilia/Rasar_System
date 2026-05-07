@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 class Soldier(Base):
     __tablename__ = "soldiers"
 
-    soldier_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
     last_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -53,7 +53,7 @@ class Soldier(Base):
     user: Mapped[Optional["User"]] = relationship(back_populates="soldier")
 
     def __repr__(self) -> str:
-        return f"Soldier(soldier_id={self.soldier_id!r})"
+        return f"Soldier(id={self.id!r})"
 
 
 class Doh1(Base):

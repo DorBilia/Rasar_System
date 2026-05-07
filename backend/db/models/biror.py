@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class BirorType(Base):
     __tablename__ = "biror_types"
 
-    biror_type_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     biror_type_description: Mapped[BirorTypeEnum] = mapped_column(
         SAEnum(BirorTypeEnum, native_enum=False),
         nullable=False,
@@ -29,13 +29,13 @@ class BirorType(Base):
     birors: Mapped[List["Biror"]] = relationship(back_populates="biror_type_ref")
 
     def __repr__(self) -> str:
-        return f"BirorType(biror_type_id={self.biror_type_id!r})"
+        return f"BirorType(id={self.id!r})"
 
 
 class BirorResult(Base):
     __tablename__ = "biror_results"
 
-    biror_result_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     biror_result_description: Mapped[BirorResultEnum] = mapped_column(
         SAEnum(BirorResultEnum, native_enum=False), nullable=False
     )
@@ -43,13 +43,13 @@ class BirorResult(Base):
     birors: Mapped[List["Biror"]] = relationship(back_populates="biror_result_ref")
 
     def __repr__(self) -> str:
-        return f"BirorResult(biror_result_id={self.biror_result_id!r})"
+        return f"BirorResult(id={self.id!r})"
 
 
 class Biror(Base):
     __tablename__ = "birors"
 
-    biror_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
