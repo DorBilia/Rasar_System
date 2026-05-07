@@ -11,10 +11,10 @@ from db.db import Base
 class SystemVariable(Base):
     __tablename__ = "system_variables"
 
-    system_variables_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     system_variables_description: Mapped[str] = mapped_column(String(255), nullable=False)
     system_variables_value: Mapped[int] = mapped_column(nullable=False)
 
     def __repr__(self) -> str:
-        return f"SystemVariable(system_variables_id={self.system_variables_id!r})"
+        return f"SystemVariable(id={self.id!r})"
 

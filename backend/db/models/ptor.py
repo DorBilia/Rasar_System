@@ -18,23 +18,23 @@ from db.models.soldier import Soldier
 class MedicalPtorType(Base):
     __tablename__ = "medical_ptor_types"
 
-    med_ptor_type_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     med_ptor_description: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __repr__(self) -> str:
-        return f"MedicalPtorType(med_ptor_type_id={self.med_ptor_type_id!r})"
+        return f"MedicalPtorType(id={self.id!r})"
 
 
 class MedicalPtor(Base):
     __tablename__ = "medical_ptors"
 
-    med_ptor_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
     med_ptor_type: Mapped[int] = mapped_column(
-        ForeignKey("medical_ptor_types.med_ptor_type_id", ondelete="RESTRICT"),
+        ForeignKey("medical_ptor_types.id", ondelete="RESTRICT"),
         nullable=False,
     )
     given_by: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -45,13 +45,13 @@ class MedicalPtor(Base):
     medical_ptor_type: Mapped["MedicalPtorType"] = relationship()
 
     def __repr__(self) -> str:
-        return f"MedicalPtor(med_ptor_id={self.med_ptor_id!r})"
+        return f"MedicalPtor(id={self.id!r})"
 
 
 class BeardStatementType(Base):
     __tablename__ = "beard_statement_types"
 
-    beard_statement_type_id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     type_name: Mapped[BeardStatementTypeEnum] = mapped_column(
         SAEnum(BeardStatementTypeEnum, native_enum=False), nullable=False
     )
@@ -59,7 +59,7 @@ class BeardStatementType(Base):
     def __repr__(self) -> str:
         return (
             "BeardStatementType("
-            f"beard_statement_type_id={self.beard_statement_type_id!r}"
+            f"id={self.id!r}"
             ")"
         )
 
@@ -68,10 +68,10 @@ class BeardStatement(Base):
     __tablename__ = "beard_statements"
 
     soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.soldier_id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
     beard_statement_type: Mapped[int] = mapped_column(
-        ForeignKey("beard_statement_types.beard_statement_type_id", ondelete="RESTRICT"),
+        ForeignKey("beard_statement_types.id", ondelete="RESTRICT"),
         nullable=False,
     )
     is_canceled: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
