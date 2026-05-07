@@ -1,6 +1,8 @@
 from typing import Generic, TypeVar, Optional, Type, Sequence
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload, joinedload
+
 from Repositories.Interfaces.base_repo import IBaseRepo
 
 T = TypeVar("T")
@@ -27,6 +29,15 @@ class AbstractRepo(IBaseRepo[T], Generic[T]):
     async def get_all(self) -> Sequence[T]:
         query = select(self.model)
         result = await self.db.execute(query)
+        return result.scalars().all()
+
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[T]:
+        query = (
+            select(self.model)
+            .where(self.model.soldier_id == soldier_id)
+        )
+        result = await self.db.execute(query)
+
         return result.scalars().all()
 
     async def update(self, entity_id: int, **updates) -> Optional[T]:
