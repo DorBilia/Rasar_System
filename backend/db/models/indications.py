@@ -32,6 +32,15 @@ class IndicationType(Base):
         return f"IndicationType(id={self.id!r})"
 
 
+class IndicationTypeMisdarType(Base):
+    __tablename__ = "indication_types_misdar_types"
+    indication_type_id: Mapped[int] = mapped_column(ForeignKey("indication_types.id"), primary_key=True)
+    misdar_type_id: Mapped[int] = mapped_column(ForeignKey("misdar_types.id"), primary_key=True)
+
+    indication_type: Mapped["IndicationType"] = relationship(back_populates="misdar_mappings")
+    misdar_type: Mapped["MisdarType"] = relationship(back_populates="indication_mappings")
+
+
 class Indication(Base):
     __tablename__ = "indications"
 
