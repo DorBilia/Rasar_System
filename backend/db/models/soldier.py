@@ -11,15 +11,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.db import Base
 from core.enums import Doh1ValueEnum, RankEnum, ServiceTypeEnum
 
-__all__ = ["Doh1", "Soldier"]
+from db.models.biror import Biror
+from db.models.duties import Guarding, Task
+from db.models.ptor import BeardStatement, MedicalPtor
+from db.models.indications import Indication
+from db.models.misdar import MisdarAttendance
+from db.models.users import User
 
-if TYPE_CHECKING:
-    from db.models.biror import Biror
-    from db.models.duties import Guarding, Task
-    from db.models.ptor import BeardStatement, MedicalPtor
-    from db.models.indications import Indication
-    from db.models.misdar import Misdar, MisdarAttendance
-    from db.models.users import User
+__all__ = ["Doh1", "Soldier"]
 
 
 class Soldier(Base):
@@ -29,23 +28,25 @@ class Soldier(Base):
 
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
     last_name: Mapped[str] = mapped_column(String(255), nullable=False)
+
     rank: Mapped[RankEnum] = mapped_column(SAEnum(RankEnum, native_enum=False), nullable=False)
-    framework: Mapped[str] = mapped_column(String(255), nullable=False)
-    picture: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
+
+    picture: Mapped[Optional[str]] = mapped_column(String(1024))  # check about that
+
     discharge_date: Mapped[date] = mapped_column(Date, nullable=False)
-    service_type: Mapped[ServiceTypeEnum] = mapped_column(
-        SAEnum(ServiceTypeEnum, native_enum=False), nullable=False
-    )
+    service_type: Mapped[ServiceTypeEnum] = mapped_column(SAEnum(ServiceTypeEnum, native_enum=False), nullable=False)
+
     unit: Mapped[str] = mapped_column(String(255), nullable=False)
+    branch: Mapped[str] = mapped_column(String(255), nullable=False)
+    department: Mapped[str] = mapped_column(String(255), nullable=False)
+    other_allocations: Mapped[str] = mapped_column(String(255))
+
     phone_number: Mapped[str] = mapped_column(String(50), nullable=False)
 
     doh1_records: Mapped[List["Doh1"]] = relationship(back_populates="soldier")
     medical_ptors: Mapped[List["MedicalPtor"]] = relationship(back_populates="soldier")
     beard_statements: Mapped[List["BeardStatement"]] = relationship(back_populates="soldier")
-    misdars: Mapped[List["Misdar"]] = relationship(back_populates="soldier")
-    misdar_attendance_records: Mapped[List["MisdarAttendance"]] = relationship(
-        back_populates="soldier"
-    )
+    misdar_attendance_records: Mapped[List["MisdarAttendance"]] = relationship(back_populates="soldier")
     birors: Mapped[List["Biror"]] = relationship(back_populates="soldier")
     indications: Mapped[List["Indication"]] = relationship(back_populates="soldier")
     guardings: Mapped[List["Guarding"]] = relationship(back_populates="soldier")
