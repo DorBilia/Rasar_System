@@ -12,10 +12,13 @@ class IBaseRepo(ABC, Generic[T]):
         self.db = db
 
     @abstractmethod
-    async def create(self, **kwargs):
+    async def create(self, **kwargs) -> T:
         pass
 
     @abstractmethod
+    async def create_many(self, objects: list[T]) -> list[T]:
+        pass
+
     async def get_by_id(self, id: int) -> Optional[object]:
         pass
 

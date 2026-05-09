@@ -9,6 +9,7 @@ T = TypeVar("T")
 
 
 class AbstractRepo(IBaseRepo[T], Generic[T]):
+
     def __init__(self, model: Type[T]):
         super().__init__(self.db)
         self.model = model
@@ -20,8 +21,12 @@ class AbstractRepo(IBaseRepo[T], Generic[T]):
         await self.db.refresh(new_entity)
         return new_entity
 
+    async def create_many(self, objects: list[T]) -> list[T]:
+        self.db.add_all(objects)
+        await self.db.commit()
+        return objects
+
     async def get_by_id(self, entity_id: int) -> Optional[T]:
-        # Using getattr(self.model, 'id') makes it generic for models with 'id' column
         query = select(self.model).where(self.model.id == entity_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
