@@ -7,7 +7,6 @@ from typing import List
 
 from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Time, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from db.models.soldier import Soldier
 
 from db.db import Base
 from core.enums import MisdarNameEnum
@@ -27,6 +26,9 @@ class MisdarType(Base):
     misdar_length: Mapped[float] = mapped_column(Float)
 
     misdars: Mapped[List["MisdarAttendance"]] = relationship(back_populates="misdar_type_ref")
+    misdar_mappings: Mapped[List["IndicationTypeMisdarType"]] = relationship(
+        "IndicationTypeMisdarType", back_populates="misdar_type"
+    )
 
     def __repr__(self) -> str:
         return f"MisdarType(id={self.id!r})"
@@ -48,7 +50,7 @@ class MisdarAttendance(Base):
     scan_note: Mapped[str] = mapped_column(String(255), nullable=False)
     # A log about the can status - succesful/conflict with indication
 
-    soldier: Mapped["Soldier"] = relationship(back_populates="misdars")
+    soldier: Mapped["Soldier"] = relationship(back_populates="misdar_attendance_records")
     misdar_type_ref: Mapped["MisdarType"] = relationship(back_populates="misdars")
 
     def __repr__(self) -> str:

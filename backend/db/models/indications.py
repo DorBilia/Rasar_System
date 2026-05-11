@@ -14,7 +14,7 @@ from core.enums import IndicationDescriptionEnum
 if TYPE_CHECKING:
     from db.models.soldier import Soldier
 
-__all__ = ["Indication", "IndicationType"]
+__all__ = ["Indication", "IndicationType","IndicationTypeMisdarType"]
 
 
 class IndicationType(Base):
@@ -26,7 +26,11 @@ class IndicationType(Base):
     )
     weekly_arrivals: Mapped[int] = mapped_column(nullable=False)
 
+
     indications: Mapped[List["Indication"]] = relationship(back_populates="indication_type_ref")
+    indication_mappings: Mapped[List["IndicationTypeMisdarType"]] = relationship(
+        "IndicationTypeMisdarType", back_populates="indication_type"
+    )
 
     def __repr__(self) -> str:
         return f"IndicationType(id={self.id!r})"
@@ -37,8 +41,11 @@ class IndicationTypeMisdarType(Base):
     indication_type_id: Mapped[int] = mapped_column(ForeignKey("indication_types.id"), primary_key=True)
     misdar_type_id: Mapped[int] = mapped_column(ForeignKey("misdar_types.id"), primary_key=True)
 
-    indication_type: Mapped["IndicationType"] = relationship(back_populates="misdar_mappings")
-    misdar_type: Mapped["MisdarType"] = relationship(back_populates="indication_mappings")
+    misdar_type: Mapped["MisdarType"] = relationship(back_populates="misdar_mappings")
+    indication_type: Mapped["IndicationType"] = relationship(back_populates="indication_mappings")
+
+    def __repr__(self) -> str:
+        return f"IndicationTypeMisdarType(indication_type_id={self.indication_type!r},misdar_type_id={self.misdar_type_id!r})"
 
 
 class Indication(Base):

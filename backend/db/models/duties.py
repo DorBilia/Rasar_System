@@ -13,9 +13,6 @@ from core.enums import GuardingTypeEnum, TaskAssignedByEnum
 
 __all__ = ["Guarding", "GuardingType", "Task", "TaskType"]
 
-if TYPE_CHECKING:
-    from db.models.soldier import Soldier
-
 
 class GuardingType(Base):
     __tablename__ = "guarding_types"

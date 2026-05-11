@@ -11,13 +11,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.db import Base
 from core.enums import Doh1ValueEnum, RankEnum, ServiceTypeEnum
 
-from db.models.biror import Biror
-from db.models.duties import Guarding, Task
-from db.models.ptor import BeardStatement, MedicalPtor
-from db.models.indications import Indication
-from db.models.misdar import MisdarAttendance
-from db.models.users import User
-
 __all__ = ["Doh1", "Soldier"]
 
 
