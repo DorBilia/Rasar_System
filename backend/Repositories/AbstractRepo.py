@@ -3,16 +3,18 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 
-from Repositories.Interfaces.base_repo import IBaseRepo
+from Repositories.Interfaces.baseRepo import IBaseRepo
 
 T = TypeVar("T")
 
 
 class AbstractRepo(IBaseRepo[T], Generic[T]):
+    db: AsyncSession
 
-    def __init__(self, model: Type[T]):
-        super().__init__(self.db)
+    def __init__(self, db, model: Type[T]):
+        super().__init__()
         self.model = model
+        self.db = db
 
     async def create(self, **kwargs) -> T:
         new_entity = self.model(**kwargs)

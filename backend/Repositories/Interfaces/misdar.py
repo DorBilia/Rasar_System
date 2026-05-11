@@ -1,4 +1,4 @@
-from base_repo import IBaseRepo
+from baseRepo import IBaseRepo
 from db.models.misdar import MisdarAttendance
 from typing import Sequence
 from abc import abstractmethod
