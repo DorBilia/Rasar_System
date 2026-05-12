@@ -55,10 +55,10 @@ class Biror(Base):
         ForeignKey("biror_types.id", ondelete="RESTRICT"), nullable=False
     )
     biror_date: Mapped[date] = mapped_column(Date, nullable=False)
-    biror_description: Mapped[str] = mapped_column(Text, nullable=False)
-    comments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    biror_description: Mapped[str] = mapped_column(Text)
+    comments: Mapped[Optional[str]] = mapped_column(Text)
     biror_result: Mapped[int] = mapped_column(
-        ForeignKey("biror_results.id", ondelete="RESTRICT"), nullable=False
+        ForeignKey("biror_results.id", ondelete="RESTRICT")
     )
 
     soldier: Mapped["Soldier"] = relationship(back_populates="birors")

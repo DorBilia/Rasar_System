@@ -53,7 +53,7 @@ class MisdarNameEnum(str, Enum):
     LATE = "מאחרים"
     MOKED = "מוקד"
 
-
+ 
 class IndicationDescriptionEnum(str, Enum):
     EXEMPT = "פטור"
     PUNISHMENT = "עונש"
