@@ -6,7 +6,7 @@ from Repositories.Interfaces.soldier import ISoldierRepo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo[Soldier]):
+class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
     def __init__(self, db: AsyncSession):
         super().__init__(db, Soldier)

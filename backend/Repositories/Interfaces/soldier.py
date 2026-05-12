@@ -1,4 +1,4 @@
-from baseRepo import IBaseRepo
+from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.soldier import Soldier, Doh1
 from typing import Sequence
 from abc import abstractmethod
