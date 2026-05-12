@@ -6,12 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class BirorRepository(AbstractRepo[Biror], IBirorRepo):
+    def __init__(self, db: AsyncSession):
+        super().__init__(db, Biror)
 
     async def get_by_result(self, result: str) -> Sequence[Biror]:
         pass
-
-    def __init__(self, db: AsyncSession):
-        super().__init__(db, Biror)
 
 
 class BirorTypeRepository(AbstractRepo[BirorType]):
