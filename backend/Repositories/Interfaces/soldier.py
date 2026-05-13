@@ -1,35 +1,22 @@
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.soldier import Soldier, Doh1
-from typing import Sequence
+from typing import Sequence, Optional
 from abc import abstractmethod
 
 
 class ISoldierRepo(IBaseRepo[Soldier]):
 
     @abstractmethod
-    async def get_by_unit(self, unit_id: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_branch(self, branch: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_department(self, branch: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_rank(self, rank: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_discharge_date(self, discharge_date: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_service_type(self, service_type: str) -> Sequence[Soldier]:
-        pass
-
-    @abstractmethod
-    async def get_by_phone_number(self, phone_number: str) -> Sequence[Soldier]:
+    async def get_all_filtered(
+            self,
+            unit: Optional[int] = None,
+            branch: Optional[int] = None,
+            department: Optional[int] = None,
+            rank: Optional[str] = None,
+            discharge_date: Optional[str] = None,
+            service_type: Optional[str] = None,
+            phone_number: Optional[str] = None,
+            indication_type: Optional[str] = None,
+            search_term: Optional[str] = None,
+            limit: int = 50) -> Sequence[Soldier]:
         pass

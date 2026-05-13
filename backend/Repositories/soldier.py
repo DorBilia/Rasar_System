@@ -1,4 +1,4 @@
-from sqlalchemy import select, update, delete
+from sqlalchemy import select
 from typing import Optional, Sequence
 from db.models.soldier import Soldier
 from Repositories.AbstractRepo import AbstractRepo
@@ -11,37 +11,43 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
     def __init__(self, db: AsyncSession):
         super().__init__(db, Soldier)
 
-    async def get_by_unit(self, unit_id: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.unit == unit_id)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+    async def get_all_filtered(
+            self,
+            unit: Optional[int] = None,
+            branch: Optional[int] = None,
+            department: Optional[int] = None,
+            rank: Optional[str] = None,
+            discharge_date: Optional[str] = None,
+            service_type: Optional[str] = None,
+            phone_number: Optional[str] = None,
+            indication_type: Optional[str] = None,
+            search_term: Optional[str] = None,  # could be name or id
+            limit: int = 50) -> Sequence[Soldier]:
 
-    async def get_by_branch(self, branch: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.branch == branch)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+        query = select(Soldier).where(Soldier.isActive)
 
-    async def get_by_department(self, department: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.department == department)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+        query_map = {unit: Soldier.unit == unit,
+                     branch: Soldier.branch == branch,
+                     department: Soldier.department == department,
+                     rank: Soldier.rank == rank,
+                     discharge_date: Soldier.discharge_date == discharge_date,
+                     service_type: Soldier.service_type == service_type,
+                     phone_number: Soldier.phone_number == phone_number,
+                     indication_type: Soldier.indications == indication_type}
 
-    async def get_by_rank(self, rank: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.rank == rank)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+        for param, condition in query_map.items():
+            if param is not None:
+                query = query.where(condition)
 
-    async def get_by_discharge_date(self, discharge_date: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.discharge_date == discharge_date)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+        if search_term:
+            if search_term.isdecimal():
+                soldier_id = int(search_term)
+                query = query.where(Soldier.id.ilike(soldier_id))
+            else:
+                query = query.where(
+                    Soldier.first_name.ilike(f"%{search_term}%") |
+                    Soldier.last_name.ilike(f"%{search_term}%"))
 
-    async def get_by_service_type(self, service_type: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.service_type == service_type)
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
-
-    async def get_by_phone_number(self, phone_number: str) -> Sequence[Soldier]:
-        stmt = select(Soldier).where(Soldier.phone_number == phone_number)
-        result = await self.db.execute(stmt)
+        query = query.limit(limit)
+        result = await self.db.execute(query)
         return result.scalars().all()
