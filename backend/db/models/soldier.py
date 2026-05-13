@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String
+from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
@@ -33,6 +33,8 @@ class Soldier(Base):
     branch: Mapped[str] = mapped_column(String(255), nullable=False)
     department: Mapped[str] = mapped_column(String(255), nullable=False)
     other_allocations: Mapped[str] = mapped_column(String(255))
+
+    is_active: bool = mapped_column(Boolean, nullable=False)
 
     phone_number: Mapped[str] = mapped_column(String(50), nullable=False)
 
