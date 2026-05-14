@@ -38,15 +38,17 @@ class Soldier(Base):
 
     phone_number: Mapped[str] = mapped_column(String(50), nullable=False)
 
-    doh1_records: Mapped[List["Doh1"]] = relationship(back_populates="soldier")
-    medical_ptors: Mapped[List["MedicalPtor"]] = relationship(back_populates="soldier")
-    beard_statements: Mapped[List["BeardStatement"]] = relationship(back_populates="soldier")
-    misdar_attendance_records: Mapped[List["MisdarAttendance"]] = relationship(back_populates="soldier")
-    birors: Mapped[List["Biror"]] = relationship(back_populates="soldier")
-    indications: Mapped[List["Indication"]] = relationship(back_populates="soldier")
-    guardings: Mapped[List["Guarding"]] = relationship(back_populates="soldier")
-    tasks: Mapped[List["Task"]] = relationship(back_populates="soldier")
-    user: Mapped[Optional["User"]] = relationship(back_populates="soldier")
+    doh1_records: Mapped[List["Doh1"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    medical_ptors: Mapped[List["MedicalPtor"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    beard_statements: Mapped[List["BeardStatement"]] = relationship(back_populates="soldier",
+                                                                    cascade="all, delete-orphan")
+    misdar_attendance_records: Mapped[List["MisdarAttendance"]] = relationship(back_populates="soldier",
+                                                                               cascade="all, delete-orphan")
+    birors: Mapped[List["Biror"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    indications: Mapped[List["Indication"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    guardings: Mapped[List["Guarding"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    tasks: Mapped[List["Task"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    user: Mapped[Optional["User"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"Soldier(id={self.id!r})"
