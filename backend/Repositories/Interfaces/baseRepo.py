@@ -20,7 +20,6 @@ class IBaseRepo(ABC, Generic[T]):
 
     @abstractmethod
     async def get_for_soldier(self, soldier_id: str) -> Sequence[object]:
-        # Easier to implement it that way, breaks SOLID principle
         pass
 
     @abstractmethod
