@@ -5,5 +5,7 @@ sqlalchemy
 uvicorn
 pydantic_settings
 fastapi_restful
+typing-inspect
+
 
 
