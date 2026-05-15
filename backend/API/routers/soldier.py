@@ -1,21 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi_restful.cbv import cbv
-from typing import Optional, List
+from typing import Sequence
 
 from API.schemas.soldier import BaseSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest
 from Services.Interfaces.soldier import ISoldierService
 
+from core.dependecies.soldier import get_soldier_service
 router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 
 
 @cbv(router)
 class SoldierRouter:
-    service: ISoldierService
 
-    def __init__(self, service: ISoldierService):
-        self.service = service
+    service: ISoldierService = Depends(get_soldier_service)
 
-    @router.get("/", response_model=List[BaseSoldier])
+    @router.post("/", response_model=Sequence[BaseSoldier])
     async def get_soldiers(self, request: FilterSoldiersRequest):
         return await self.service.get_all_filtered(request)
 
