@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
@@ -7,14 +7,14 @@ from core.enums import RankEnum, ServiceTypeEnum
 
 
 class FilterSoldiersRequest(BaseModel):
-    unit: Optional[int] = None
-    branch: Optional[int] = None
-    department: Optional[int] = None
+    unit: Optional[str] = None
+    branch: Optional[str] = None
+    department: Optional[str] = None
     rank: Optional[str] = None
-    discharge_date: Optional[str] = None
+    discharge_date: Optional[date] = None
     service_type: Optional[str] = None
     phone_number: Optional[str] = None
-    indication_type: Optional[str] = None
+    indication_types: Optional[List[str]] = None
     search_term: Optional[str] = None
     limit: int = 50
 
