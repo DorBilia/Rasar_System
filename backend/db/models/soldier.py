@@ -34,7 +34,7 @@ class Soldier(Base):
     department: Mapped[str] = mapped_column(String(255), nullable=False)
     other_allocations: Mapped[str] = mapped_column(String(255))
 
-    is_active: bool = mapped_column(Boolean, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     phone_number: Mapped[str] = mapped_column(String(50), nullable=False)
 
