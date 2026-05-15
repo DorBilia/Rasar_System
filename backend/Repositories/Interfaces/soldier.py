@@ -1,6 +1,8 @@
+from datetime import date
+
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.soldier import Soldier, Doh1
-from typing import Sequence, Optional
+from typing import Sequence, Optional, List
 from abc import abstractmethod
 
 
@@ -9,11 +11,11 @@ class ISoldierRepo(IBaseRepo[Soldier]):
     @abstractmethod
     async def get_all_filtered(
             self,
-            unit: Optional[int] = None,
-            branch: Optional[int] = None,
-            department: Optional[int] = None,
+            unit: Optional[str] = None,
+            branch: Optional[str] = None,
+            department: Optional[str] = None,
             rank: Optional[str] = None,
-            discharge_date: Optional[str] = None,
+            discharge_date: Optional[date] = None,
             service_type: Optional[str] = None,
             phone_number: Optional[str] = None,
             indication_type: Optional[str] = None,

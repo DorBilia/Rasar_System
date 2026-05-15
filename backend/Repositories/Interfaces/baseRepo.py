@@ -6,7 +6,6 @@ T = TypeVar("T")
 
 class IBaseRepo(ABC, Generic[T]):
 
-
     @abstractmethod
     async def create(self, **kwargs) -> T:
         pass

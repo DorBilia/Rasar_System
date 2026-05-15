@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
 from db.models.soldier import Soldier
 from Repositories.AbstractRepo import AbstractRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
@@ -21,10 +21,10 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
             service_type: Optional[str] = None,
             phone_number: Optional[str] = None,
             indication_type: Optional[str] = None,
-            search_term: Optional[str] = None,  # could be name or id
+            search_term: Optional[str] = None,  # could be a name or id
             limit: int = 50) -> Sequence[Soldier]:
 
-        query = select(Soldier).where(Soldier.isActive)
+        query = select(Soldier).where(Soldier.isctive)
 
         query_map = {unit: Soldier.unit == unit,
                      branch: Soldier.branch == branch,
@@ -33,7 +33,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
                      discharge_date: Soldier.discharge_date == discharge_date,
                      service_type: Soldier.service_type == service_type,
                      phone_number: Soldier.phone_number == phone_number,
-                     indication_type: Soldier.indications == indication_type}
+                     indication_type: Soldier.indications.contains(indication_type)}
 
         for param, condition in query_map.items():
             if param is not None:
