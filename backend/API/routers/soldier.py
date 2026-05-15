@@ -6,17 +6,21 @@ from API.schemas.soldier import BaseSoldier, FilterSoldiersRequest, FullSoldier,
 from Services.Interfaces.soldier import ISoldierService
 
 from core.dependecies.soldier import get_soldier_service
+
 router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 
 
 @cbv(router)
 class SoldierRouter:
-
     service: ISoldierService = Depends(get_soldier_service)
 
-    @router.post("/", response_model=Sequence[BaseSoldier])
+    @router.post("/filter", response_model=Sequence[BaseSoldier])
     async def get_soldiers(self, request: FilterSoldiersRequest):
         return await self.service.get_all_filtered(request)
+
+    @router.post("/create", response_model=FullSoldier)
+    async def create(self, request: FullSoldier):
+        return await self.service.create(request)
 
     @router.get("/{soldier_id}", response_model=FullSoldier)
     async def get_soldier_by_id(self, soldier_id: int):
