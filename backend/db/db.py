@@ -11,7 +11,6 @@ SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 Base = declarative_base()
 
 
-@asynccontextmanager
 async def get_db():
     async with SessionLocal() as session:
         try:
