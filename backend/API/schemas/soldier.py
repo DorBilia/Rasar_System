@@ -30,7 +30,7 @@ class BaseSoldierRequest(BaseModel):
     unit: Optional[str] = None
     branch: Optional[str] = None
     department: Optional[str] = None
-    rank: Optional[str] = None
+    rank: Optional[RankEnum] = None
     discharge_date: Optional[date] = None
     service_type: Optional[str] = None
     phone_number: Optional[str] = None
