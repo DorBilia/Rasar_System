@@ -5,3 +5,4 @@ from .indications import Indication, IndicationType, IndicationTypeMisdarType
 from .misdar import MisdarAttendance, MisdarType
 from .users import User
 from .soldier import Soldier, Doh1
+from .organization import Section, Unit, Branch

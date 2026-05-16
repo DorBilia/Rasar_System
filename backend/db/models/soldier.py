@@ -29,9 +29,10 @@ class Soldier(Base):
     discharge_date: Mapped[date] = mapped_column(Date, nullable=False)
     service_type: Mapped[ServiceTypeEnum] = mapped_column(SAEnum(ServiceTypeEnum, native_enum=False), nullable=False)
 
-    unit: Mapped[str] = mapped_column(String(255), nullable=False)
-    branch: Mapped[str] = mapped_column(String(255), nullable=False)
-    department: Mapped[str] = mapped_column(String(255), nullable=False)
+    unit: Mapped[int] = mapped_column(ForeignKey("units.id", ondelete="RESTRICT"), nullable=False)
+    branch: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"), nullable=False)
+    sections: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"), nullable=False)
+
     other_allocations: Mapped[str] = mapped_column(String(255))
 
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
@@ -49,6 +50,9 @@ class Soldier(Base):
     guardings: Mapped[List["Guarding"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     tasks: Mapped[List["Task"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     user: Mapped[Optional["User"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
+    unit_ref: Mapped["Unit"] = relationship(back_populates="soldiers", foreign_keys=[unit])
+    branch_ref: Mapped["Branch"] = relationship(back_populates="soldiers", foreign_keys=[branch])
+    sections_ref: Mapped["Section"] = relationship(back_populates="soldiers", foreign_keys=[sections])
 
     def __repr__(self) -> str:
         return f"Soldier(id={self.id!r})"
