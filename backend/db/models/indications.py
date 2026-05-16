@@ -14,7 +14,7 @@ from core.enums import IndicationDescriptionEnum
 if TYPE_CHECKING:
     from db.models.soldier import Soldier
 
-__all__ = ["Indication", "IndicationType","IndicationTypeMisdarType"]
+__all__ = ["Indication", "IndicationType", "IndicationTypeMisdarType"]
 
 
 class IndicationType(Base):
@@ -25,7 +25,6 @@ class IndicationType(Base):
         SAEnum(IndicationDescriptionEnum, native_enum=False), nullable=False
     )
     weekly_arrivals: Mapped[int] = mapped_column(nullable=False)
-
 
     indications: Mapped[List["Indication"]] = relationship(back_populates="indication_type_ref")
     indication_mappings: Mapped[List["IndicationTypeMisdarType"]] = relationship(
@@ -56,15 +55,27 @@ class Indication(Base):
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
-    indication_type: Mapped[int] = mapped_column(
-        ForeignKey("indication_types.id", ondelete="RESTRICT"),
-        nullable=False,
-    )
+    indication_type: Mapped[int] = mapped_column(ForeignKey("indication_types.id", ondelete="RESTRICT"),
+                                                 nullable=False)
     indication_start_date: Mapped[date] = mapped_column(Date, nullable=False)
     indication_end_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"))
+    # uuid to distinguish organized indications from specific indications
 
     soldier: Mapped["Soldier"] = relationship(back_populates="indications")
     indication_type_ref: Mapped["IndicationType"] = relationship(back_populates="indications")
 
     def __repr__(self) -> str:
         return f"Indication(id={self.id!r})"
+
+
+class OrganizationIndication(Base):
+    __tablename__ = "organization_indications"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"))
+    section_id: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"))
+
+    def __repr__(self) -> str:
+        return f"OrganizationIndication (id={self.id!r})"
