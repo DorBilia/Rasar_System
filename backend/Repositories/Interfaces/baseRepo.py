@@ -14,19 +14,19 @@ class IBaseRepo(ABC, Generic[T]):
     async def create_many(self, objects: list[T]) -> list[T]:
         pass
 
-    async def get_by_id(self, id: int) -> Optional[object]:
+    async def get_by_id(self, id: int) -> Optional[T]:
         pass
 
     @abstractmethod
-    async def get_for_soldier(self, soldier_id: str) -> Sequence[object]:
+    async def get_for_soldier(self, soldier_id: str) -> Sequence[T]:
         pass
 
     @abstractmethod
-    async def get_all(self) -> List[object]:
+    async def get_all(self) -> List[T]:
         pass
 
     @abstractmethod
-    async def update(self, id: int, **updates) -> Optional[object]:
+    async def update(self, id: int, **updates) -> Optional[T]:
         # Gets key-value attribute in a dict form and updates the relevant fields in the object
         pass
 
