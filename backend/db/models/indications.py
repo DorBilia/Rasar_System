@@ -14,7 +14,7 @@ from core.enums import IndicationDescriptionEnum
 if TYPE_CHECKING:
     from db.models.soldier import Soldier
 
-__all__ = ["Indication", "IndicationType", "IndicationTypeMisdarType"]
+__all__ = ["Indication", "IndicationType", "IndicationTypeMisdarType", "OrganizationIndication"]
 
 
 class IndicationType(Base):
@@ -75,6 +75,8 @@ class OrganizationIndication(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"))
     section_id: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"))
+    indication_type: Mapped[int] = mapped_column(ForeignKey("indication_types.id", ondelete="RESTRICT"),
+                                                 nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
