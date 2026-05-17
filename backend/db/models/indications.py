@@ -73,9 +73,10 @@ class Indication(Base):
 class OrganizationIndication(Base):
     __tablename__ = "organization_indications"
     id: Mapped[int] = mapped_column(primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False)
     branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"))
     section_id: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"))
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     def __repr__(self) -> str:
         return f"OrganizationIndication (id={self.id!r})"
