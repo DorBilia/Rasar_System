@@ -2,14 +2,14 @@ from typing import Sequence
 
 from sqlalchemy.orm import selectinload
 
-from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType
+from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
 from Repositories.AbstractRepo import AbstractRepo
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from Repositories.Interfaces.indication import IIndicationRepo
+from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
 
 
-class IndicationRepository(AbstractRepo[Indication], IIndicationRepo):
+class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRepo):
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
         stmt = (
             select(Indication)
@@ -41,3 +41,16 @@ class IndicationRepository(AbstractRepo[Indication], IIndicationRepo):
 class IndicationTypeRepository(AbstractRepo[IndicationType]):
     def __init__(self, db: AsyncSession):
         super().__init__(db, IndicationType)
+
+
+class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOrganizationIndicationRepo):
+
+    def __init__(self, db: AsyncSession):
+        super().__init__(db, OrganizationIndication)
+
+    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
+        stmt = (
+            select(OrganizationIndication)
+            .where(OrganizationIndication.indication_type == indication_type.id))
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
