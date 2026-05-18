@@ -32,7 +32,10 @@ class IndicationSoldierRouter:
 
     @soldier_router.get("/{id}", response_model=SoldierIndicationResponse)
     async def get_by_id(self, id: int):
-        return await self.service.get_by_id(id)
+        result = await self.service.get_by_id(id)
+        if result is None:
+            raise HTTPException(status_code=404, detail="indication not found")
+        return result
 
 
 @cbv(organization_router)
@@ -58,4 +61,3 @@ class OrganizationSoldierRouter:
         return result
 
 # get-filtered ?
-
