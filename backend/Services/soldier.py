@@ -27,15 +27,14 @@ class SoldierService(ISoldierService):
         rows = await self.soldier_repo.get_all_filtered(
             unit=filter_request.unit,
             branch=filter_request.branch,
-            department=filter_request.department,
+            section=filter_request.section,
             rank=filter_request.rank,
             discharge_date=filter_request.discharge_date,
             service_type=filter_request.service_type,
             phone_number=filter_request.phone_number,
             indication_type=filter_request.indication_type,
             search_term=filter_request.search_term,
-            limit=filter_request.limit,
-        )
+            limit=filter_request.limit)
         return [BaseSoldier.model_validate(r) for r in rows]
 
     async def update_soldier(self, soldier_id: int, updates: UpdateSoldierRequest) -> Optional[BaseSoldier]:

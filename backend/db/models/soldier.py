@@ -31,7 +31,7 @@ class Soldier(Base):
 
     unit: Mapped[int] = mapped_column(ForeignKey("units.id", ondelete="RESTRICT"), nullable=False)
     branch: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"), nullable=False)
-    sections: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"), nullable=False)
+    section: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"), nullable=False)
 
     other_allocations: Mapped[str] = mapped_column(String(255))
 
@@ -52,7 +52,7 @@ class Soldier(Base):
     user: Mapped[Optional["User"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     unit_ref: Mapped["Unit"] = relationship(back_populates="soldiers", foreign_keys=[unit])
     branch_ref: Mapped["Branch"] = relationship(back_populates="soldiers", foreign_keys=[branch])
-    sections_ref: Mapped["Section"] = relationship(back_populates="soldiers", foreign_keys=[sections])
+    sections_ref: Mapped["Section"] = relationship(back_populates="soldiers", foreign_keys=[section])
 
     def __repr__(self) -> str:
         return f"Soldier(id={self.id!r})"
