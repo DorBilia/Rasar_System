@@ -15,7 +15,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
             self,
             unit: Optional[int] = None,
             branch: Optional[int] = None,
-            department: Optional[int] = None,
+            section: Optional[int] = None,
             rank: Optional[str] = None,
             discharge_date: Optional[str] = None,
             service_type: Optional[str] = None,
@@ -28,7 +28,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
         query_map = {unit: Soldier.unit == unit,
                      branch: Soldier.branch == branch,
-                     department: Soldier.sections == department,
+                     section: Soldier.sections == section,
                      rank: Soldier.rank == rank,
                      discharge_date: Soldier.discharge_date == discharge_date,
                      service_type: Soldier.service_type == service_type,

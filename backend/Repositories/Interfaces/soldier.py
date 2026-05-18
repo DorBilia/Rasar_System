@@ -13,7 +13,7 @@ class ISoldierRepo(IBaseRepo[Soldier]):
             self,
             unit: Optional[str] = None,
             branch: Optional[str] = None,
-            department: Optional[str] = None,
+            section: Optional[str] = None,
             rank: Optional[str] = None,
             discharge_date: Optional[date] = None,
             service_type: Optional[str] = None,
