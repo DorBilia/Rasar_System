@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from Repositories.indication import SoldierIndicationRepository, IndicationTypeRepository, \
     OrganizationIndicationRepository
-from Repositories.Interfaces.indication import ISoldierIndicationRepo
+from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.indication import SoldierIndicationService, OrganizationIndicationService, IndicationService
 from Services.Interfaces.indication import ISoldierIndicationService, IOrganizationIndicationService
 
@@ -24,17 +24,17 @@ async def get_organization_indication_repository(
 
 
 async def get_indication_service(
-        type_repository: IndicationTypeRepository = Depends(
-            get_indication_type_repository)) -> IndicationService:
+        type_repository: IndicationTypeRepository = Depends(get_indication_type_repository)) -> IndicationService:
     return IndicationService(type_repository)
 
 
 async def get_soldier_indication_service(
-        repository: ISoldierIndicationRepo = Depends(
-            get_soldier_indication_repository), ) -> ISoldierIndicationService:
-    return SoldierIndicationService(repository)
+        repository: ISoldierIndicationRepo = Depends(get_soldier_indication_repository)) -> ISoldierIndicationService:
+    return SoldierIndicationService(repository, )
 
 
 async def get_organization_indication_service(
-        repository: OrganizationIndicationRepository = Depends(get_organization_indication_repository)):
-    return OrganizationIndicationService(repository)
+        repository: IOrganizationIndicationRepo = Depends(get_organization_indication_repository),
+        soldier_indication_service: ISoldierIndicationService = Depends(
+            get_soldier_indication_service)) -> IOrganizationIndicationService:
+    return OrganizationIndicationService(repository, soldier_indication_service)
