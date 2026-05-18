@@ -7,7 +7,7 @@ from API.schemas.indication import *
 
 indication_router = APIRouter(prefix="/indications", tags=["Indications"])
 soldier_router = APIRouter(prefix="/indications/soldier", tags=["IndicationsSoldier"])
-organization_router = APIRouter(prefix="/indications/organization", tags=["IndicationsOrganisation"])
+organization_router = APIRouter(prefix="/indications/organization", tags=["IndicationsOrganization"])
 
 
 @cbv(indication_router)
@@ -30,7 +30,7 @@ class IndicationSoldierRouter:
             raise HTTPException(status_code=500, detail="somthing went wrong")
         return result
 
-    @organization_router.get("/{id}", response_model=SoldierIndicationResponse)
+    @soldier_router.get("/{id}", response_model=SoldierIndicationResponse)
     async def get_by_id(self, id: int):
         return await self.service.get_by_id(id)
 
@@ -39,7 +39,7 @@ class IndicationSoldierRouter:
 class OrganizationSoldierRouter:
     service: IOrganizationIndicationService = Depends(get_organization_indication_service)
 
-    @organization_router.post("/create", response_model=OrganizationIndicationRequest)
+    @organization_router.post("/create", response_model=OrganizationIndicationResponse)
     async def create(self, request: OrganizationIndicationRequest):
         result = await self.service.create(request)
         if result is None:
@@ -52,7 +52,10 @@ class OrganizationSoldierRouter:
 
     @organization_router.get("/{id}", response_model=OrganizationIndicationResponse)
     async def get_by_id(self, id: int):
-        return await self.service.get_by_id(id)
+        result = await self.service.get_by_id(id)
+        if result is None:
+            raise HTTPException(status_code=404, detail="Organization indication not found")
+        return result
 
-# get-filtered
+# get-filtered ?
 

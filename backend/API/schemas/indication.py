@@ -8,14 +8,16 @@ from core.enums import IndicationDescriptionEnum
 
 class IndicationType(BaseModel):
     id: int
-    description: IndicationDescriptionEnum
+    indication_description: IndicationDescriptionEnum
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SoldierIndicationRequest(BaseModel):
     soldier_id: str
-    type_id: int
+    indication_type: int
     start_date: date
     end_date: date
+    organization_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -37,7 +39,7 @@ class OrganizationIndicationMinimal(BaseModel):
 class OrganizationIndicationRequest(BaseModel):
     section_id: Optional[int] = None
     branch_id: Optional[int] = None
-    type_id: int
+    indication_type: int
     start_date: date
     end_date: date
     additional_soldiers: Optional[List[int]] = None
