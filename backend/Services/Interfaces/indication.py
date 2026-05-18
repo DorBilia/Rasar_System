@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Optional, Sequence
 from API.schemas.indication import *
 
 
@@ -27,6 +27,10 @@ class ISoldierIndicationService(ABC):
     async def get_by_id(self, id: int) -> SoldierIndicationResponse:
         pass
 
+    @abstractmethod
+    async def create_many(self, requests: List[SoldierIndicationRequest]):
+        pass
+
 
 class IOrganizationIndicationService(ABC):
     @abstractmethod
@@ -38,7 +42,7 @@ class IOrganizationIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> Sequence[OrganizationIndicationResponse]:
+    async def get_by_id(self, id: int) -> Optional[OrganizationIndicationResponse]:
         pass
 
     @abstractmethod
