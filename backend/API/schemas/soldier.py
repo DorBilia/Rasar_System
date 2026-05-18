@@ -19,7 +19,7 @@ class BaseSoldier(BaseModel):
 
 
 class FullSoldier(BaseSoldier):
-    unit: str
+    unit: int
     discharge_date: Optional[date] = None
     service_type: Optional[ServiceTypeEnum] = None
     other_allocations: Optional[str] = None

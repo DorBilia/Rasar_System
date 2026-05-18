@@ -33,7 +33,7 @@ class Soldier(Base):
     branch: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"), nullable=False)
     section: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"), nullable=False)
 
-    other_allocations: Mapped[str] = mapped_column(String(255))
+    other_allocations: Mapped[str] = mapped_column(String(255), nullable=True)
 
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
