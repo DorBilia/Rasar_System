@@ -6,3 +6,4 @@ from .misdar import MisdarAttendance, MisdarType
 from .users import User
 from .soldier import Soldier, Doh1
 from .organization import Section, Unit, Branch
+from .system import SystemVariable
