@@ -1,12 +1,16 @@
 from typing import Sequence
 
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
 from Repositories.AbstractRepo import AbstractRepo
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
+from Repositories.Interfaces.indication import (
+    ISoldierIndicationRepo,
+    IOrganizationIndicationRepo,
+    OrganizationIndicationMinimalRow,
+)
 
 
 class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRepo):
@@ -47,6 +51,43 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
 
     def __init__(self, db: AsyncSession):
         super().__init__(db, OrganizationIndication)
+
+    async def get_all_minimal(self) -> Sequence[OrganizationIndicationMinimalRow]:
+        stmt = (
+            select(
+                OrganizationIndication.id,
+                IndicationType.indication_description,
+                OrganizationIndication.start_date,
+                OrganizationIndication.end_date,
+                func.count(Indication.id).label("soldiers_affected"),
+            )
+            .join(IndicationType, OrganizationIndication.indication_type == IndicationType.id)
+            .outerjoin(Indication, Indication.organization_id == OrganizationIndication.id)
+            .group_by(
+                OrganizationIndication.id,
+                IndicationType.indication_description,
+                OrganizationIndication.start_date,
+                OrganizationIndication.end_date,
+            )
+        )
+        result = await self.db.execute(stmt)
+        return [
+            OrganizationIndicationMinimalRow(
+                id=row.id,
+                indication_description=row.indication_description,
+                start_date=row.start_date,
+                end_date=row.end_date,
+                soldiers_affected=row.soldiers_affected,
+            )
+            for row in result.all()
+        ]
+
+    async def get_soldier_ids_by_organization_id(self, organization_id: int) -> Sequence[int]:
+        stmt = select(Indication.soldier_id).where(
+            Indication.organization_id == organization_id
+        )
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
 
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
         stmt = (
