@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi_restful.cbv import cbv
 from typing import Sequence
 
+from sqlalchemy.exc import IntegrityError
+
 from API.schemas.soldier import BaseSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest
 from Services.Interfaces.soldier import ISoldierService
 
@@ -20,7 +22,10 @@ class SoldierRouter:
 
     @router.post("/create", response_model=FullSoldier)
     async def create(self, request: FullSoldier):
-        return await self.service.create(request)
+        try:
+            return await self.service.create(request)
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail="The soldier id you entered already exists")
 
     @router.get("/{soldier_id}", response_model=FullSoldier)
     async def get_soldier_by_id(self, soldier_id: int):
