@@ -13,7 +13,7 @@ class IndicationType(BaseModel):
 
 
 class SoldierIndicationRequest(BaseModel):
-    soldier_id: str
+    soldier_id: int
     indication_type: int
     start_date: date
     end_date: date
