@@ -12,8 +12,8 @@ class BaseSoldier(BaseModel):
     last_name: str
     rank: RankEnum
     picture: Optional[str] = None
-    branch: str
-    department: str
+    branch: int
+    section: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,9 +27,9 @@ class FullSoldier(BaseSoldier):
 
 
 class BaseSoldierRequest(BaseModel):
-    unit: Optional[str] = None
-    branch: Optional[str] = None
-    department: Optional[str] = None
+    unit: Optional[int] = None
+    branch: Optional[int] = None
+    section: Optional[int] = None
     rank: Optional[RankEnum] = None
     discharge_date: Optional[date] = None
     service_type: Optional[str] = None
