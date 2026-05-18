@@ -22,18 +22,22 @@ class SoldierIndicationService(ISoldierIndicationService):
 
     async def create(self, request: SoldierIndicationRequest) -> SoldierIndicationResponse:
         data = request.model_dump()
-        data.setdefault("id", int(uuid.uuid4()))
+        # data.setdefault("id", int(uuid.uuid4())) TODO: figure out what to do with ids
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:  # fix this
+    # TODO: change return type to a schema
+    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
         return await self._repository.get_by_indication_type(indication_type)
 
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         return await self._repository.can_soldier_attend_misdar(soldier_id, misdar_id)
 
-    async def get_by_id(self, id: int) -> SoldierIndicationResponse:
-        pass
+    async def get_by_id(self, id: int) -> Optional[SoldierIndicationResponse]:
+        result = await self._repository.get_by_id(id)
+        if result is None:
+            return None
+        return SoldierIndicationResponse.model_validate(result)
 
     async def create_many(self, requests: List[SoldierIndicationRequest]) -> List[SoldierIndicationResponse]:
         to_add = List()

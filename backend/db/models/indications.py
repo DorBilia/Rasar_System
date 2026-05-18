@@ -57,10 +57,11 @@ class Indication(Base):
     )
     indication_type: Mapped[int] = mapped_column(ForeignKey("indication_types.id", ondelete="RESTRICT"),
                                                  nullable=False)
-    indication_start_date: Mapped[date] = mapped_column(Date, nullable=False)
-    indication_end_date: Mapped[date] = mapped_column(Date, nullable=False)
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    organization_id: Mapped[int] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"))
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"),
+                                                 nullable=True)
     # uuid to distinguish organized indications from specific indications
 
     soldier: Mapped["Soldier"] = relationship(back_populates="indications")

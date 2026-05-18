@@ -24,7 +24,7 @@ class ISoldierIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> SoldierIndicationResponse:
+    async def get_by_id(self, id: int) -> Optional[SoldierIndicationResponse]:
         pass
 
     @abstractmethod
