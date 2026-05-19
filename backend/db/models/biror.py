@@ -18,7 +18,7 @@ class BirorType(Base):
     __tablename__ = "biror_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     biror_type_description: Mapped[BirorTypeEnum] = mapped_column(
         SAEnum(BirorTypeEnum, native_enum=False),
         nullable=False,
@@ -34,7 +34,7 @@ class BirorResult(Base):
     __tablename__ = "biror_results"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     biror_result_description: Mapped[BirorResultEnum] = mapped_column(
         SAEnum(BirorResultEnum, native_enum=False), nullable=False
     )
@@ -49,7 +49,7 @@ class Biror(Base):
     __tablename__ = "birors"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
 
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False

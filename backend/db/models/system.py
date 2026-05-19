@@ -12,7 +12,7 @@ class SystemVariable(Base):
     __tablename__ = "system_variables"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     system_variables_description: Mapped[str] = mapped_column(String(255), nullable=False)
     system_variables_value: Mapped[int] = mapped_column(nullable=False)
 

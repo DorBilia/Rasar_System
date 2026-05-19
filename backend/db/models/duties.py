@@ -18,7 +18,7 @@ class GuardingType(Base):
     __tablename__ = "guarding_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     guarding_description: Mapped[GuardingTypeEnum] = mapped_column(
         SAEnum(GuardingTypeEnum, native_enum=False), nullable=False
     )
@@ -34,7 +34,7 @@ class Guarding(Base):
     __tablename__ = "guardings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
@@ -55,7 +55,7 @@ class TaskType(Base):
     __tablename__ = "task_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     task_description: Mapped[str] = mapped_column(String(255), nullable=False)
     assigned_by: Mapped[TaskAssignedByEnum] = mapped_column(
         SAEnum(TaskAssignedByEnum, native_enum=False), nullable=False
@@ -71,7 +71,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )

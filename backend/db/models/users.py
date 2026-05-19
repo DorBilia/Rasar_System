@@ -21,7 +21,7 @@ class Role(Base):
     __tablename__ = "roles"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     role_name: Mapped[RoleNameEnum] = mapped_column(
         SAEnum(RoleNameEnum, native_enum=False), nullable=False
     )
@@ -36,7 +36,7 @@ class Role(Base):
 class User(Base):
     __tablename__ = "users"
 
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
