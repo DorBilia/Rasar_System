@@ -22,7 +22,7 @@ class SoldierIndicationService(ISoldierIndicationService):
 
     async def create(self, request: SoldierIndicationRequest) -> SoldierIndicationResponse:
         data = request.model_dump()
-        # data.setdefault("id", int(uuid.uuid4())) TODO: figure out what to do with ids
+        data["uuid"] = str(uuid.uuid4())
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
@@ -43,7 +43,7 @@ class SoldierIndicationService(ISoldierIndicationService):
         to_add = List()
         for request in requests:
             data = request.model_dump()
-            data.setdefault("id", int(uuid.uuid4()))
+            data["uuid"] = str(uuid.uuid4())
             to_add.append(data)
         created = await self._repository.create_many(*to_add)
         return [SoldierIndicationResponse.model_validate(r) for r in created]
@@ -80,7 +80,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
     async def create(self, request: OrganizationIndicationRequest) -> OrganizationIndicationResponse:
         data = request.model_dump(exclude={"additional_soldiers"})
         organization_id = int(uuid.uuid4())
-        data.setdefault("id", organization_id)
+        data["uuid"] = str(uuid.uuid4())
         created = await self._repository.create(**data)
 
         soldiers = request.additional_soldiers

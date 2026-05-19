@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional, Sequence
 
 from API.schemas.soldier import BaseSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest
@@ -14,6 +15,7 @@ class SoldierService(ISoldierService):
     async def create(self, soldier: FullSoldier) -> FullSoldier:
         data = soldier.model_dump()
         data.setdefault("is_active", True)
+        data["uuid"] = str(uuid.uuid4())
         created = await self.soldier_repo.create(**data)
         return FullSoldier.model_validate(created)
 
