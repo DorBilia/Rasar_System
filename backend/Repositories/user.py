@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import delete as sql_delete, select, update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from Commands.user import LoginCommand, RegisterCommand
+from API.schemas.user import Login, Register
 from core.security import hash_password, verify_password
 from db.models.users import User
 from Repositories.AbstractRepo import AbstractRepo
@@ -25,7 +25,7 @@ class UserRepository(AbstractRepo[User], IUserRepo):
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def register(self, command: RegisterCommand) -> User:
+    async def register(self, command: Register) -> User:
         existing = await self.get_by_soldier_id(command.soldier_id)
         if existing is not None:
             raise ValueError(f"User already exists for soldier_id={command.soldier_id}")
@@ -39,7 +39,7 @@ class UserRepository(AbstractRepo[User], IUserRepo):
             created_at=date.today(),
         )
 
-    async def login(self, command: LoginCommand) -> Optional[User]:
+    async def login(self, command: Login) -> Optional[User]:
         user = await self.get_by_soldier_id(command.soldier_id)
         if user is None or not user.is_active:
             return None
