@@ -33,8 +33,8 @@ class SoldierIndicationService(ISoldierIndicationService):
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         return await self._repository.can_soldier_attend_misdar(soldier_id, misdar_id)
 
-    async def get_by_id(self, id: int) -> Optional[SoldierIndicationResponse]:
-        result = await self._repository.get_by_id(id)
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[SoldierIndicationResponse]:
+        result = await self._repository.get_by_uuid(indication_uuid)
         if result is None:
             return None
         return SoldierIndicationResponse.model_validate(result)
@@ -59,7 +59,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         rows = await self._repository.get_all_minimal()
         return [
             OrganizationIndicationMinimal(
-                id=row.id,
+                uuid=row.uuid,
                 type=row.indication_description.value,
                 start_date=row.start_date,
                 end_date=row.end_date,
@@ -68,11 +68,11 @@ class OrganizationIndicationService(IOrganizationIndicationService):
             for row in rows
         ]
 
-    async def get_by_id(self, id: int) -> Optional[OrganizationIndicationResponse]:
-        row = await self._repository.get_by_id(id)
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[OrganizationIndicationResponse]:
+        row = await self._repository.get_by_uuid(indication_uuid)
         if row is None:
             return None
-        soldier_ids = await self._repository.get_soldier_ids_by_organization_id(id)
+        soldier_ids = await self._repository.get_soldier_ids_by_organization_id(row.id)
         return OrganizationIndicationResponse.model_validate(row).model_copy(
             update={"additional_soldiers": list(soldier_ids)}
         )

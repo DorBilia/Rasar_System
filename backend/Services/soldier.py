@@ -19,8 +19,8 @@ class SoldierService(ISoldierService):
         created = await self.soldier_repo.create(**data)
         return FullSoldier.model_validate(created)
 
-    async def get_by_id(self, soldier_id: int) -> Optional[FullSoldier]:
-        row = await self.soldier_repo.get_by_id(soldier_id)
+    async def get_by_uuid(self, soldier_uuid: str) -> Optional[FullSoldier]:
+        row = await self.soldier_repo.get_by_uuid(soldier_uuid)
         if row is None:
             return None
         return FullSoldier.model_validate(row)
@@ -39,17 +39,17 @@ class SoldierService(ISoldierService):
             limit=filter_request.limit)
         return [BaseSoldier.model_validate(r) for r in rows]
 
-    async def update_soldier(self, soldier_id: int, updates: UpdateSoldierRequest) -> Optional[BaseSoldier]:
+    async def update_soldier(self, soldier_uuid: str, updates: UpdateSoldierRequest) -> Optional[BaseSoldier]:
         payload = updates.model_dump(exclude_unset=True)
         if not payload:
-            row = await self.soldier_repo.get_by_id(soldier_id)
+            row = await self.soldier_repo.get_by_uuid(soldier_uuid)
             if row is None:
                 return None
             return BaseSoldier.model_validate(row)
-        row = await self.soldier_repo.update(soldier_id, **payload)
+        row = await self.soldier_repo.update_by_uuid(soldier_uuid, **payload)
         if row is None:
             return None
         return BaseSoldier.model_validate(row)
 
-    async def delete_soldier(self, soldier_id: int) -> bool:
-        return await self.soldier_repo.delete(soldier_id)
+    async def delete_soldier(self, soldier_uuid: str) -> bool:
+        return await self.soldier_repo.delete_by_uuid(soldier_uuid)
