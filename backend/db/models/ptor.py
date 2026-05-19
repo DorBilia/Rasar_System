@@ -19,6 +19,7 @@ class MedicalPtorType(Base):
     __tablename__ = "medical_ptor_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
     med_ptor_description: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __repr__(self) -> str:
@@ -29,6 +30,7 @@ class MedicalPtor(Base):
     __tablename__ = "medical_ptors"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
 
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
@@ -52,6 +54,7 @@ class BeardStatementType(Base):
     __tablename__ = "beard_statement_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
     type_name: Mapped[BeardStatementTypeEnum] = mapped_column(
         SAEnum(BeardStatementTypeEnum, native_enum=False), nullable=False
     )
@@ -67,6 +70,7 @@ class BeardStatementType(Base):
 class BeardStatement(Base):
     __tablename__ = "beard_statements"
 
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )

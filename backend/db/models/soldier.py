@@ -18,6 +18,7 @@ class Soldier(Base):
     __tablename__ = "soldiers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
 
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
     last_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -61,6 +62,7 @@ class Soldier(Base):
 class Doh1(Base):
     __tablename__ = "doh1_records"
 
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
     )
