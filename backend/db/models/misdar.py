@@ -18,6 +18,7 @@ class MisdarType(Base):
     __tablename__ = "misdar_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     misdar_name: Mapped[MisdarNameEnum] = mapped_column(
         SAEnum(MisdarNameEnum, native_enum=False), nullable=False
     )
@@ -38,6 +39,7 @@ class MisdarAttendance(Base):
     __tablename__ = "misdar_attendance"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )

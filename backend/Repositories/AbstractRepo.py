@@ -7,6 +7,8 @@ from Repositories.Interfaces.baseRepo import IBaseRepo
 
 T = TypeVar("T")
 
+# Public API identity is `uuid`; integer `id` is DB-internal (FKs, joins).
+
 
 class AbstractRepo(IBaseRepo[T], Generic[T]):
     db: AsyncSession
@@ -30,6 +32,11 @@ class AbstractRepo(IBaseRepo[T], Generic[T]):
 
     async def get_by_id(self, entity_id: int) -> Optional[T]:
         query = select(self.model).where(self.model.id == entity_id)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_uuid(self, entity_uuid: str) -> Optional[T]:
+        query = select(self.model).where(self.model.uuid == entity_uuid)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
@@ -58,9 +65,26 @@ class AbstractRepo(IBaseRepo[T], Generic[T]):
         await self.db.commit()
         return await self.get_by_id(entity_id)
 
+    async def update_by_uuid(self, entity_uuid: str, **updates) -> Optional[T]:
+        query = (
+            update(self.model)
+            .where(self.model.uuid == entity_uuid)
+            .values(**updates)
+            .execution_options(synchronize_session=False)
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        return await self.get_by_uuid(entity_uuid)
+
     async def delete(self, entity_id: int) -> bool:
         # Returns how many rows were affected, if 0 then object is not found
         query = delete(self.model).where(self.model.id == entity_id)
         result = await self.db.execute(query)
         await self.db.commit()
         return result.rowcount > 0  # check whether if this is valid
+
+    async def delete_by_uuid(self, entity_uuid: str) -> bool:
+        query = delete(self.model).where(self.model.uuid == entity_uuid)
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0

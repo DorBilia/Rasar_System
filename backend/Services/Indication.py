@@ -22,7 +22,7 @@ class SoldierIndicationService(ISoldierIndicationService):
 
     async def create(self, request: SoldierIndicationRequest) -> SoldierIndicationResponse:
         data = request.model_dump()
-        # data.setdefault("id", int(uuid.uuid4())) TODO: figure out what to do with ids
+        data["uuid"] = str(uuid.uuid4())
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
@@ -33,8 +33,8 @@ class SoldierIndicationService(ISoldierIndicationService):
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         return await self._repository.can_soldier_attend_misdar(soldier_id, misdar_id)
 
-    async def get_by_id(self, id: int) -> Optional[SoldierIndicationResponse]:
-        result = await self._repository.get_by_id(id)
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[SoldierIndicationResponse]:
+        result = await self._repository.get_by_uuid(indication_uuid)
         if result is None:
             return None
         return SoldierIndicationResponse.model_validate(result)
@@ -43,7 +43,7 @@ class SoldierIndicationService(ISoldierIndicationService):
         to_add = List()
         for request in requests:
             data = request.model_dump()
-            data.setdefault("id", int(uuid.uuid4()))
+            data["uuid"] = str(uuid.uuid4())
             to_add.append(data)
         created = await self._repository.create_many(*to_add)
         return [SoldierIndicationResponse.model_validate(r) for r in created]
@@ -59,7 +59,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         rows = await self._repository.get_all_minimal()
         return [
             OrganizationIndicationMinimal(
-                id=row.id,
+                uuid=row.uuid,
                 type=row.indication_description.value,
                 start_date=row.start_date,
                 end_date=row.end_date,
@@ -68,11 +68,11 @@ class OrganizationIndicationService(IOrganizationIndicationService):
             for row in rows
         ]
 
-    async def get_by_id(self, id: int) -> Optional[OrganizationIndicationResponse]:
-        row = await self._repository.get_by_id(id)
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[OrganizationIndicationResponse]:
+        row = await self._repository.get_by_uuid(indication_uuid)
         if row is None:
             return None
-        soldier_ids = await self._repository.get_soldier_ids_by_organization_id(id)
+        soldier_ids = await self._repository.get_soldier_ids_by_organization_id(row.id)
         return OrganizationIndicationResponse.model_validate(row).model_copy(
             update={"additional_soldiers": list(soldier_ids)}
         )
@@ -80,7 +80,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
     async def create(self, request: OrganizationIndicationRequest) -> OrganizationIndicationResponse:
         data = request.model_dump(exclude={"additional_soldiers"})
         organization_id = int(uuid.uuid4())
-        data.setdefault("id", organization_id)
+        data["uuid"] = str(uuid.uuid4())
         created = await self._repository.create(**data)
 
         soldiers = request.additional_soldiers

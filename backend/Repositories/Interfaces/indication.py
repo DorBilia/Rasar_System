@@ -8,6 +8,7 @@ from core.enums import IndicationDescriptionEnum
 
 class OrganizationIndicationMinimalRow(NamedTuple):
     id: int
+    uuid: str
     indication_description: IndicationDescriptionEnum
     start_date: date
     end_date: date

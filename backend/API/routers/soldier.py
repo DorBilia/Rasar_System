@@ -27,23 +27,23 @@ class SoldierRouter:
         except IntegrityError:
             raise HTTPException(status_code=409, detail="The soldier id you entered already exists")
 
-    @router.get("/{soldier_id}", response_model=FullSoldier)
-    async def get_soldier_by_id(self, soldier_id: int):
-        soldier = await self.service.get_by_id(soldier_id)
+    @router.get("/{soldier_uuid}", response_model=FullSoldier)
+    async def get_soldier_by_uuid(self, soldier_uuid: str):
+        soldier = await self.service.get_by_uuid(soldier_uuid)
         if not soldier:
-            raise HTTPException(status_code=400, detail="Soldier not found")
+            raise HTTPException(status_code=404, detail="Soldier not found")
         return soldier
 
-    @router.patch("/{soldier_id}", response_model=BaseSoldier)
-    async def update_soldier_indication(self, soldier_id: int, update_data: UpdateSoldierRequest) -> BaseSoldier:
-        updated_soldier = await self.service.update_soldier(soldier_id, update_data)
+    @router.patch("/{soldier_uuid}", response_model=BaseSoldier)
+    async def update_soldier_indication(self, soldier_uuid: str, update_data: UpdateSoldierRequest) -> BaseSoldier:
+        updated_soldier = await self.service.update_soldier(soldier_uuid, update_data)
         if not updated_soldier:
             raise HTTPException(status_code=404, detail="Update failed")
         return updated_soldier
 
-    @router.delete("/{soldier_id}", status_code=status.HTTP_204_NO_CONTENT)
-    async def delete_soldier(self, soldier_id: int):
-        success = await self.service.delete_soldier(soldier_id)
+    @router.delete("/{soldier_uuid}", status_code=status.HTTP_204_NO_CONTENT)
+    async def delete_soldier(self, soldier_uuid: str):
+        success = await self.service.delete_soldier(soldier_uuid)
         if not success:
             raise HTTPException(status_code=404, detail="Soldier not found")
         return None

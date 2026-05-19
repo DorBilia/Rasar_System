@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import Date, Enum as SAEnum, ForeignKey
+from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
@@ -21,6 +21,7 @@ class IndicationType(Base):
     __tablename__ = "indication_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     indication_description: Mapped[IndicationDescriptionEnum] = mapped_column(
         SAEnum(IndicationDescriptionEnum, native_enum=False), nullable=False
     )
@@ -37,6 +38,7 @@ class IndicationType(Base):
 
 class IndicationTypeMisdarType(Base):
     __tablename__ = "indication_types_misdar_types"
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     indication_type_id: Mapped[int] = mapped_column(ForeignKey("indication_types.id"), primary_key=True)
     misdar_type_id: Mapped[int] = mapped_column(ForeignKey("misdar_types.id"), primary_key=True)
 
@@ -51,6 +53,7 @@ class Indication(Base):
     __tablename__ = "indications"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
 
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
@@ -74,6 +77,7 @@ class Indication(Base):
 class OrganizationIndication(Base):
     __tablename__ = "organization_indications"
     id: Mapped[int] = mapped_column(primary_key=True)
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"))
     section_id: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"))
     indication_type: Mapped[int] = mapped_column(ForeignKey("indication_types.id", ondelete="RESTRICT"),

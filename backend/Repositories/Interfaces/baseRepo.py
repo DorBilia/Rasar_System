@@ -18,6 +18,10 @@ class IBaseRepo(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    async def get_by_uuid(self, entity_uuid: str) -> Optional[T]:
+        pass
+
+    @abstractmethod
     async def get_for_soldier(self, soldier_id: str) -> Sequence[T]:
         pass
 
@@ -31,5 +35,13 @@ class IBaseRepo(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    async def update_by_uuid(self, entity_uuid: str, **updates) -> Optional[T]:
+        pass
+
+    @abstractmethod
     async def delete(self, biror_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    async def delete_by_uuid(self, entity_uuid: str) -> bool:
         pass

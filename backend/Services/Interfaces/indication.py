@@ -24,7 +24,7 @@ class ISoldierIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> Optional[SoldierIndicationResponse]:
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[SoldierIndicationResponse]:
         pass
 
     @abstractmethod
@@ -42,7 +42,7 @@ class IOrganizationIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> Optional[OrganizationIndicationResponse]:
+    async def get_by_uuid(self, indication_uuid: str) -> Optional[OrganizationIndicationResponse]:
         pass
 
     @abstractmethod

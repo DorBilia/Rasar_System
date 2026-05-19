@@ -30,9 +30,9 @@ class IndicationSoldierRouter:
             raise HTTPException(status_code=500, detail="somthing went wrong")
         return result
 
-    @soldier_router.get("/{id}", response_model=SoldierIndicationResponse)
-    async def get_by_id(self, id: int):
-        result = await self.service.get_by_id(id)
+    @soldier_router.get("/{uuid}", response_model=SoldierIndicationResponse)
+    async def get_by_uuid(self, uuid: str):
+        result = await self.service.get_by_uuid(uuid)
         if result is None:
             raise HTTPException(status_code=404, detail="indication not found")
         return result
@@ -53,9 +53,9 @@ class OrganizationSoldierRouter:
     async def get_all(self):
         return await self.service.get_all()
 
-    @organization_router.get("/{id}", response_model=OrganizationIndicationResponse)
-    async def get_by_id(self, id: int):
-        result = await self.service.get_by_id(id)
+    @organization_router.get("/{uuid}", response_model=OrganizationIndicationResponse)
+    async def get_by_uuid(self, uuid: str):
+        result = await self.service.get_by_uuid(uuid)
         if result is None:
             raise HTTPException(status_code=404, detail="Organization indication not found")
         return result
