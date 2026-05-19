@@ -56,6 +56,7 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
         stmt = (
             select(
                 OrganizationIndication.id,
+                OrganizationIndication.uuid,
                 IndicationType.indication_description,
                 OrganizationIndication.start_date,
                 OrganizationIndication.end_date,
@@ -65,6 +66,7 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
             .outerjoin(Indication, Indication.organization_id == OrganizationIndication.id)
             .group_by(
                 OrganizationIndication.id,
+                OrganizationIndication.uuid,
                 IndicationType.indication_description,
                 OrganizationIndication.start_date,
                 OrganizationIndication.end_date,
@@ -74,6 +76,7 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
         return [
             OrganizationIndicationMinimalRow(
                 id=row.id,
+                uuid=row.uuid,
                 indication_description=row.indication_description,
                 start_date=row.start_date,
                 end_date=row.end_date,
