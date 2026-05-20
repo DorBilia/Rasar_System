@@ -31,3 +31,7 @@ class TokenResponse(BaseModel):
     tokenType: str = "Bearer"
     expiresIn: int
 
+
+class AuthCredentials(BaseModel):
+    scheme: str
+    credentials: str

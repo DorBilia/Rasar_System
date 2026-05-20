@@ -1,14 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from fastapi.security import HTTPAuthorizationCredentials
-
-from API.schemas.auth import (
-    RegisterRequest,
-    TokenRequest,
-    TokenResponse,
-    UserResponse,
-)
+from API.schemas.auth import RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
 
 
 class IUserService(ABC):
@@ -30,5 +23,5 @@ class IUserService(ABC):
         pass
 
     @abstractmethod
-    async def authenticate_user(self, creds: HTTPAuthorizationCredentials) -> UserResponse:
+    async def authenticate_user(self, creds: AuthCredentials) -> UserResponse:
         pass

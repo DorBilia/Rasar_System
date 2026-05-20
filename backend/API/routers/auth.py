@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_restful.cbv import cbv
 from sqlalchemy.exc import IntegrityError
+from starlette.authentication import AuthenticationError
 
-from API.schemas.auth import RefreshRequest, RegisterRequest, TokenRequest, TokenResponse, UserResponse
+from API.schemas.auth import RefreshRequest, RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
 from Services.Interfaces.user import IUserService
 from core.dependecies.user import get_user_service
 
@@ -64,7 +65,8 @@ class AuthRouter:
     async def me(self, creds: HTTPAuthorizationCredentials = Depends(security), ):
         try:
 
-            user = await self.service.authenticate_user(creds)
+            user = await self.service.authenticate_user(
+                AuthCredentials(scheme=creds.scheme.lower(), credentials=creds.credentials))
             return user
 
         except AuthenticationError as e:

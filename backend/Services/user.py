@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 from jwt import PyJWTError
 from starlette.authentication import AuthenticationError
 
-from API.schemas.auth import RegisterRequest, TokenRequest, TokenResponse, UserResponse
+from API.schemas.auth import RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
 from core.enums import RoleNameEnum
 from core.security import create_access_token, generate_raw_refresh_token, hash_refresh_token, decode_access_token
 from core.security import hash_password, verify_password
@@ -102,9 +102,9 @@ class UserService(IUserService):
         h = hash_refresh_token(refresh_token)
         await self.refresh_repo.delete_by_hash(h)
 
-    async def authenticate_user(self, creds: HTTPAuthorizationCredentials) -> UserResponse:
+    async def authenticate_user(self, creds: AuthCredentials) -> UserResponse:
 
-        if creds is None or creds.scheme.lower() != "bearer":
+        if creds is None or creds.scheme != "bearer":
             raise AuthenticationError()
 
         try:
