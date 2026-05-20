@@ -28,7 +28,6 @@ class SoldierIndicationService(ISoldierIndicationService):
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
-    # TODO: change return type to a schema
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[SoldierIndicationResponse]:
         indications_result = await self._repository.get_by_indication_type(indication_type)
         return [SoldierIndicationResponse.model_validate(r) for r in indications_result]

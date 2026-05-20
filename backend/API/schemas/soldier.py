@@ -6,9 +6,8 @@ from pydantic import BaseModel, ConfigDict
 from core.enums import RankEnum, ServiceTypeEnum
 
 
-# TODO: separate models to Request/Response - Request without uuid and Response with uuid
 class BaseSoldier(BaseModel):
-    uuid: str
+    id: int
     first_name: str
     last_name: str
     rank: RankEnum
@@ -16,15 +15,23 @@ class BaseSoldier(BaseModel):
     branch: int
     section: int
 
-    model_config = ConfigDict(from_attributes=True)
 
-
-class FullSoldier(BaseSoldier):
+class CreateSoldierRequest(BaseSoldier):
     unit: int
     discharge_date: Optional[date] = None
     service_type: Optional[ServiceTypeEnum] = None
     other_allocations: Optional[str] = None
     phone_number: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MinimalSoldier(BaseSoldier):
+    uuid: str
+
+
+class FullSoldier(CreateSoldierRequest):
+    uuid: str
 
 
 class BaseSoldierRequest(BaseModel):
