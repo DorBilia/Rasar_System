@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,9 +12,6 @@ from db.db import Base
 from core.enums import RoleNameEnum
 
 __all__ = ["Role", "User"]
-
-if TYPE_CHECKING:
-    from db.models.soldier import Soldier
 
 
 class Role(Base):
@@ -37,14 +34,14 @@ class User(Base):
     __tablename__ = "users"
 
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldiers.id", ondelete="RESTRICT"))
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[date] = mapped_column(Date, nullable=False)
 
-    soldier: Mapped["Soldier"] = relationship(back_populates="user")
     role: Mapped["Role"] = relationship(back_populates="users")
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"User(soldier_id={self.soldier_id!r})"

@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict
 from core.enums import RankEnum, ServiceTypeEnum
 
 
+# TODO: separate models to Request/Response - Request without uuid and Response with uuid
 class BaseSoldier(BaseModel):
-    id: int
     uuid: str
     first_name: str
     last_name: str

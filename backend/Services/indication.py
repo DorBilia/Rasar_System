@@ -1,4 +1,6 @@
 import uuid
+from unittest import result
+
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.Interfaces.indication import *
@@ -27,8 +29,9 @@ class SoldierIndicationService(ISoldierIndicationService):
         return SoldierIndicationResponse.model_validate(created)
 
     # TODO: change return type to a schema
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
-        return await self._repository.get_by_indication_type(indication_type)
+    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[SoldierIndicationResponse]:
+        indications_result = await self._repository.get_by_indication_type(indication_type)
+        return [SoldierIndicationResponse.model_validate(r) for r in indications_result]
 
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         return await self._repository.can_soldier_attend_misdar(soldier_id, misdar_id)

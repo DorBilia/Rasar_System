@@ -10,11 +10,12 @@ from core.enums import MisdarNameEnum
 
 __all__ = ["Branch", "Section", "Unit"]
 
+from db.models import Soldier
+
 
 class Unit(Base):
     __tablename__ = "units"
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
     soldiers: Mapped[List["Soldier"]] = relationship(back_populates="unit_ref")
@@ -26,7 +27,6 @@ class Unit(Base):
 class Branch(Base):
     __tablename__ = "branches"
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
     soldiers: Mapped[List["Soldier"]] = relationship(back_populates="branch_ref")
@@ -38,7 +38,6 @@ class Branch(Base):
 class Section(Base):
     __tablename__ = "sections"
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
     soldiers: Mapped[List["Soldier"]] = relationship(back_populates="sections_ref")
