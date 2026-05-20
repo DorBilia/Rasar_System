@@ -34,13 +34,11 @@ class User(Base):
     __tablename__ = "users"
 
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, primary_key=True)
-    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldiers.id", ondelete="RESTRICT"))
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[date] = mapped_column(Date, nullable=False)
 
-    soldier: Mapped["Soldier"] = relationship(back_populates="user")
     role: Mapped["Role"] = relationship(back_populates="users")
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
         back_populates="user", cascade="all, delete-orphan")

@@ -50,7 +50,6 @@ class Soldier(Base):
     indications: Mapped[List["Indication"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     guardings: Mapped[List["Guarding"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     tasks: Mapped[List["Task"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
-    user: Mapped[Optional["User"]] = relationship(back_populates="soldier", cascade="all, delete-orphan")
     unit_ref: Mapped["Unit"] = relationship(back_populates="soldiers", foreign_keys=[unit])
     branch_ref: Mapped["Branch"] = relationship(back_populates="soldiers", foreign_keys=[branch])
     sections_ref: Mapped["Section"] = relationship(back_populates="soldiers", foreign_keys=[section])
