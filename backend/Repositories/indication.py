@@ -17,8 +17,7 @@ class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRe
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
         stmt = (
             select(Indication)
-            .where(Indication.indication_type == indication_type.id)
-            .options(selectinload(Indication.soldier)))
+            .where(Indication.indication_type == indication_type.id))
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
