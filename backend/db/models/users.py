@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,9 +12,6 @@ from db.db import Base
 from core.enums import RoleNameEnum
 
 __all__ = ["Role", "User"]
-
-if TYPE_CHECKING:
-    from db.models.soldier import Soldier
 
 
 class Role(Base):
@@ -45,6 +42,8 @@ class User(Base):
 
     soldier: Mapped["Soldier"] = relationship(back_populates="user")
     role: Mapped["Role"] = relationship(back_populates="users")
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"User(soldier_id={self.soldier_id!r})"
