@@ -7,7 +7,6 @@ from core.enums import RankEnum, ServiceTypeEnum
 
 
 class BaseSoldier(BaseModel):
-    id: int
     uuid: str
     first_name: str
     last_name: str

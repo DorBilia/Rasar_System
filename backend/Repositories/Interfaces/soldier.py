@@ -11,9 +11,9 @@ class ISoldierRepo(IBaseRepo[Soldier]):
     @abstractmethod
     async def get_all_filtered(
             self,
-            unit: Optional[str] = None,
-            branch: Optional[str] = None,
-            section: Optional[str] = None,
+            unit: Optional[int] = None,
+            branch: Optional[int] = None,
+            section: Optional[int] = None,
             rank: Optional[str] = None,
             discharge_date: Optional[date] = None,
             service_type: Optional[str] = None,

@@ -41,7 +41,6 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
         if search_term:
             if search_term.isdecimal():
-                soldier_id = int(search_term)
                 query = query.where(Soldier.id.ilike(f"%{search_term}%"))
             else:
                 query = query.where(
