@@ -15,6 +15,8 @@ class BaseSoldier(BaseModel):
     branch: int
     section: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CreateSoldierRequest(BaseSoldier):
     unit: int
@@ -22,8 +24,6 @@ class CreateSoldierRequest(BaseSoldier):
     service_type: Optional[ServiceTypeEnum] = None
     other_allocations: Optional[str] = None
     phone_number: Optional[str] = None
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class MinimalSoldier(BaseSoldier):
@@ -40,7 +40,7 @@ class BaseSoldierRequest(BaseModel):
     section: Optional[int] = None
     rank: Optional[RankEnum] = None
     discharge_date: Optional[date] = None
-    service_type: Optional[str] = None
+    service_type: Optional[ServiceTypeEnum] = None
     phone_number: Optional[str] = None
 
 
