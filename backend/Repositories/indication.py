@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
-from Repositories.AbstractRepo import AbstractRepo
+from Repositories.AbstractRepo import AbstractRepo, T
 from Repositories.Interfaces.indication import (
     ISoldierIndicationRepo,
     IOrganizationIndicationRepo,
@@ -20,6 +20,17 @@ class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRe
             .where(Indication.indication_type == indication_type.id))
         result = await self.db.execute(stmt)
         return result.scalars().all()
+
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[T]:
+        """Also return the indication type info"""
+        query = (
+            select(self.model)
+            .where(self.model.soldier_id == soldier_id)
+            .options(selectinload(Indication.indication_type))
+        )
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
 
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         stmt = (
