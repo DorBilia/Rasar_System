@@ -18,7 +18,7 @@ class ISoldierRepo(IBaseRepo[Soldier]):
             discharge_date: Optional[date] = None,
             service_type: Optional[str] = None,
             phone_number: Optional[str] = None,
-            indication_type: Optional[str] = None,
+            indication_type: Optional[int] = None,
             search_term: Optional[str] = None,
             limit: int = 50) -> Sequence[Soldier]:
         pass

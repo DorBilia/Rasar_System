@@ -20,7 +20,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
             discharge_date: Optional[str] = None,
             service_type: Optional[str] = None,
             phone_number: Optional[str] = None,
-            indication_type: Optional[str] = None,
+            indication_type: Optional[int] = None,
             search_term: Optional[str] = None,  # could be a name or id
             limit: int = 50) -> Sequence[Soldier]:
 
@@ -48,5 +48,6 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
                     Soldier.last_name.ilike(f"%{search_term}%"))
 
         query = query.limit(limit)
+
         result = await self.db.execute(query)
         return result.scalars().all()
