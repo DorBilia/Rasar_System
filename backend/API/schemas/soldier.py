@@ -45,7 +45,7 @@ class BaseSoldierRequest(BaseModel):
 
 
 class FilterSoldiersRequest(BaseSoldierRequest):
-    indication_type: Optional[str] = None
+    indication_type: Optional[int] = None
     search_term: Optional[str] = None
     limit: int = 50
 

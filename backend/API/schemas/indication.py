@@ -18,7 +18,7 @@ class SoldierIndicationRequest(BaseModel):
     indication_type: int
     start_date: date
     end_date: date
-    organization_id: Optional[int] = None
+    organization_id: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
