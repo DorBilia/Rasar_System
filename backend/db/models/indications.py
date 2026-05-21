@@ -21,7 +21,6 @@ class IndicationType(Base):
     __tablename__ = "indication_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     indication_description: Mapped[IndicationDescriptionEnum] = mapped_column(
         SAEnum(IndicationDescriptionEnum, native_enum=False), nullable=False
     )
@@ -38,7 +37,6 @@ class IndicationType(Base):
 
 class IndicationTypeMisdarType(Base):
     __tablename__ = "indication_types_misdar_types"
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     indication_type_id: Mapped[int] = mapped_column(ForeignKey("indication_types.id"), primary_key=True)
     misdar_type_id: Mapped[int] = mapped_column(ForeignKey("misdar_types.id"), primary_key=True)
 
@@ -63,7 +61,7 @@ class Indication(Base):
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    organization_id: Mapped[int] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"),
                                                  nullable=True)
     # uuid to distinguish organized indications from specific indications
 
