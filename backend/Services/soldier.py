@@ -26,7 +26,7 @@ class SoldierService(ISoldierService):
             return None
         return FullSoldier.model_validate(row)
 
-    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> Sequence[MinimalSoldier]: #TODO: fix model validate
+    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> Sequence[MinimalSoldier]:
         rows = await self.soldier_repo.get_all_filtered(
             unit=filter_request.unit,
             branch=filter_request.branch,
