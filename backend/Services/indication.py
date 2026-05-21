@@ -40,13 +40,17 @@ class SoldierIndicationService(ISoldierIndicationService):
             return None
         return SoldierIndicationResponse.model_validate(result)
 
+    async def get_all_for_soldier(self, soldier_id: int) -> Sequence[IndicationType]:
+        result = await self._repository.get_for_soldier(soldier_id)
+        return [IndicationType.model_validate(r) for r in result]
+
     async def create_many(self, requests: List[SoldierIndicationRequest]) -> List[SoldierIndicationResponse]:
         to_add = []
         for request in requests:
 
             indication = Indication(
                 soldier_id=request.soldier_id, indication_type=request.indication_type, start_date=request.start_date,
-                end_date=request.end_date, uuid= str(uuid.uuid4()))
+                end_date=request.end_date, uuid=str(uuid.uuid4()))
 
             org_id = request.organization_id
             if org_id is not None:
@@ -98,7 +102,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
 
             indications = []
 
-            for soldier_id in soldiers: # build indications list for the soldiers
+            for soldier_id in soldiers:  # build indications list for the soldiers
                 indication = SoldierIndicationRequest(
                     soldier_id=soldier_id, indication_type=request.indication_type, start_date=request.start_date,
                     end_date=request.end_date, organization_id=created.id)
