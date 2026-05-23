@@ -8,7 +8,6 @@ from core.enums import IndicationDescriptionEnum
 
 class IndicationType(BaseModel):
     id: int
-    uuid: str
     indication_description: IndicationDescriptionEnum
     model_config = ConfigDict(from_attributes=True)
 
@@ -24,8 +23,11 @@ class SoldierIndicationRequest(BaseModel):
 
 
 class SoldierIndicationResponse(SoldierIndicationRequest):
-    id: int
     uuid: str
+
+
+class SoldierIndicationWithDescription(SoldierIndicationResponse):
+    indication_description: IndicationDescriptionEnum
 
 
 class OrganizationIndicationMinimal(BaseModel):
@@ -50,5 +52,4 @@ class OrganizationIndicationRequest(BaseModel):
 
 
 class OrganizationIndicationResponse(OrganizationIndicationRequest):
-    id: int
     uuid: str
