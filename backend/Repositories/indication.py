@@ -21,6 +21,17 @@ class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRe
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[Indication]:
+        """Also return the indication info"""
+        query = (
+            select(self.model)
+            .where(self.model.soldier_id == soldier_id)
+            .options(selectinload(Indication.indication_type_ref))
+        )
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
         stmt = (
             select(Indication)
@@ -51,6 +62,7 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
     def __init__(self, db: AsyncSession):
         super().__init__(db, OrganizationIndication)
 
+    #TODO: fix return type, add aschema for it
     async def get_all_minimal(self) -> Sequence[OrganizationIndicationMinimalRow]:
         stmt = (
             select(

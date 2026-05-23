@@ -30,11 +30,17 @@ class IndicationSoldierRouter:
             raise HTTPException(status_code=500, detail="somthing went wrong")
         return result
 
-    @soldier_router.get("/{uuid}", response_model=SoldierIndicationResponse)
-    async def get_by_uuid(self, uuid: str):
-        result = await self.service.get_by_uuid(uuid)
+    # TODO: change this to search by id (int) or maybe use the uuid method on types
+    @soldier_router.get("/{indication_uuid}", response_model=SoldierIndicationResponse)
+    async def get_by_indication_uuid(self, indication_uuid: str):
+        result = await self.service.get_by_uuid(indication_uuid)
         if result is None:
             raise HTTPException(status_code=404, detail="indication not found")
+        return result
+
+    @soldier_router.get("/all/{soldier_id}", response_model=List[SoldierIndicationWithDescription])
+    async def get_by_soldier_id(self, soldier_id: int):
+        result = await self.service.get_all_for_soldier(soldier_id)
         return result
 
 

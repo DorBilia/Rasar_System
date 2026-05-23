@@ -1,6 +1,4 @@
 import uuid
-from unittest import result
-
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.Interfaces.indication import *
@@ -19,8 +17,9 @@ class IndicationService(IIndicationService):
 
 class SoldierIndicationService(ISoldierIndicationService):
 
-    def __init__(self, repository: ISoldierIndicationRepo) -> None:
+    def __init__(self, repository: ISoldierIndicationRepo, org_repo: IOrganizationIndicationRepo) -> None:
         self._repository = repository
+        self.org_repository = org_repo
 
     async def create(self, request: SoldierIndicationRequest) -> SoldierIndicationResponse:
         data = request.model_dump()
@@ -28,7 +27,6 @@ class SoldierIndicationService(ISoldierIndicationService):
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
-    # TODO: change return type to a schema
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[SoldierIndicationResponse]:
         indications_result = await self._repository.get_by_indication_type(indication_type)
         return [SoldierIndicationResponse.model_validate(r) for r in indications_result]
@@ -42,13 +40,46 @@ class SoldierIndicationService(ISoldierIndicationService):
             return None
         return SoldierIndicationResponse.model_validate(result)
 
+    async def get_all_for_soldier(self, soldier_id: int) -> Sequence[SoldierIndicationWithDescription]:
+        indications = await self._repository.get_for_soldier(soldier_id)
+
+        for indication in indications:
+            # Add the indication description
+            indication.__setattr__('indication_description',
+                                   indication.indication_type_ref.indication_description)
+
+            # Add organization id if there is one
+            org_id = indication.organization_id
+            if org_id is not None:
+                org_object = await self.org_repository.get_by_id(org_id)
+                if org_object is not None:
+                    org_uuid = org_object.uuid
+                    indication.__setattr__('organization_id', org_uuid)
+
+        return [SoldierIndicationWithDescription.model_validate(i) for i in indications]
+
     async def create_many(self, requests: List[SoldierIndicationRequest]) -> List[SoldierIndicationResponse]:
-        to_add = List()
+        to_add = []
+        org_uuid = requests[0].organization_id
         for request in requests:
-            data = request.model_dump()
-            data["uuid"] = str(uuid.uuid4())
-            to_add.append(data)
-        created = await self._repository.create_many(*to_add)
+
+            indication = Indication(
+                soldier_id=request.soldier_id, indication_type=request.indication_type, start_date=request.start_date,
+                end_date=request.end_date, uuid=str(uuid.uuid4()))
+
+            if org_uuid is not None:
+                org_object = await self.org_repository.get_by_uuid(org_uuid)
+                if org_object is None:
+                    return []
+
+                indication.organization_id = org_object.id
+
+            to_add.append(indication)
+
+        created = await self._repository.create_many(to_add)
+        if org_uuid is not None:
+            for ind in created:
+                ind.__setattr__('organization_id', org_uuid)
         return [SoldierIndicationResponse.model_validate(r) for r in created]
 
 
@@ -77,30 +108,29 @@ class OrganizationIndicationService(IOrganizationIndicationService):
             return None
         soldier_ids = await self._repository.get_soldier_ids_by_organization_id(row.id)
         return OrganizationIndicationResponse.model_validate(row).model_copy(
-            update={"additional_soldiers": list(soldier_ids)}
-        )
+            update={"additional_soldiers": list(soldier_ids)})
 
     async def create(self, request: OrganizationIndicationRequest) -> OrganizationIndicationResponse:
         data = request.model_dump(exclude={"additional_soldiers"})
-        organization_id = int(uuid.uuid4())
         data["uuid"] = str(uuid.uuid4())
         created = await self._repository.create(**data)
 
         soldiers = request.additional_soldiers
 
         if soldiers is not None:
-            # create indication for each additional soldier
+            # create an indication for each additional soldier
 
-            indications = List()
+            indications = []
 
-            for soldier_id in soldiers:
+            for soldier_id in soldiers:  # build indications list for the soldiers
                 indication = SoldierIndicationRequest(
                     soldier_id=soldier_id, indication_type=request.indication_type, start_date=request.start_date,
-                    end_date=request.end_date, organization_id=organization_id)
+                    end_date=request.end_date, organization_id=created.uuid)
                 indications.append(indication)
 
             await self._soldier_indication_service.create_many(indications)
-        return created
+
+        return OrganizationIndicationResponse.model_validate(created)
 
     async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[OrganizationIndicationResponse]:
         pass

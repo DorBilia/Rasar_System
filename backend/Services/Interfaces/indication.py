@@ -31,6 +31,10 @@ class ISoldierIndicationService(ABC):
     async def create_many(self, requests: List[SoldierIndicationRequest]):
         pass
 
+    @abstractmethod
+    async def get_all_for_soldier(self, soldier_id: int) -> Sequence[SoldierIndicationWithDescription]:
+        pass
+
 
 class IOrganizationIndicationService(ABC):
     @abstractmethod

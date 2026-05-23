@@ -22,7 +22,7 @@ class IBaseRepo(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    async def get_for_soldier(self, soldier_id: str) -> Sequence[T]:
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[T]:
         pass
 
     @abstractmethod
