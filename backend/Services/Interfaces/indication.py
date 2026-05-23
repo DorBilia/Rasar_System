@@ -32,7 +32,7 @@ class ISoldierIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_all_for_soldier(self, soldier_id: int) -> Sequence[IndicationType]:
+    async def get_all_for_soldier(self, soldier_id: int) -> Sequence[SoldierIndicationWithDescription]:
         pass
 
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
-from Repositories.AbstractRepo import AbstractRepo, T
+from Repositories.AbstractRepo import AbstractRepo
 from Repositories.Interfaces.indication import (
     ISoldierIndicationRepo,
     IOrganizationIndicationRepo,
@@ -21,12 +21,12 @@ class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRe
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
-    async def get_for_soldier(self, soldier_id: int) -> Sequence[T]:
-        """Also return the indication type info"""
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[Indication]:
+        """Also return the indication info"""
         query = (
             select(self.model)
             .where(self.model.soldier_id == soldier_id)
-            .options(selectinload(Indication.indication_type))
+            .options(selectinload(Indication.indication_type_ref))
         )
         result = await self.db.execute(query)
         return result.scalars().all()
@@ -62,6 +62,7 @@ class OrganizationIndicationRepository(AbstractRepo[OrganizationIndication], IOr
     def __init__(self, db: AsyncSession):
         super().__init__(db, OrganizationIndication)
 
+    #TODO: fix return type, add aschema for it
     async def get_all_minimal(self) -> Sequence[OrganizationIndicationMinimalRow]:
         stmt = (
             select(
