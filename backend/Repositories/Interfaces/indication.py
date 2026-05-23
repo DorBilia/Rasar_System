@@ -6,15 +6,6 @@ from abc import abstractmethod
 from core.enums import IndicationDescriptionEnum
 
 
-class OrganizationIndicationMinimalRow(NamedTuple):
-    id: int
-    uuid: str
-    indication_description: IndicationDescriptionEnum
-    start_date: date
-    end_date: date
-    soldiers_affected: int
-
-
 class ISoldierIndicationRepo(IBaseRepo[Indication]):
 
     @abstractmethod
@@ -29,7 +20,8 @@ class ISoldierIndicationRepo(IBaseRepo[Indication]):
 class IOrganizationIndicationRepo(IBaseRepo[OrganizationIndication]):
 
     @abstractmethod
-    async def get_all_minimal(self) -> Sequence[OrganizationIndicationMinimalRow]:
+    async def get_all_with_soldiers(self) -> Sequence[OrganizationIndication]:
+        """Gets the organization indication and all the additional soldiers of it"""
         pass
 
     @abstractmethod
