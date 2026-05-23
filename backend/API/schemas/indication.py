@@ -17,7 +17,7 @@ class SoldierIndicationRequest(BaseModel):
     indication_type: int
     start_date: date
     end_date: date
-    organization_id: Optional[str] = None
+    organization_uuid: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -31,11 +31,12 @@ class SoldierIndicationWithDescription(SoldierIndicationResponse):
 
 
 class OrganizationIndicationMinimal(BaseModel):
+    """uuid, type,start/end dates and list of additional soldiers ids"""
     uuid: str
-    type: str
+    indication_type: int
     start_date: date
     end_date: date
-    soldiers_affected: int
+    additional_soldiers: Optional[List[int]] = None
 
     model_config = ConfigDict(from_attributes=True)
 

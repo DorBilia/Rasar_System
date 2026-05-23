@@ -54,32 +54,36 @@ class SoldierIndicationService(ISoldierIndicationService):
                 org_object = await self.org_repository.get_by_id(org_id)
                 if org_object is not None:
                     org_uuid = org_object.uuid
-                    indication.__setattr__('organization_id', org_uuid)
+                    indication.__setattr__('organization_uuid', org_uuid)
 
         return [SoldierIndicationWithDescription.model_validate(i) for i in indications]
 
     async def create_many(self, requests: List[SoldierIndicationRequest]) -> List[SoldierIndicationResponse]:
         to_add = []
-        org_uuid = requests[0].organization_id
+        org_uuid = requests[0].organization_uuid
+        org_object = None
+
+        if org_uuid is not None:
+            org_object = await self.org_repository.get_by_uuid(org_uuid)
+            if org_object is None:
+                return []
+
         for request in requests:
 
             indication = Indication(
                 soldier_id=request.soldier_id, indication_type=request.indication_type, start_date=request.start_date,
                 end_date=request.end_date, uuid=str(uuid.uuid4()))
 
-            if org_uuid is not None:
-                org_object = await self.org_repository.get_by_uuid(org_uuid)
-                if org_object is None:
-                    return []
-
+            if org_object is not None:
                 indication.organization_id = org_object.id
 
             to_add.append(indication)
 
         created = await self._repository.create_many(to_add)
+
         if org_uuid is not None:
             for ind in created:
-                ind.__setattr__('organization_id', org_uuid)
+                ind.__setattr__('organization_uuid', org_uuid)
         return [SoldierIndicationResponse.model_validate(r) for r in created]
 
 
@@ -90,17 +94,15 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         self._soldier_indication_service = soldier_indication_service
 
     async def get_all(self) -> Sequence[OrganizationIndicationMinimal]:
-        rows = await self._repository.get_all_minimal()
-        return [
-            OrganizationIndicationMinimal(
-                uuid=row.uuid,
-                type=row.indication_description.value,
-                start_date=row.start_date,
-                end_date=row.end_date,
-                soldiers_affected=row.soldiers_affected,
-            )
-            for row in rows
-        ]
+        org_indications = await self._repository.get_all_with_soldiers()
+        result = []
+        for ind in org_indications:
+            soldier_ids = [ind.soldier_id for ind in ind.indications]
+
+            ind.__setattr__('additional_soldiers', soldier_ids)
+            result.append(OrganizationIndicationMinimal.model_validate(ind))
+
+        return result
 
     async def get_by_uuid(self, indication_uuid: str) -> Optional[OrganizationIndicationResponse]:
         row = await self._repository.get_by_uuid(indication_uuid)
@@ -120,13 +122,10 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         if soldiers is not None:
             # create an indication for each additional soldier
 
-            indications = []
-
-            for soldier_id in soldiers:  # build indications list for the soldiers
-                indication = SoldierIndicationRequest(
-                    soldier_id=soldier_id, indication_type=request.indication_type, start_date=request.start_date,
-                    end_date=request.end_date, organization_id=created.uuid)
-                indications.append(indication)
+            indications = [SoldierIndicationRequest(
+                soldier_id=soldier_id, indication_type=request.indication_type, start_date=request.start_date,
+                end_date=request.end_date, organization_uuid=created.uuid)
+                for soldier_id in soldiers]
 
             await self._soldier_indication_service.create_many(indications)
 

@@ -84,7 +84,7 @@ class OrganizationIndication(Base):
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    organization: Mapped["Indication"] = relationship(back_populates="organization")
+    indications: Mapped[List["Indication"]] = relationship(back_populates="organization")
 
     def __repr__(self) -> str:
         return f"OrganizationIndication (id={self.id!r})"
