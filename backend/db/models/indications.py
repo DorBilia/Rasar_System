@@ -61,7 +61,7 @@ class Indication(Base):
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    organization_id: Mapped[str] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"),
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organization_indications.id", ondelete="RESTRICT"),
                                                  nullable=True)
     # uuid to distinguish organized indications from specific indications
 

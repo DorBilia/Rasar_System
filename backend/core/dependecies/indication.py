@@ -29,8 +29,10 @@ async def get_indication_service(
 
 
 async def get_soldier_indication_service(
-        repository: ISoldierIndicationRepo = Depends(get_soldier_indication_repository)) -> ISoldierIndicationService:
-    return SoldierIndicationService(repository, )
+        soldier_repository: ISoldierIndicationRepo = Depends(get_soldier_indication_repository),
+        org_repo: IOrganizationIndicationRepo = Depends(
+            get_organization_indication_repository)) -> ISoldierIndicationService:
+    return SoldierIndicationService(soldier_repository, org_repo)
 
 
 async def get_organization_indication_service(
