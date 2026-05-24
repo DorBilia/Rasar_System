@@ -13,11 +13,11 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = ""
 
     # JWT (HS256). Set JWT_SECRET to a long random string in production.
-    JWT_SECRET: str = "change-me-in-production-use-long-random-secret"
-    JWT_ALGORITHM: str = "HS256"
-    JWT_ISS: str = "rasar-api"
-    ACCESS_TOKEN_EXPIRES_SECONDS: int = 900
-    REFRESH_TOKEN_EXPIRES_SECONDS: int = 604800
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    JWT_ISS: str
+    ACCESS_TOKEN_EXPIRES_SECONDS: int
+    REFRESH_TOKEN_EXPIRES_SECONDS: int
 
     @field_validator("ALLOWED_ORIGINS")
     def parse_allowed_origins(cls, v: str) -> List[str]:
