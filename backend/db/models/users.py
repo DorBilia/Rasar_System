@@ -1,47 +1,31 @@
-"""Authentication/authorization models (users and roles)."""
-
 from __future__ import annotations
 
 from datetime import date
 from typing import List
 
-from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, String
+from sqlalchemy import Boolean, Date, Enum as SAEnum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
 from core.enums import RoleNameEnum
 
-__all__ = ["Role", "User"]
-
-
-class Role(Base):
-    __tablename__ = "roles"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
-    role_name: Mapped[RoleNameEnum] = mapped_column(
-        SAEnum(RoleNameEnum, native_enum=False), nullable=False
-    )
-    description: Mapped[str] = mapped_column(String(255), nullable=False)
-
-    users: Mapped[List["User"]] = relationship(back_populates="role")
-
-    def __repr__(self) -> str:
-        return f"Role(id={self.id!r})"
+__all__ = ["User"]
 
 
 class User(Base):
     __tablename__ = "users"
 
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, primary_key=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id", ondelete="RESTRICT"), nullable=False)
+    role: Mapped[RoleNameEnum] = mapped_column(SAEnum(RoleNameEnum, native_enum=False), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[date] = mapped_column(Date, nullable=False)
 
-    role: Mapped["Role"] = relationship(back_populates="users")
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan")
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
-        return f"User(soldier_id={self.soldier_id!r})"
+        return f"User(email={self.email!r})"
