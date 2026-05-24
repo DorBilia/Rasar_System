@@ -4,7 +4,7 @@ from fastapi_restful.cbv import cbv
 from sqlalchemy.exc import IntegrityError
 from starlette.authentication import AuthenticationError
 
-from API.schemas.auth import RefreshRequest, RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
+from API.schemas.auth import RefreshRequest, AuthRequest, AuthRequest, TokenResponse, UserResponse, AuthCredentials
 from Services.Interfaces.user import IUserService
 from core.dependecies.user import get_user_service
 
@@ -17,25 +17,23 @@ class AuthRouter:
     service: IUserService = Depends(get_user_service)
 
     @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-    async def register(self, request: RegisterRequest):
+    async def register(self, request: AuthRequest):
         try:
             return await self.service.register(request)
         except ValueError as e:
             code = str(e)
             if code == "user_exists":
                 raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                                    detail="An account for this soldier already exists")
-            if code == "soldier_not_found":
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Soldier not found")
+                                    detail="An account with this email already exists")
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=code)
         except IntegrityError:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                                detail="An account for this soldier already exists")
+                                detail="An account with this email already exists")
         except RuntimeError as e:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e))
 
     @router.post("/token", response_model=TokenResponse)
-    async def login(self, request: TokenRequest):
+    async def login(self, request: AuthRequest):
         tokens = await self.service.login(request)
         if tokens is None:
             raise HTTPException(

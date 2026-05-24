@@ -2,13 +2,10 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-
-class RegisterRequest(BaseModel):
-    email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+from core.enums import RoleNameEnum
 
 
-class TokenRequest(BaseModel):
+class AuthRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
 
@@ -21,8 +18,10 @@ class RefreshRequest(BaseModel):
 class UserResponse(BaseModel):
     uuid: str
     email: str
-    role: str
+    role: RoleNameEnum
     created_at: date
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TokenResponse(BaseModel):
@@ -30,6 +29,8 @@ class TokenResponse(BaseModel):
     refreshToken: str
     tokenType: str = "Bearer"
     expiresIn: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AuthCredentials(BaseModel):
