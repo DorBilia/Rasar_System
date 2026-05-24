@@ -21,9 +21,20 @@ class SoldierIndicationService(ISoldierIndicationService):
         self._repository = repository
         self.org_repository = org_repo
 
-    async def create(self, request: SoldierIndicationRequest) -> SoldierIndicationResponse:
-        data = request.model_dump()
+    async def create(self, request: SoldierIndicationRequest) -> Optional[SoldierIndicationResponse]:
+        data = request.model_dump(exclude={"organization_uuid"})
         data["uuid"] = str(uuid.uuid4())
+
+        org_uuid = request.organization_uuid
+        if org_uuid is not None:
+            org = await self.org_repository.get_by_uuid(org_uuid)
+            if org is not None:
+                data["organization_id"] = org.id
+            else:
+                return None
+        else:
+            data["organization_id"] = None
+
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
