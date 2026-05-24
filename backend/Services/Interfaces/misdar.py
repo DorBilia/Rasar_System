@@ -1,19 +1,33 @@
 from abc import ABC, abstractmethod
-from datetime import date
 from typing import Sequence
-
-from db.models.misdar import MisdarAttendance
+from API.schemas.misdar import *
 
 
 class IMisdarAttendanceService(ABC):
     @abstractmethod
-    async def get_by_date_range(self, start_date: date, end_date: date) -> Sequence[MisdarAttendance]:
+    async def search(self, request: SearchMisdarRequest) -> Sequence[MisdarOverviewResponse]:
         pass
 
     @abstractmethod
-    async def get_by_misdar_type(self, misdar_type: str) -> Sequence[MisdarAttendance]:
+    async def get_absence_report(self, request: MisdarRequest):
         pass
 
     @abstractmethod
-    def get_absence_report(self) -> Sequence[MisdarAttendance]:
+    async def get_summary_report(self, request: MisdarRequest):
+        pass
+
+    @abstractmethod
+    async def try_scan_start(self, misdar_type: int) -> bool:
+        pass
+
+    @abstractmethod
+    async def scan_active(self, request: ScanRequest) -> ScanResponse:
+        pass
+
+    @abstractmethod
+    async def scan_late(self, request: LateScanRequest) -> ScanResponse:
+        pass
+
+    @abstractmethod
+    async def get_types(self) -> Sequence[MisdarType]:
         pass
