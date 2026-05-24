@@ -13,7 +13,7 @@ router = APIRouter(prefix="/misdars", tags=["Misdars"])
 
 @cbv(router)
 class Misdars:
-    service: IMisdarAttendanceService = Depends(get_misdar_attendance_service)
+    service: IMisdarService = Depends(get_misdar_attendance_service)
 
     @router.post("/search", response_model=List[MisdarOverviewResponse])
     async def get_misdars(self, request: SearchMisdarRequest):

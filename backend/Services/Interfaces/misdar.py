@@ -3,7 +3,7 @@ from typing import Sequence
 from API.schemas.misdar import *
 
 
-class IMisdarAttendanceService(ABC):
+class IMisdarService(ABC):
     @abstractmethod
     async def search(self, request: SearchMisdarRequest) -> Sequence[MisdarOverviewResponse]:
         pass
