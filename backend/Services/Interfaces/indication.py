@@ -35,6 +35,10 @@ class ISoldierIndicationService(ABC):
     async def get_all_for_soldier(self, soldier_id: int) -> Sequence[SoldierIndicationWithDescription]:
         pass
 
+    @abstractmethod
+    async def delete(self, indication_uuid: str):
+        pass
+
 
 class IOrganizationIndicationService(ABC):
     @abstractmethod
@@ -50,5 +54,5 @@ class IOrganizationIndicationService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[OrganizationIndicationResponse]:
+    async def delete(self, indication_uuid: str):
         pass

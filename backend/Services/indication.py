@@ -97,6 +97,9 @@ class SoldierIndicationService(ISoldierIndicationService):
                 ind.__setattr__('organization_uuid', org_uuid)
         return [SoldierIndicationResponse.model_validate(r) for r in created]
 
+    async def delete(self, indication_uuid: str):
+        return await self._repository.delete_by_uuid(indication_uuid)
+
 
 class OrganizationIndicationService(IOrganizationIndicationService):
 
@@ -142,5 +145,6 @@ class OrganizationIndicationService(IOrganizationIndicationService):
 
         return OrganizationIndicationResponse.model_validate(created)
 
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[OrganizationIndicationResponse]:
-        pass
+    async def delete(self, indication_uuid: str):
+        return await self._repository.delete_by_uuid(indication_uuid)
+

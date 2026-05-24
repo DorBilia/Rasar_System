@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_restful.cbv import cbv
+from starlette import status
+
 from Services.Interfaces.indication import *
 from core.dependecies.indication import get_soldier_indication_service, get_organization_indication_service, \
     get_indication_service
@@ -43,6 +45,13 @@ class IndicationSoldierRouter:
         result = await self.service.get_all_for_soldier(soldier_id)
         return result
 
+    @soldier_router.delete("/{uuid}", status_code=status.HTTP_204_NO_CONTENT)
+    async def delete(self, uuid: str):
+        success = await self.service.delete(uuid)
+        if not success:
+            raise HTTPException(status_code=404, detail="Soldier not found")
+        return None
+
 
 @cbv(organization_router)
 class OrganizationSoldierRouter:
@@ -66,4 +75,9 @@ class OrganizationSoldierRouter:
             raise HTTPException(status_code=404, detail="Organization indication not found")
         return result
 
-# get-filtered ?
+    @organization_router.delete("/{uuid}", status_code=status.HTTP_204_NO_CONTENT)
+    async def delete(self, uuid: str):
+        success = await self.service.delete(uuid)
+        if not success:
+            raise HTTPException(status_code=404, detail="Soldier not found")
+        return None
