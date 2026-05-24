@@ -5,7 +5,7 @@ from typing import Optional
 from jwt import PyJWTError
 from starlette.authentication import AuthenticationError
 
-from API.schemas.auth import RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
+from API.schemas.auth import AuthRequest, TokenResponse, UserResponse, AuthCredentials
 from core.enums import RoleNameEnum
 from core.security import create_access_token, generate_raw_refresh_token, hash_refresh_token, decode_access_token
 from core.security import hash_password, verify_password
@@ -28,7 +28,7 @@ class UserService(IUserService):
         self.user_repo = user_repo
         self.refresh_repo = refresh_repo
 
-    async def register(self, register: RegisterRequest) -> UserResponse:
+    async def register(self, register: AuthRequest) -> UserResponse:
         existing = await self.user_repo.get_by_email(register.email)
         if existing is not None:
             raise ValueError("user_exists")
@@ -60,7 +60,7 @@ class UserService(IUserService):
             expiresIn=expires_in,
             refreshToken=raw_refresh)
 
-    async def login(self, login: TokenRequest) -> Optional[TokenResponse]:
+    async def login(self, login: AuthRequest) -> Optional[TokenResponse]:
         user = await self.user_repo.get_by_email(login.email)
         if user is None or not user.is_active:
             return None

@@ -1,17 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from API.schemas.auth import RegisterRequest, TokenRequest, TokenResponse, UserResponse, AuthCredentials
+from API.schemas.auth import AuthRequest, AuthRequest, TokenResponse, UserResponse, AuthCredentials
 
 
 class IUserService(ABC):
 
     @abstractmethod
-    async def register(self, register: RegisterRequest) -> UserResponse:
+    async def register(self, register: AuthRequest) -> UserResponse:
         pass
 
     @abstractmethod
-    async def login(self, login: TokenRequest) -> Optional[TokenResponse]:
+    async def login(self, login: AuthRequest) -> Optional[TokenResponse]:
         pass
 
     @abstractmethod
