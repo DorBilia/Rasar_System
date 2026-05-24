@@ -18,7 +18,6 @@ class MisdarType(Base):
     __tablename__ = "misdar_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     misdar_name: Mapped[MisdarNameEnum] = mapped_column(
         SAEnum(MisdarNameEnum, native_enum=False), nullable=False
     )
@@ -39,7 +38,6 @@ class MisdarAttendance(Base):
     __tablename__ = "misdar_attendance"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     soldier_id: Mapped[int] = mapped_column(
         ForeignKey("soldiers.id", ondelete="RESTRICT"), nullable=False
     )
@@ -56,4 +54,4 @@ class MisdarAttendance(Base):
     misdar_type_ref: Mapped["MisdarType"] = relationship(back_populates="misdars")
 
     def __repr__(self) -> str:
-        return f"Misdar(misdar_id={self.misdar_id!r})"
+        return f"Misdar(misdar_date={self.misdar_date!r},misdar_type={self.misdar_type!r})"
