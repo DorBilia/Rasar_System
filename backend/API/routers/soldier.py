@@ -12,7 +12,7 @@ from core.dependecies.soldier import get_soldier_service
 
 router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 
-
+#TODO: decide whether to search by soldier uuid or soldier id
 @cbv(router)
 class SoldierRouter:
     service: ISoldierService = Depends(get_soldier_service)

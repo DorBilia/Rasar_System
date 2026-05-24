@@ -67,6 +67,7 @@ class Indication(Base):
 
     soldier: Mapped["Soldier"] = relationship(back_populates="indications")
     indication_type_ref: Mapped["IndicationType"] = relationship(back_populates="indications")
+    organization: Mapped["OrganizationIndication"] = relationship(back_populates="indications")
 
     def __repr__(self) -> str:
         return f"Indication(id={self.id!r})"
@@ -82,6 +83,8 @@ class OrganizationIndication(Base):
                                                  nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+    indications: Mapped[List["Indication"]] = relationship(back_populates="organization")
 
     def __repr__(self) -> str:
         return f"OrganizationIndication (id={self.id!r})"
