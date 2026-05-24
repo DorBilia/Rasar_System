@@ -12,3 +12,4 @@ argon2-cffi
 aiosqlite
 passlib
 starlette
+pydantic[email]
