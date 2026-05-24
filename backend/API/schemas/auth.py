@@ -1,15 +1,15 @@
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):
-    soldier_id: int
+    email: EmailStr
     password: str = Field(min_length=8, max_length=128)
 
 
 class TokenRequest(BaseModel):
-    soldier_id: int
+    email: EmailStr
     password: str = Field(min_length=8, max_length=128)
 
 
@@ -20,7 +20,7 @@ class RefreshRequest(BaseModel):
 
 class UserResponse(BaseModel):
     uuid: str
-    soldier_id: int
+    email: str
     role: str
     created_at: date
 

@@ -8,5 +8,9 @@ from db.models.users import User
 class IUserRepo(IBaseRepo[User]):
 
     @abstractmethod
-    async def get_by_soldier_id(self, soldier_id: int) -> Optional[User]:
+    async def get_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    async def count_users(self) -> int:
         pass
