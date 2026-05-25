@@ -53,6 +53,14 @@ class MisdarNameEnum(str, Enum):
     LATE = "מאחרים"
     MOKED = "מוקד"
 
+
+class ScanNote(str, Enum):
+    SUCCESS = "successful"
+    CONFLICT = "conflict with indication"
+    SOLDIER_NOT_FOUND = "soldier does not exist"
+    SOLDIER_INACTIVE = "soldier inactive"
+    DOH1_NOT_PRESENT = "doh1 not present"
+
  
 class IndicationDescriptionEnum(str, Enum):
     EXEMPT = "פטור"
