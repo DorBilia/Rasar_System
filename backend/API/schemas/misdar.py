@@ -10,6 +10,9 @@ class MisdarType(BaseModel):
     id: int
     misdar_name: MisdarNameEnum
 
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 class ScanRequest(BaseModel):
     misdar_type: int
