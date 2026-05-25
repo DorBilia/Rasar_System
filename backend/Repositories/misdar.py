@@ -1,7 +1,7 @@
 from datetime import date
-from typing import Sequence
+from typing import Optional, Sequence
 
-from sqlalchemy import select
+from sqlalchemy import select, func, Row
 
 from db.models.misdar import MisdarAttendance, MisdarType
 from Repositories.AbstractRepo import AbstractRepo
@@ -13,21 +13,43 @@ class MisdarAttendanceRepository(AbstractRepo[MisdarAttendance], IMisdarAttendan
     def __init__(self, db: AsyncSession):
         super().__init__(db, MisdarAttendance)
 
-    async def get_by_date_range(self, start_date: date, end_date: date) -> Sequence[MisdarAttendance]:
-        query = select(MisdarAttendance).where(MisdarAttendance.misdar_date.between(start_date, end_date))
-        result = await self.db.execute(query)
-        return result.scalars().all()
+    async def get_filtered(
+            self,
+            misdar_date: Optional[date] = None,
+            misdar_type: Optional[int] = None) -> Sequence[Row]:
 
-    async def get_by_misdar_type(self, misdar_type: str) -> Sequence[MisdarAttendance]:
-        query = (
-            select(MisdarAttendance)
-            .join(MisdarAttendance.misdar_type_ref)
-            .where(MisdarType.id == misdar_type)
+        query = select(
+            MisdarAttendance.misdar_date,
+            MisdarAttendance.misdar_type,
+            func.count().label('scan_count')
+        )
+
+        if misdar_date is not None:
+            query = query.where(MisdarAttendance.misdar_date == misdar_date)
+
+        if misdar_type is not None:
+            query = query.where(MisdarAttendance.misdar_type == misdar_type)
+
+        query = query.group_by(
+            MisdarAttendance.misdar_date,
+            MisdarAttendance.misdar_type
+        )
+
+        result = await self.db.execute(query)
+
+        return result.all()
+
+    async def exists_for_soldier(self, soldier_id: int, misdar_date: date, misdar_type: int) -> bool:
+        """Used for duplicate checking"""
+        query = select(MisdarAttendance.id).where(
+            MisdarAttendance.soldier_id == soldier_id,
+            MisdarAttendance.misdar_date == misdar_date,
+            MisdarAttendance.misdar_type == misdar_type,
         )
         result = await self.db.execute(query)
-        return result.scalars().all()
+        return result.scalar_one_or_none() is not None
 
-    def get_absence_report(self) -> Sequence[MisdarAttendance]:
+    async def get_absence_report(self) -> Sequence[MisdarAttendance]:
         pass
 
 

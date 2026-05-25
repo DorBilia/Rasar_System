@@ -1,21 +1,24 @@
-from baseRepo import IBaseRepo
-from db.models.misdar import MisdarAttendance
-from typing import Sequence
-from abc import abstractmethod
 from datetime import date
+from typing import Optional, Sequence
+from abc import abstractmethod
+
+from Repositories.Interfaces.baseRepo import IBaseRepo
+from db.models.misdar import MisdarAttendance
 
 
 class IMisdarAttendanceRepo(IBaseRepo[MisdarAttendance]):
 
     @abstractmethod
-    def get_by_date_range(self, start_date: date, end_date: date) -> Sequence[MisdarAttendance]:
+    async def get_filtered(
+        self,
+        misdar_date: Optional[date] = None,
+        misdar_type: Optional[int] = None,) -> Sequence[MisdarAttendance]:
         pass
 
     @abstractmethod
-    def get_by_misdar_type(self, misdar_type: str) -> Sequence[MisdarAttendance]:
+    async def exists_for_soldier(self, soldier_id: int, misdar_date: date, misdar_type: int) -> bool:
         pass
 
     @abstractmethod
-    def get_absence_report(self) -> Sequence[MisdarAttendance]:
+    async def get_absence_report(self) -> Sequence[MisdarAttendance]:
         pass
-

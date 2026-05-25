@@ -16,8 +16,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
     async def get_doh1_on_date(self, soldier_id: int, doh1_date: date) -> Optional[Doh1]:
         query = select(Doh1).where(
             Doh1.soldier_id == soldier_id,
-            Doh1.doh1_date == doh1_date,
-        )
+            Doh1.doh1_date == doh1_date)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
