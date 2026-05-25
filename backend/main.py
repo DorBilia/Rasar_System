@@ -3,7 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 from settings import settings
 from db.db import create_tables
-from API.routers import soldier, indication, auth
+from API.routers import soldier, indication, auth, misdar
 
 
 app = FastAPI(
@@ -17,6 +17,7 @@ app.include_router(indication.indication_router, prefix=settings.API_PREFIX)
 app.include_router(indication.soldier_router, prefix=settings.API_PREFIX)
 app.include_router(indication.organization_router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)
+app.include_router(misdar.router, prefix=settings.API_PREFIX)
 
 
 async def main():
