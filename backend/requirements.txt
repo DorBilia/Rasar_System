@@ -1,0 +1,15 @@
+fastapi
+pydantic
+python-dotenv
+sqlalchemy
+uvicorn
+pydantic_settings
+fastapi_restful
+typing-inspect
+PyJWT
+passlib[argon2]
+argon2-cffi
+aiosqlite
+passlib
+starlette
+pydantic[email]

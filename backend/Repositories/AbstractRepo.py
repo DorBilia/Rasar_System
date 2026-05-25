@@ -1,0 +1,90 @@
+from typing import Generic, TypeVar, Optional, Type, Sequence
+from sqlalchemy import select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload, joinedload
+
+from Repositories.Interfaces.baseRepo import IBaseRepo
+
+T = TypeVar("T")
+
+# Public API identity is `uuid`; integer `id` is DB-internal (FKs, joins).
+
+
+class AbstractRepo(IBaseRepo[T], Generic[T]):
+    db: AsyncSession
+
+    def __init__(self, db, model: Type[T]):
+        super().__init__()
+        self.model = model
+        self.db = db
+
+    async def create(self, **kwargs) -> T:
+        new_entity = self.model(**kwargs)
+        self.db.add(new_entity)
+        await self.db.commit()
+        await self.db.refresh(new_entity)
+        return new_entity
+
+    async def create_many(self, objects: list[T]) -> list[T]:
+        self.db.add_all(objects)
+        await self.db.commit()
+        return objects
+
+    async def get_by_id(self, entity_id: int) -> Optional[T]:
+        query = select(self.model).where(self.model.id == entity_id)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_uuid(self, entity_uuid: str) -> Optional[T]:
+        query = select(self.model).where(self.model.uuid == entity_uuid)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_all(self) -> Sequence[T]:
+        query = select(self.model)
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+    async def get_for_soldier(self, soldier_id: int) -> Sequence[T]:
+        query = (
+            select(self.model)
+            .where(self.model.soldier_id == soldier_id)
+        )
+        result = await self.db.execute(query)
+
+        return result.scalars().all()
+
+    async def update(self, entity_id: int, **updates) -> Optional[T]:
+        query = (
+            update(self.model)
+            .where(self.model.id == entity_id)
+            .values(**updates)
+            .execution_options(synchronize_session=False)
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        return await self.get_by_id(entity_id)
+
+    async def update_by_uuid(self, entity_uuid: str, **updates) -> Optional[T]:
+        query = (
+            update(self.model)
+            .where(self.model.uuid == entity_uuid)
+            .values(**updates)
+            .execution_options(synchronize_session=False)
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        return await self.get_by_uuid(entity_uuid)
+
+    async def delete(self, entity_id: int) -> bool:
+        # Returns how many rows were affected, if 0 then object is not found
+        query = delete(self.model).where(self.model.id == entity_id)
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0  # check whether if this is valid
+
+    async def delete_by_uuid(self, entity_uuid: str) -> bool:
+        query = delete(self.model).where(self.model.uuid == entity_uuid)
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0
