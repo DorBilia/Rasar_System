@@ -9,6 +9,10 @@ from abc import abstractmethod
 class ISoldierRepo(IBaseRepo[Soldier]):
 
     @abstractmethod
+    async def get_doh1_on_date(self, soldier_id: int, doh1_date: date) -> Optional[Doh1]:
+        pass
+
+    @abstractmethod
     async def get_all_filtered(
             self,
             unit: Optional[int] = None,
