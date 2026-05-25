@@ -31,3 +31,7 @@ class IMisdarService(ABC):
     @abstractmethod
     async def get_types(self) -> Sequence[MisdarType]:
         pass
+
+    @abstractmethod
+    async def delete_scan(self, scan_uuid: str) -> bool:
+        pass

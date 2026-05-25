@@ -1,4 +1,4 @@
-from collections import defaultdict
+import uuid
 from datetime import date, datetime, time, timedelta
 from typing import Sequence
 
@@ -19,6 +19,7 @@ from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.misdar import IMisdarService
 
+
 class DuplicateMisdarScanError(Exception):
     pass
 
@@ -29,11 +30,11 @@ class MisdarTypeNotFoundError(Exception):
 
 class MisdarService(IMisdarService):
     def __init__(
-        self,
-        repository: IMisdarAttendanceRepo,
-        type_repository: IBaseRepo[MisdarTypeModel],
-        indication_repository: ISoldierIndicationRepo,
-        soldier_repository: ISoldierRepo,
+            self,
+            repository: IMisdarAttendanceRepo,
+            type_repository: IBaseRepo[MisdarTypeModel],
+            indication_repository: ISoldierIndicationRepo,
+            soldier_repository: ISoldierRepo,
     ):
         self._repository = repository
         self._type_repository = type_repository
@@ -86,11 +87,11 @@ class MisdarService(IMisdarService):
         return [MisdarTypeSchema.model_validate(r) for r in rows]
 
     async def _record_scan(
-        self,
-        soldier_id: int,
-        misdar_type: int,
-        misdar_date: date,
-        scan_time: time) -> ScanResponse:
+            self,
+            soldier_id: int,
+            misdar_type: int,
+            misdar_date: date,
+            scan_time: time) -> ScanResponse:
 
         misdar_type_row = await self._type_repository.get_by_id(misdar_type)
 
@@ -99,14 +100,15 @@ class MisdarService(IMisdarService):
 
         soldier = await self._soldier_repository.get_by_id(soldier_id)
         if soldier is None:
-            return ScanResponse(soldier_id=soldier_id, scan_note=ScanNote.SOLDIER_NOT_FOUND)
+            return ScanResponse(soldier_id=soldier_id, scan_note=ScanNote.SOLDIER_NOT_FOUND, uuid=None)
 
         if await self._repository.exists_for_soldier(soldier_id, misdar_date, misdar_type):
             raise DuplicateMisdarScanError()
 
         scan_note = await self._resolve_scan_note(soldier, misdar_type, misdar_date)
 
-        await self._repository.create(
+        created = await self._repository.create(
+            uuid=str(uuid.uuid4()),
             soldier_id=soldier_id,
             misdar_type=misdar_type,
             misdar_date=misdar_date,
@@ -114,7 +116,7 @@ class MisdarService(IMisdarService):
             scan_note=scan_note,
         )
 
-        return ScanResponse(soldier_id=soldier_id, scan_note=scan_note)
+        return ScanResponse(soldier_id=soldier_id, scan_note=scan_note, uuid=created.uuid)
 
     async def _resolve_scan_note(self, soldier: Soldier, misdar_type: int, misdar_date: date) -> ScanNote:
         if not soldier.is_active:
@@ -131,3 +133,6 @@ class MisdarService(IMisdarService):
             return ScanNote.CONFLICT
 
         return ScanNote.SUCCESS
+
+    async def delete_scan(self, soldier_uuid: str) -> bool:
+        return await self._repository.delete_by_uuid(soldier_uuid)

@@ -24,6 +24,7 @@ class ScanRequest(BaseModel):
 class ScanResponse(BaseModel):
     soldier_id: int
     scan_note: str
+    uuid: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

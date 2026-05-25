@@ -44,8 +44,7 @@ class Misdars:
         except DuplicateMisdarScanError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="soldier already scanned for this misdar",
-            )
+                detail="soldier already scanned for this misdar")
 
     @router.post("/scan/late", response_model=ScanResponse)
     async def scan_late(self, request: LateScanRequest):
@@ -56,8 +55,7 @@ class Misdars:
         except DuplicateMisdarScanError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="soldier already scanned for this misdar",
-            )
+                detail="soldier already scanned for this misdar")
 
     @router.post("/absence_report")
     async def get_absence_report(self, request: MisdarRequest):
@@ -70,3 +68,10 @@ class Misdars:
     @router.get("/types", response_model=List[MisdarType])
     async def get_types(self):
         return await self.service.get_types()
+
+    @router.delete("/{scan_uuid}", status_code=status.HTTP_204_NO_CONTENT)
+    async def delete_soldier(self, scan_uuid: str):
+        success = await self.service.delete_scan(scan_uuid)
+        if not success:
+            raise HTTPException(status_code=404, detail="Scan not found")
+        return None
