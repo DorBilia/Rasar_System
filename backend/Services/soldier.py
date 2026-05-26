@@ -1,8 +1,8 @@
 import uuid
 from typing import Optional, Sequence
-
 from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
-    CreateSoldierRequest
+    CreateSoldierRequest, Doh1Request
+from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.soldier import ISoldierService
 
@@ -10,8 +10,9 @@ from Services.Interfaces.soldier import ISoldierService
 class SoldierService(ISoldierService):
     soldier_repo: ISoldierRepo
 
-    def __init__(self, soldier_repo: ISoldierRepo) -> None:
+    def __init__(self, soldier_repo: ISoldierRepo, doh1_repo: IDoh1Repo) -> None:
         self.soldier_repo = soldier_repo
+        self.doh1_repo = doh1_repo
 
     async def create(self, soldier: CreateSoldierRequest) -> FullSoldier:
         data = soldier.model_dump()
@@ -54,3 +55,13 @@ class SoldierService(ISoldierService):
 
     async def delete_soldier(self, soldier_uuid: str) -> bool:
         return await self.soldier_repo.delete_by_uuid(soldier_uuid)
+
+    async def add_doh1_manual(self, request: Doh1Request) -> bool:
+
+        result = await self.doh1_repo.create(
+            uuid=str(uuid.uuid4()),
+            soldier_id=request.soldier_id,
+            doh1_date=request.doh1_date,
+            doh1_value=request.doh1_value)
+
+        return result is not None;

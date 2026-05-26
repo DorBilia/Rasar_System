@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
-from core.enums import RankEnum, ServiceTypeEnum
+from core.enums import RankEnum, ServiceTypeEnum, Doh1ValueEnum
 
 
 class BaseSoldier(BaseModel):
@@ -55,3 +55,9 @@ class UpdateSoldierRequest(BaseSoldierRequest):
     last_name: Optional[str] = None
     picture: Optional[str] = None
     other_allocations: Optional[str] = None
+
+
+class Doh1Request(BaseModel):
+    soldier_id: int
+    doh1_date: Optional[date] = date.today()
+    doh1_value: Doh1ValueEnum

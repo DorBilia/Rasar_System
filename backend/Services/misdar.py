@@ -19,6 +19,7 @@ from core.enums import DayOfWeek, Doh1ValueEnum, ScanNote
 from db.models.misdar import MisdarType as MisdarTypeModel
 from db.models.soldier import Soldier
 from Repositories.Interfaces.baseRepo import IBaseRepo
+from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo
 from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
@@ -40,11 +41,13 @@ class MisdarService(IMisdarService):
             type_repository: IBaseRepo[MisdarTypeModel],
             indication_repository: ISoldierIndicationRepo,
             soldier_repository: ISoldierRepo,
+            doh1_repository: IDoh1Repo,
     ):
         self._repository = repository
         self._type_repository = type_repository
         self._indication_repository = indication_repository
         self._soldier_repository = soldier_repository
+        self._doh1_repository = doh1_repository
 
     async def search(self, request: SearchMisdarRequest) -> Sequence[MisdarOverviewResponse]:
 
@@ -142,7 +145,7 @@ class MisdarService(IMisdarService):
         month_start = selected_date.replace(day=1)
         days_in_month = monthrange(selected_date.year, selected_date.month)[1]
 
-        doh1_records = await self._soldier_repository.get_doh1_on_month(soldier_id, selected_date)
+        doh1_records = await self._doh1_repository.get_doh1_on_month(soldier_id, selected_date)
         attendance_records = await self._repository.get_misdar_attendances_for_month(soldier_id, selected_date)
         misdar_days = await self._repository.get_misdar_days()
 
@@ -161,10 +164,8 @@ class MisdarService(IMisdarService):
         # Build map for attendance flags - misdar type : can/can't atten this misdar
         can_attend_by_type: dict[int, bool] = {}
         result: list[AttendanceDay] = []
-        for day_number in range(1, 8):
-            weekday = DayOfWeek(day_number)
-
-            for misdar_type in misdar_types_by_weekday.get(weekday, []):
+        for misdars_in_day in misdar_types_by_weekday.values():
+            for misdar_type in misdars_in_day:
                 if misdar_type not in can_attend_by_type:
                     can_attend_by_type[misdar_type] = (
                         await self._indication_repository.can_soldier_attend_misdar(

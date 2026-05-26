@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from Services.soldier import SoldierService
 from Services.Interfaces.soldier import ISoldierService
+from Repositories.doh1 import Doh1Repository
+from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.soldier import SoldierRepository
 from Repositories.Interfaces.soldier import ISoldierRepo
 
@@ -13,5 +15,11 @@ async def get_soldier_repository(db: AsyncSession = Depends(get_db)) -> ISoldier
     return SoldierRepository(db)
 
 
-async def get_soldier_service(repository: ISoldierRepo = Depends(get_soldier_repository)) -> ISoldierService:
-    return SoldierService(repository)
+async def get_doh1_repository(db: AsyncSession = Depends(get_db)) -> IDoh1Repo:
+    return Doh1Repository(db)
+
+
+async def get_soldier_service(
+        repository: ISoldierRepo = Depends(get_soldier_repository),
+        doh1_repository: IDoh1Repo = Depends(get_doh1_repository)) -> ISoldierService:
+    return SoldierService(repository, doh1_repository)

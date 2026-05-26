@@ -68,6 +68,6 @@ class Misdars:
             raise HTTPException(status_code=404, detail="Scan not found")
         return None
 
-    @router.get("/{soldier_id}/{date}/calender", response_model=List[MisdarDay])
+    @router.get("/{soldier_id}/{date}/calender", response_model=List[AttendanceDay])
     async def get_calender(self, soldier_id: int, date: date):
         return await self.service.get_soldier_attendances_for_month(soldier_id, date)

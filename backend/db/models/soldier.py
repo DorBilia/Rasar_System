@@ -61,14 +61,11 @@ class Soldier(Base):
 class Doh1(Base):
     __tablename__ = "doh1_records"
 
+    id: Mapped[int] = mapped_column(primary_key=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
-    soldier_id: Mapped[int] = mapped_column(
-        ForeignKey("soldiers.id", ondelete="RESTRICT"), primary_key=True
-    )
-    doh1_date: Mapped[date] = mapped_column(Date, primary_key=True, nullable=False)
-    doh1_value: Mapped[Doh1ValueEnum] = mapped_column(
-        SAEnum(Doh1ValueEnum, native_enum=False), nullable=False
-    )
+    soldier_id: Mapped[int] = mapped_column(ForeignKey("soldiers.id", ondelete="RESTRICT"))
+    doh1_date: Mapped[date] = mapped_column(Date, nullable=False)
+    doh1_value: Mapped[Doh1ValueEnum] = mapped_column(SAEnum(Doh1ValueEnum, native_enum=False), nullable=False)
 
     soldier: Mapped["Soldier"] = relationship(back_populates="doh1_records")
 

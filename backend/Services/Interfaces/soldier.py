@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
 
-from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
-    CreateSoldierRequest
+from API.schemas.soldier import *
 
 
 class ISoldierService(ABC):
@@ -25,4 +24,8 @@ class ISoldierService(ABC):
 
     @abstractmethod
     async def delete_soldier(self, soldier_uuid: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def add_doh1_manual(self, request: Doh1Request) -> bool:
         pass
