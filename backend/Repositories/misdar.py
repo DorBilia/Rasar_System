@@ -1,9 +1,10 @@
+from calendar import monthrange
 from datetime import date
 from typing import Optional, Sequence
 
 from sqlalchemy import select, func, Row
 
-from db.models.misdar import MisdarAttendance, MisdarType
+from db.models.misdar import MisdarAttendance, MisdarType, MisdarTypeDays
 from Repositories.AbstractRepo import AbstractRepo
 from sqlalchemy.ext.asyncio import AsyncSession
 from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
@@ -51,6 +52,21 @@ class MisdarAttendanceRepository(AbstractRepo[MisdarAttendance], IMisdarAttendan
 
     async def get_absence_report(self) -> Sequence[MisdarAttendance]:
         pass
+
+    async def get_misdar_attendances_for_month(self, soldier_id: int, date: date) -> Sequence[MisdarAttendance]:
+        month_start = date.replace(day=1)
+        month_end = date.replace(day=monthrange(date.year, date.month)[1])
+
+        query = select(MisdarAttendance).where(
+            MisdarAttendance.soldier_id == soldier_id,
+            MisdarAttendance.misdar_date.between(month_start, month_end))
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+    async def get_misdar_days(self) -> Sequence[MisdarTypeDays]:
+        query = select(MisdarTypeDays)
+        result = await self.db.execute(query)
+        return result.scalars().all()
 
 
 class MisdarTypeRepository(AbstractRepo[MisdarType]):
