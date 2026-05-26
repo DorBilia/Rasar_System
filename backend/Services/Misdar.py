@@ -1,16 +1,21 @@
 import uuid
+from collections import defaultdict
+from calendar import monthrange
 from datetime import date, datetime, time, timedelta
 from typing import Sequence
 
 from API.schemas.misdar import (
+    AttendanceDay,
     LateScanRequest,
+    MisdarAttendanceStatus,
+    MisdarDay,
     MisdarOverviewResponse,
     MisdarRequest,
     MisdarType as MisdarTypeSchema,
     ScanRequest,
     ScanResponse,
     SearchMisdarRequest)
-from core.enums import Doh1ValueEnum, ScanNote
+from core.enums import DayOfWeek, Doh1ValueEnum, ScanNote
 from db.models.misdar import MisdarType as MisdarTypeModel
 from db.models.soldier import Soldier
 from Repositories.Interfaces.baseRepo import IBaseRepo
@@ -122,10 +127,6 @@ class MisdarService(IMisdarService):
         if not soldier.is_active:
             return ScanNote.SOLDIER_INACTIVE
 
-        doh1 = await self._soldier_repository.get_doh1_on_date(soldier.id, misdar_date)
-        if doh1 is None or doh1.doh1_value != Doh1ValueEnum.PRESENT:
-            return ScanNote.DOH1_NOT_PRESENT
-
         can_attend = await self._indication_repository.can_soldier_attend_misdar(
             soldier.id, misdar_type
         )
@@ -136,3 +137,83 @@ class MisdarService(IMisdarService):
 
     async def delete_scan(self, soldier_uuid: str) -> bool:
         return await self._repository.delete_by_uuid(soldier_uuid)
+
+    async def get_soldier_attendances_for_month(self, soldier_id: int, selected_date: date) -> Sequence[AttendanceDay]:
+        month_start = selected_date.replace(day=1)
+        days_in_month = monthrange(selected_date.year, selected_date.month)[1]
+
+        doh1_records = await self._soldier_repository.get_doh1_on_month(soldier_id, selected_date)
+        attendance_records = await self._repository.get_misdar_attendances_for_month(soldier_id, selected_date)
+        misdar_days = await self._repository.get_misdar_days()
+
+        doh1_by_date = {record.doh1_date: record for record in doh1_records}
+
+        # Build a map for date : misdar types attended to in this date
+        attended_by_date: dict[date, set[int]] = defaultdict(set)
+        for attendance in attendance_records:
+            attended_by_date[attendance.misdar_date].add(attendance.misdar_type)
+
+        # Build a map for day : misdar types on this day
+        misdar_types_by_weekday: dict[DayOfWeek, set[int]] = defaultdict(set)
+        for misdar_day in misdar_days:
+            misdar_types_by_weekday[misdar_day.misdar_day].add(misdar_day.misdar_type)
+
+        # Build map for attendance flags - misdar type : can/can't atten this misdar
+        can_attend_by_type: dict[int, bool] = {}
+        result: list[AttendanceDay] = []
+        for day_number in range(1, 8):
+            weekday = DayOfWeek(day_number)
+
+            for misdar_type in misdar_types_by_weekday.get(weekday, []):
+                if misdar_type not in can_attend_by_type:
+                    can_attend_by_type[misdar_type] = (
+                        await self._indication_repository.can_soldier_attend_misdar(
+                            soldier_id, misdar_type))
+
+        for day_offset in range(days_in_month):
+            current_date = month_start + timedelta(days=day_offset)
+            doh1 = doh1_by_date.get(current_date)
+
+            # Check whether the soldier is present
+            if doh1 is None or doh1.doh1_value != Doh1ValueEnum.PRESENT:
+                result.append(
+                    AttendanceDay(
+                        date=current_date,
+                        base_status="not present",
+                        misdar_statuses=None))
+                continue
+
+            misdar_statuses: list[MisdarAttendanceStatus] = []
+            weekday = DayOfWeek(current_date.isoweekday())
+
+            # Check for every misdar on the specific day if the soldier can attend it and if so, check if he attended
+            for misdar_type in misdar_types_by_weekday.get(weekday, []):
+
+                if not can_attend_by_type[misdar_type]:
+                    continue
+
+                status = (
+                    "attended"
+                    if misdar_type in attended_by_date.get(current_date, set())
+                    else "didnt attend")
+                misdar_statuses.append(
+                    MisdarAttendanceStatus(misdar_type=misdar_type, status=status))
+
+            base_status = (
+                "didnt attend misdar"
+                if any(status.status == "didnt attend" for status in misdar_statuses)
+                else "attended")
+
+            result.append(
+                AttendanceDay(
+                    date=current_date,
+                    base_status=base_status,
+                    misdar_statuses=misdar_statuses))
+
+        return result
+
+    async def get_misdar_days(self) -> Sequence[MisdarDay]:
+        return [
+            MisdarDay(day=misdar_day.misdar_day, misdar_type=misdar_day.misdar_type)
+            for misdar_day in await self._repository.get_misdar_days()
+        ]
