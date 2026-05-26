@@ -57,7 +57,7 @@ class UpdateSoldierRequest(BaseSoldierRequest):
     other_allocations: Optional[str] = None
 
 
-class Doh1Request(BaseSoldier):
+class Doh1Request(BaseModel):
     soldier_id: int
     doh1_date: Optional[date] = date.today()
     doh1_value: Doh1ValueEnum

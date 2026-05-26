@@ -5,7 +5,6 @@ from settings import settings
 from db.db import create_tables
 from API.routers import soldier, indication, auth, misdar
 
-
 app = FastAPI(
     title="Rasar System API",
     description="api to manage rasar system backend",
@@ -13,6 +12,7 @@ app = FastAPI(
     redoc_url="/redoc")
 
 app.include_router(soldier.soldiers_router, prefix=settings.API_PREFIX)
+app.include_router(soldier.doh1_router, prefix=settings.API_PREFIX)
 app.include_router(indication.indication_router, prefix=settings.API_PREFIX)
 app.include_router(indication.soldier_router, prefix=settings.API_PREFIX)
 app.include_router(indication.organization_router, prefix=settings.API_PREFIX)

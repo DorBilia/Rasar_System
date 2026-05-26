@@ -1,3 +1,5 @@
+from datetime import date
+
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.soldier import Soldier
 from typing import Sequence, Optional
