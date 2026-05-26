@@ -4,15 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi_restful.cbv import cbv
 from starlette import status
 
-from API.schemas.misdar import (
-    LateScanRequest,
-    MisdarOverviewResponse,
-    MisdarRequest,
-    MisdarType,
-    ScanRequest,
-    ScanResponse,
-    SearchMisdarRequest,
-)
+from API.schemas.misdar import *
 from Services.Interfaces.misdar import IMisdarService
 from Services.misdar import DuplicateMisdarScanError, MisdarTypeNotFoundError
 from core.dependecies.misdar import get_misdar_attendance_service
@@ -75,3 +67,7 @@ class Misdars:
         if not success:
             raise HTTPException(status_code=404, detail="Scan not found")
         return None
+
+    @router.get("/{soldier_id}/{date}/calender", response_model=List[MisdarDay])
+    async def get_calender(self, soldier_id: int, date: date):
+        return await self.service.get_soldier_attendances_for_month(soldier_id, date)

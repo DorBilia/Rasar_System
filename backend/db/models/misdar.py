@@ -9,9 +9,9 @@ from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Time, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from core.enums import MisdarNameEnum
+from core.enums import MisdarNameEnum, DayOfWeek
 
-__all__ = ["MisdarAttendance", "MisdarType"]
+__all__ = ["MisdarAttendance", "MisdarType", "MisdarTypeDays"]
 
 
 class MisdarType(Base):
@@ -21,7 +21,6 @@ class MisdarType(Base):
     misdar_name: Mapped[MisdarNameEnum] = mapped_column(
         SAEnum(MisdarNameEnum, native_enum=False), nullable=False
     )
-    weekly_arrivals: Mapped[int] = mapped_column(nullable=False)
     misdar_time: Mapped[time] = mapped_column(Time, nullable=False)
     misdar_length: Mapped[float] = mapped_column(Float)
 
@@ -29,9 +28,25 @@ class MisdarType(Base):
     misdar_mappings: Mapped[List["IndicationTypeMisdarType"]] = relationship(
         "IndicationTypeMisdarType", back_populates="misdar_type"
     )
+    misdar_days: Mapped[List["MisdarTypeDays"]] = relationship(
+        back_populates="misdar_type_ref", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"MisdarType(id={self.id!r})"
+
+
+class MisdarTypeDays(Base):
+    __tablename__ = "misdar_type_days"
+    misdar_type: Mapped[int] = mapped_column(ForeignKey("misdar_types.id"), primary_key=True)
+    misdar_day: Mapped[DayOfWeek] = mapped_column(
+        SAEnum(DayOfWeek, native_enum=False), primary_key=True
+    )
+
+    misdar_type_ref: Mapped["MisdarType"] = relationship(back_populates="misdar_days")
+
+    def __repr__(self) -> str:
+        return f"MisdarTypeDays(misdar_type={self.misdar_type!r}, misdar_day={self.misdar_day!r})"
 
 
 class MisdarAttendance(Base):

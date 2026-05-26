@@ -1,9 +1,9 @@
 from datetime import date, time
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
-from core.enums import MisdarNameEnum
+from core.enums import MisdarNameEnum, DayOfWeek
 
 
 class MisdarType(BaseModel):
@@ -11,7 +11,6 @@ class MisdarType(BaseModel):
     misdar_name: MisdarNameEnum
 
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class ScanRequest(BaseModel):
@@ -53,3 +52,24 @@ class MisdarOverviewResponse(BaseModel):
     scan_count: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MisdarAttendanceStatus(BaseModel):
+    misdar_type: int
+    status: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AttendanceDay(BaseModel):
+    date: date
+    base_status: str
+
+    misdar_statuses: Optional[List[MisdarAttendanceStatus]] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MisdarDay(BaseModel):
+    day: DayOfWeek
+    misdar_type: int
