@@ -35,3 +35,12 @@ class IMisdarService(ABC):
     @abstractmethod
     async def delete_scan(self, scan_uuid: str) -> bool:
         pass
+
+    @abstractmethod
+    async def get_soldier_attendances_for_month(self, soldier_id: int, date: date) -> Sequence[AttendanceDay]:
+        pass
+
+    @abstractmethod
+    async def get_misdar_days(self) -> Sequence[MisdarDay]:
+        """Get all misdar types and their days"""
+        pass
