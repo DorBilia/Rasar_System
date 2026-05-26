@@ -61,7 +61,7 @@ class ScanNote(str, Enum):
     SOLDIER_INACTIVE = "soldier inactive"
     DOH1_NOT_PRESENT = "doh1 not present"
 
- 
+
 class IndicationDescriptionEnum(str, Enum):
     EXEMPT = "פטור"
     PUNISHMENT = "עונש"
@@ -112,3 +112,13 @@ class RoleNameEnum(str, Enum):
     UNIT_COMMANDER = "מפקד יחידה"
     RASAR = "רס\"ר"
     VIEWER = "צופה"
+
+
+class DayOfWeek(int, Enum):
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
