@@ -26,3 +26,7 @@ class ISoldierRepo(IBaseRepo[Soldier]):
             search_term: Optional[str] = None,
             limit: int = 50) -> Sequence[Soldier]:
         pass
+
+    @abstractmethod
+    async def get_doh1_on_month(self, soldier_id: int, date: date) -> Sequence[Doh1]:
+        pass

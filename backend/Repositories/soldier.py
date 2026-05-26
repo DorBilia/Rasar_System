@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import date
 
 from sqlalchemy import select
@@ -58,5 +59,15 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
         query = query.limit(limit)
 
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+    async def get_doh1_on_month(self, soldier_id: int, date: date) -> Sequence[Doh1]:
+        month_start = date.replace(day=1)
+        month_end = date.replace(day=monthrange(date.year, date.month)[1])
+
+        query = select(Doh1).where(
+            Doh1.soldier_id == soldier_id,
+            Doh1.doh1_date.between(month_start, month_end))
         result = await self.db.execute(query)
         return result.scalars().all()
