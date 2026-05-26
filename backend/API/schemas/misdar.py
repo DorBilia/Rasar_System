@@ -58,16 +58,12 @@ class MisdarAttendanceStatus(BaseModel):
     misdar_type: int
     status: str
 
-    model_config = ConfigDict(from_attributes=True)
-
 
 class AttendanceDay(BaseModel):
     date: date
     base_status: str
 
     misdar_statuses: Optional[List[MisdarAttendanceStatus]] = None
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class MisdarDay(BaseModel):

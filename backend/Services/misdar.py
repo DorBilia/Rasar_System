@@ -164,10 +164,8 @@ class MisdarService(IMisdarService):
         # Build map for attendance flags - misdar type : can/can't atten this misdar
         can_attend_by_type: dict[int, bool] = {}
         result: list[AttendanceDay] = []
-        for day_number in range(1, 8):
-            weekday = DayOfWeek(day_number)
-
-            for misdar_type in misdar_types_by_weekday.get(weekday, []):
+        for misdars_in_day in misdar_types_by_weekday.values():
+            for misdar_type in misdars_in_day:
                 if misdar_type not in can_attend_by_type:
                     can_attend_by_type[misdar_type] = (
                         await self._indication_repository.can_soldier_attend_misdar(
