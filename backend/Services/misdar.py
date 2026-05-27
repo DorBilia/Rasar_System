@@ -171,8 +171,7 @@ class MisdarService(IMisdarService):
             misdar_type=misdar_type,
             misdar_date=misdar_date,
             scan_time=scan_time,
-            scan_note=scan_note,
-        )
+            scan_note=scan_note)
 
         return ScanResponse(soldier_id=soldier_id, scan_note=scan_note, uuid=created.uuid)
 
@@ -180,9 +179,7 @@ class MisdarService(IMisdarService):
         if not soldier.is_active:
             return ScanNote.SOLDIER_INACTIVE
 
-        can_attend = await self._indication_repository.can_soldier_attend_misdar(
-            soldier.id, misdar_type
-        )
+        can_attend = await self._indication_repository.can_soldier_attend_misdar(soldier.id, misdar_type)
         if not can_attend:
             return ScanNote.CONFLICT
 
@@ -191,6 +188,7 @@ class MisdarService(IMisdarService):
     async def delete_scan(self, soldier_uuid: str) -> bool:
         return await self._repository.delete_by_uuid(soldier_uuid)
 
+    #TODO: figure out what to do if there is a misdar in a non-misdar day
     async def get_soldier_attendances_for_month(self, soldier_id: int, selected_date: date) -> Sequence[AttendanceDay]:
         month_start = selected_date.replace(day=1)
         days_in_month = monthrange(selected_date.year, selected_date.month)[1]
