@@ -96,7 +96,9 @@ class IndicationTypeRepository(AbstractRepo[IndicationType], IIndicationTypeRepo
             indication_description: Optional[IndicationDescriptionEnum],
             weekly_arrivals: Optional[int] = None,
             misdar_type_ids: Optional[list[int]] = None) -> Optional[IndicationType]:
-        row = await self.get_by_id_with_mappings(entity_id)
+        updates = {"indication_description": indication_description,
+                   "weekly_arrivals": weekly_arrivals}
+        row = await self.update(entity_id, **updates)
         if row is None:
             return None
 

@@ -2,7 +2,7 @@ import uuid
 from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.Interfaces.indication import *
 from db.models import Indication
-from Repositories.misdar import MisdarTypeRepository
+from Repositories.Interfaces.misdar import IMisdarTypeRepo
 
 
 class IndicationTypeNotFoundError(Exception):
@@ -18,7 +18,7 @@ class IndicationService(IIndicationService):
     def __init__(
             self,
             type_repository: IIndicationTypeRepo,
-            misdar_type_repository: MisdarTypeRepository):
+            misdar_type_repository: IMisdarTypeRepo):
 
         self._type_repository = type_repository
         self._misdar_type_repository = misdar_type_repository
