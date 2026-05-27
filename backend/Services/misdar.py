@@ -12,9 +12,10 @@ from db.models.misdar import MisdarType as MisdarTypeModel
 from db.models.soldier import Soldier
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo
-from Repositories.Interfaces.misdar import IMisdarAttendanceRepo, IMisdarTypeRepo
+from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.misdar import IMisdarService
+from Repositories.misdar import MisdarTypeRepository
 
 
 class DuplicateMisdarScanError(Exception):
@@ -29,7 +30,7 @@ class MisdarService(IMisdarService):
     def __init__(
             self,
             repository: IMisdarAttendanceRepo,
-            type_repository: IMisdarTypeRepo,
+            type_repository: MisdarTypeRepository,
             indication_repository: ISoldierIndicationRepo,
             soldier_repository: ISoldierRepo,
             doh1_repository: IDoh1Repo,
@@ -122,14 +123,26 @@ class MisdarService(IMisdarService):
             misdar_name=row.misdar_name,
             misdar_time=row.misdar_time,
             misdar_length=row.misdar_length,
-            misdar_days=[d.misdar_day for d in row.misdar_days],
-        )
+            misdar_days=[d.misdar_day for d in row.misdar_days])
 
-    async def update_type(self, misdar_type_id: int, request: UpdateMisdarTypeRequest, ) -> Optional[MisdarTypeSchema]:
-        updated = await self._type_repository.update(misdar_type_id, **request.model_dump())
+    async def update_type(
+            self,
+            misdar_type_id: int,
+            request: UpdateMisdarTypeRequest) -> Optional[MisdarTypeSchema]:
+        updated = await self._type_repository.update_with_days(
+            misdar_type_id,
+            misdar_name=request.misdar_name,
+            misdar_time=request.misdar_time,
+            misdar_length=request.misdar_length,
+            misdar_days=request.misdar_days)
         if updated is None:
             return None
-        return MisdarTypeSchema.model_validate(updated)
+        return MisdarTypeSchema(
+            id=updated.id,
+            misdar_name=updated.misdar_name,
+            misdar_time=updated.misdar_time,
+            misdar_length=updated.misdar_length,
+            misdar_days=[d.misdar_day for d in updated.misdar_days])
 
     async def delete_type(self, misdar_type_id: int) -> bool:
         # Any FK violations are expected to surface as IntegrityError in the router.
