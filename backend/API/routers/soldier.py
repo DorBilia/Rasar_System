@@ -9,7 +9,7 @@ from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldi
     CreateSoldierRequest, Doh1Request
 from Services.Interfaces.soldier import ISoldierService
 
-from core.dependecies.soldier import get_soldier_service
+from core.dependencies.soldier import get_soldier_service
 
 soldiers_router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 doh1_router = APIRouter(prefix="/doh1", tags=["Doh1"])

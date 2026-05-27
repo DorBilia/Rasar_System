@@ -6,7 +6,7 @@ from starlette.authentication import AuthenticationError
 
 from API.schemas.auth import RefreshRequest, AuthRequest, AuthRequest, TokenResponse, UserResponse, AuthCredentials
 from Services.Interfaces.user import IUserService
-from core.dependecies.user import get_user_service
+from core.dependencies.user import get_user_service
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 security = HTTPBearer(auto_error=False)

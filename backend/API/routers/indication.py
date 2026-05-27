@@ -4,7 +4,7 @@ from starlette import status
 from sqlalchemy.exc import IntegrityError
 
 from Services.Interfaces.indication import *
-from core.dependecies.indication import get_soldier_indication_service, get_organization_indication_service, \
+from core.dependencies.indication import get_soldier_indication_service, get_organization_indication_service, \
     get_indication_service
 from API.schemas.indication import *
 from Services.indication import IndicationTypeNotFoundError, MisdarTypeIdsNotFoundError
@@ -18,11 +18,11 @@ organization_router = APIRouter(prefix="/indications/organization", tags=["Indic
 class IndicationRouter:
     service: IIndicationService = Depends(get_indication_service)
 
-    @indication_router.get("/types", response_model=List[IndicationType])
+    @indication_router.get("/types", response_model=List[IndicationTypeSchema])
     async def get_types(self):
         return await self.service.get_types()
 
-    @indication_router.post("/types", response_model=IndicationType, status_code=status.HTTP_201_CREATED)
+    @indication_router.post("/types", response_model=IndicationTypeSchema, status_code=status.HTTP_201_CREATED)
     async def create_type(self, request: CreateIndicationTypeRequest):
         try:
             return await self.service.create_type(request)
@@ -31,14 +31,14 @@ class IndicationRouter:
         except IndicationTypeNotFoundError:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="indication type not found")
 
-    @indication_router.get("/types/{indication_type_id}", response_model=IndicationType)
+    @indication_router.get("/types/{indication_type_id}", response_model=IndicationTypeSchema)
     async def get_type(self, indication_type_id: int):
         row = await self.service.get_type_by_id(indication_type_id)
         if row is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="indication type not found")
         return row
 
-    @indication_router.put("/types/{indication_type_id}", response_model=IndicationType)
+    @indication_router.put("/types/{indication_type_id}", response_model=IndicationTypeSchema)
     async def update_type(self, indication_type_id: int, request: UpdateIndicationTypeRequest):
         row = await self.service.update_type(indication_type_id, request)
         if row is None:
