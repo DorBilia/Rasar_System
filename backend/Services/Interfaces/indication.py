@@ -5,19 +5,19 @@ from API.schemas.indication import *
 
 class IIndicationService(ABC):
     @abstractmethod
-    async def get_types(self) -> List[IndicationType]:
+    async def get_types(self) -> List[IndicationTypeSchema]:
         pass
 
     @abstractmethod
-    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationType:
+    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationTypeSchema:
         pass
 
     @abstractmethod
-    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationType]:
+    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationTypeSchema]:
         pass
 
     @abstractmethod
-    async def update_type(self, indication_type_id: int, request: UpdateIndicationTypeRequest) -> Optional[IndicationType]:
+    async def update_type(self, indication_type_id: int, request: UpdateIndicationTypeRequest) -> Optional[IndicationTypeSchema]:
         pass
 
     @abstractmethod
@@ -28,7 +28,7 @@ class IIndicationService(ABC):
 class ISoldierIndicationService(ABC):
 
     @abstractmethod
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[SoldierIndicationResponse]:
+    async def get_by_indication_type(self, indication_type: IndicationTypeSchema) -> Sequence[SoldierIndicationResponse]:
         pass
 
     @abstractmethod

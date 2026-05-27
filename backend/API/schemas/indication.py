@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 from core.enums import IndicationDescriptionEnum
 
 
-class IndicationType(BaseModel):
+class IndicationTypeSchema(BaseModel):
     id: int
     indication_description: IndicationDescriptionEnum
     weekly_arrivals: int

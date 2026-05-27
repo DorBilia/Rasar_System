@@ -23,12 +23,12 @@ class IndicationService(IIndicationService):
         self._type_repository = type_repository
         self._misdar_type_repository = misdar_type_repository
 
-    async def get_types(self) -> List[IndicationType]:
+    async def get_types(self) -> List[IndicationTypeSchema]:
         result = await self._type_repository.get_all_with_mappings()
-        response: list[IndicationType] = []
+        response: list[IndicationTypeSchema] = []
         for row in result:
             response.append(
-                IndicationType(
+                IndicationTypeSchema(
                     id=row.id,
                     indication_description=row.indication_description,
                     weekly_arrivals=row.weekly_arrivals,
@@ -36,7 +36,7 @@ class IndicationService(IIndicationService):
             )
         return response
 
-    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationType:
+    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationTypeSchema:
 
         created = await self._type_repository.create_with_misdars(
             indication_description=request.indication_description,
@@ -46,18 +46,18 @@ class IndicationService(IIndicationService):
         if created is None:
             raise MisdarTypeIdsNotFoundError()
 
-        return IndicationType(
+        return IndicationTypeSchema(
             id=created.id,
             indication_description=created.indication_description,
             weekly_arrivals=created.weekly_arrivals,
             misdar_type_ids=[m.misdar_type_id for m in created.indication_mappings],
         )
 
-    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationType]:
+    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationTypeSchema]:
         row = await self._type_repository.get_by_id_with_mappings(indication_type_id)
         if row is None:
             return None
-        return IndicationType(
+        return IndicationTypeSchema(
             id=row.id,
             indication_description=row.indication_description,
             weekly_arrivals=row.weekly_arrivals,
@@ -67,7 +67,7 @@ class IndicationService(IIndicationService):
     async def update_type(
             self,
             indication_type_id: int,
-            request: UpdateIndicationTypeRequest) -> Optional[IndicationType]:
+            request: UpdateIndicationTypeRequest) -> Optional[IndicationTypeSchema]:
 
         updated = await self._type_repository.update_with_misdars(
             indication_type_id,
@@ -77,7 +77,7 @@ class IndicationService(IIndicationService):
         if updated is None:
             return None
 
-        return IndicationType(
+        return IndicationTypeSchema(
             id=updated.id,
             indication_description=updated.indication_description,
             weekly_arrivals=updated.weekly_arrivals,
@@ -110,8 +110,8 @@ class SoldierIndicationService(ISoldierIndicationService):
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[SoldierIndicationResponse]:
-        indications_result = await self._repository.get_by_indication_type(indication_type)
+    async def get_by_indication_type(self, indication_type: IndicationTypeSchema) -> Sequence[SoldierIndicationResponse]:
+        indications_result = await self._repository.get_by_indication_type(indication_type.id)
         return [SoldierIndicationResponse.model_validate(r) for r in indications_result]
 
     async def can_soldier_attend_misdar(self, soldier_id: int, misdar_id: int) -> bool:
