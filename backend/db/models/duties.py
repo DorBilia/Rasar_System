@@ -5,11 +5,10 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String
+from sqlalchemy import Date, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from core.enums import GuardingTypeEnum, TaskAssignedByEnum
 
 __all__ = ["Guarding", "GuardingType", "Task", "TaskType"]
 
@@ -19,9 +18,7 @@ class GuardingType(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
-    guarding_description: Mapped[GuardingTypeEnum] = mapped_column(
-        SAEnum(GuardingTypeEnum, native_enum=False), nullable=False
-    )
+    guarding_description: Mapped[str] = mapped_column(String(255), nullable=False)
     nights_count: Mapped[int] = mapped_column(nullable=False)
 
     guardings: Mapped[List["Guarding"]] = relationship(back_populates="guarding_type_ref")
@@ -57,9 +54,7 @@ class TaskType(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
     task_description: Mapped[str] = mapped_column(String(255), nullable=False)
-    assigned_by: Mapped[TaskAssignedByEnum] = mapped_column(
-        SAEnum(TaskAssignedByEnum, native_enum=False), nullable=False
-    )
+    assigned_by: Mapped[str] = mapped_column(String(255), nullable=False)
 
     tasks: Mapped[List["Task"]] = relationship(back_populates="task_type_ref")
 

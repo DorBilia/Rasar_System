@@ -1,14 +1,12 @@
 import uuid
 from collections import defaultdict
 from calendar import monthrange
-from datetime import date, datetime, time, timedelta
-from typing import Optional, Sequence
+from datetime import datetime, timedelta
+from typing import Sequence
 
 from API.schemas.misdar import *
 
-from Repositories.Interfaces.baseRepo import IBaseRepo
 from core.enums import DayOfWeek, Doh1ValueEnum, ScanNote
-from db.models.misdar import MisdarType as MisdarTypeModel
 from db.models.soldier import Soldier
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo
@@ -104,7 +102,6 @@ class MisdarService(IMisdarService):
             misdar_length=request.misdar_length,
             misdar_days=request.misdar_days,
         )
-        # created is always returned with days via repository method
         assert created is not None
         return MisdarTypeSchema(
             id=created.id,
@@ -145,7 +142,6 @@ class MisdarService(IMisdarService):
             misdar_days=[d.misdar_day for d in updated.misdar_days])
 
     async def delete_type(self, misdar_type_id: int) -> bool:
-        # Any FK violations are expected to surface as IntegrityError in the router.
         return await self._type_repository.delete(misdar_type_id)
 
     async def _record_scan(
@@ -167,7 +163,7 @@ class MisdarService(IMisdarService):
         if await self._repository.exists_for_soldier(soldier_id, misdar_date, misdar_type):
             raise DuplicateMisdarScanError()
 
-        scan_note = await self._resolve_scan_note(soldier, misdar_type, misdar_date)
+        scan_note = await self._resolve_scan_note(soldier, misdar_type)
 
         created = await self._repository.create(
             uuid=str(uuid.uuid4()),
@@ -180,7 +176,7 @@ class MisdarService(IMisdarService):
 
         return ScanResponse(soldier_id=soldier_id, scan_note=scan_note, uuid=created.uuid)
 
-    async def _resolve_scan_note(self, soldier: Soldier, misdar_type: int, misdar_date: date) -> ScanNote:
+    async def _resolve_scan_note(self, soldier: Soldier, misdar_type: int) -> ScanNote:
         if not soldier.is_active:
             return ScanNote.SOLDIER_INACTIVE
 

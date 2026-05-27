@@ -3,18 +3,15 @@ from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
-from core.enums import IndicationDescriptionEnum
-
-
 class IndicationTypeSchema(BaseModel):
     id: int
-    indication_description: IndicationDescriptionEnum
+    indication_description: str
     weekly_arrivals: int
     misdar_type_ids: List[int]
     model_config = ConfigDict(from_attributes=True)
 
 class CreateIndicationTypeRequest(BaseModel):
-    indication_description: IndicationDescriptionEnum
+    indication_description: str
     weekly_arrivals: int
     misdar_type_ids: List[int] = []
 
@@ -22,7 +19,7 @@ class CreateIndicationTypeRequest(BaseModel):
 
 
 class UpdateIndicationTypeRequest(BaseModel):
-    indication_description: Optional[IndicationDescriptionEnum] = None
+    indication_description: Optional[str] = None
     weekly_arrivals: Optional[int] = None
     misdar_type_ids: Optional[List[int]] = None
 
@@ -44,7 +41,7 @@ class SoldierIndicationResponse(SoldierIndicationRequest):
 
 
 class SoldierIndicationWithDescription(SoldierIndicationResponse):
-    indication_description: IndicationDescriptionEnum
+    indication_description: str
 
 
 class OrganizationIndicationMinimal(BaseModel):

@@ -10,7 +10,6 @@ from Repositories.AbstractRepo import AbstractRepo
 from sqlalchemy.ext.asyncio import AsyncSession
 from Repositories.Interfaces.misdar import IMisdarAttendanceRepo, IMisdarTypeRepo
 from core.enums import DayOfWeek
-from enums import MisdarNameEnum
 
 
 class MisdarAttendanceRepository(AbstractRepo[MisdarAttendance], IMisdarAttendanceRepo):
@@ -118,7 +117,7 @@ class MisdarTypeRepository(AbstractRepo[MisdarType], IMisdarTypeRepo):
     async def update_with_days(
             self,
             entity_id: int,
-            misdar_name: Optional[MisdarNameEnum] = None,
+            misdar_name: Optional[str] = None,
             misdar_time: Optional[time] = None,
             misdar_length: Optional[float] = None,
             misdar_days: Optional[list[DayOfWeek]] = None) -> Optional[MisdarType]:

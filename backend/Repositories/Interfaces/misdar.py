@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.misdar import MisdarAttendance, MisdarType, MisdarTypeDays
-from core.enums import DayOfWeek, MisdarNameEnum
+from core.enums import DayOfWeek
 
 
 class IMisdarAttendanceRepo(IBaseRepo[MisdarAttendance]):
@@ -46,7 +46,7 @@ class IMisdarTypeRepo(IBaseRepo[MisdarType]):
     async def create_with_days(
         self,
         *,
-        misdar_name: MisdarNameEnum,
+        misdar_name: str,
         misdar_time: time,
         misdar_length: float,
         misdar_days: list[DayOfWeek],
@@ -57,7 +57,7 @@ class IMisdarTypeRepo(IBaseRepo[MisdarType]):
     async def update_with_days(
         self,
         entity_id: int,
-        misdar_name: Optional[MisdarNameEnum] = None,
+        misdar_name: Optional[str] = None,
         misdar_time: Optional[time] = None,
         misdar_length: Optional[float] = None,
         misdar_days: Optional[list[DayOfWeek]] = None) -> Optional[MisdarType]:

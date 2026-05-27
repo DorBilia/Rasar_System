@@ -9,7 +9,7 @@ from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Time, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from core.enums import MisdarNameEnum, DayOfWeek
+from core.enums import DayOfWeek
 
 __all__ = ["MisdarAttendance", "MisdarType", "MisdarTypeDays"]
 
@@ -18,9 +18,7 @@ class MisdarType(Base):
     __tablename__ = "misdar_types"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    misdar_name: Mapped[MisdarNameEnum] = mapped_column(
-        SAEnum(MisdarNameEnum, native_enum=False), nullable=False
-    )
+    misdar_name: Mapped[str] = mapped_column(String(255), nullable=False)
     misdar_time: Mapped[time] = mapped_column(Time, nullable=False)
     misdar_length: Mapped[float] = mapped_column(Float)
 
