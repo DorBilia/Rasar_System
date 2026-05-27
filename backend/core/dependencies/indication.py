@@ -1,14 +1,12 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from Repositories.indication import SoldierIndicationRepository, IndicationTypeRepository, \
     OrganizationIndicationRepository
 from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.indication import SoldierIndicationService, OrganizationIndicationService, IndicationService
 from Services.Interfaces.indication import ISoldierIndicationService, IOrganizationIndicationService
-
+from .misdar import get_misdar_type_repository
 from db.db import get_db
-from core.dependecies.misdar import get_misdar_type_repository
 
 
 async def get_soldier_indication_repository(db: AsyncSession = Depends(get_db)) -> ISoldierIndicationRepo:

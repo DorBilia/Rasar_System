@@ -7,12 +7,12 @@ from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
 from Repositories.misdar import MisdarAttendanceRepository, MisdarTypeRepository
 from Services.Interfaces.misdar import IMisdarService
 from Services.misdar import MisdarService
-from core.dependecies.indication import get_soldier_indication_repository
-from core.dependecies.soldier import get_doh1_repository, get_soldier_repository
 from db.db import get_db
 from db.models.misdar import MisdarType
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
+from .indication import get_soldier_indication_repository
+from .soldier import get_soldier_repository, get_doh1_repository
 
 
 async def get_misdar_attendance_repository(db: AsyncSession = Depends(get_db)) -> IMisdarAttendanceRepo:
@@ -24,11 +24,11 @@ async def get_misdar_type_repository(db: AsyncSession = Depends(get_db)) -> Misd
 
 
 async def get_misdar_attendance_service(
-    attendance_repository: IMisdarAttendanceRepo = Depends(get_misdar_attendance_repository),
-    type_repository: IBaseRepo[MisdarType] = Depends(get_misdar_type_repository),
-    indication_repository: ISoldierIndicationRepo = Depends(get_soldier_indication_repository),
-    soldier_repository: ISoldierRepo = Depends(get_soldier_repository),
-    doh1_repository: IDoh1Repo = Depends(get_doh1_repository)) -> IMisdarService:
+        attendance_repository: IMisdarAttendanceRepo = Depends(get_misdar_attendance_repository),
+        type_repository: MisdarTypeRepository = Depends(get_misdar_type_repository),
+        indication_repository: ISoldierIndicationRepo = Depends(get_soldier_indication_repository),
+        soldier_repository: ISoldierRepo = Depends(get_soldier_repository),
+        doh1_repository: IDoh1Repo = Depends(get_doh1_repository)) -> IMisdarService:
     return MisdarService(
         attendance_repository,
         type_repository,
