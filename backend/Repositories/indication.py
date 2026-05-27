@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional, Sequence
 
 from sqlalchemy import delete, select
@@ -39,6 +40,7 @@ class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRe
             .where(
                 Indication.soldier_id == soldier_id,
                 IndicationTypeMisdarType.misdar_type_id == misdar_id,
+                Indication.end_date >= date.today()
             )
         )
         result = await self.db.execute(stmt)
