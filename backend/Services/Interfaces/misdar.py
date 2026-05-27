@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Optional, Sequence
 from API.schemas.misdar import *
 
 
@@ -29,7 +29,23 @@ class IMisdarService(ABC):
         pass
 
     @abstractmethod
-    async def get_types(self) -> Sequence[MisdarType]:
+    async def get_types(self) -> Sequence[MisdarTypeSchema]:
+        pass
+
+    @abstractmethod
+    async def create_type(self, request: CreateMisdarTypeRequest) -> MisdarTypeSchema:
+        pass
+
+    @abstractmethod
+    async def get_type_by_id(self, misdar_type_id: int) -> Optional[MisdarTypeSchema]:
+        pass
+
+    @abstractmethod
+    async def update_type(self, misdar_type_id: int, request: UpdateMisdarTypeRequest) -> Optional[MisdarTypeSchema]:
+        pass
+
+    @abstractmethod
+    async def delete_type(self, misdar_type_id: int) -> bool:
         pass
 
     @abstractmethod

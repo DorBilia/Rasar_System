@@ -2,26 +2,17 @@ import uuid
 from collections import defaultdict
 from calendar import monthrange
 from datetime import date, datetime, time, timedelta
-from typing import Sequence
+from typing import Optional, Sequence
 
-from API.schemas.misdar import (
-    AttendanceDay,
-    LateScanRequest,
-    MisdarAttendanceStatus,
-    MisdarDay,
-    MisdarOverviewResponse,
-    MisdarRequest,
-    MisdarType as MisdarTypeSchema,
-    ScanRequest,
-    ScanResponse,
-    SearchMisdarRequest)
+from API.schemas.misdar import *
+
+from Repositories.Interfaces.baseRepo import IBaseRepo
 from core.enums import DayOfWeek, Doh1ValueEnum, ScanNote
 from db.models.misdar import MisdarType as MisdarTypeModel
 from db.models.soldier import Soldier
-from Repositories.Interfaces.baseRepo import IBaseRepo
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.indication import ISoldierIndicationRepo
-from Repositories.Interfaces.misdar import IMisdarAttendanceRepo
+from Repositories.Interfaces.misdar import IMisdarAttendanceRepo, IMisdarTypeRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.misdar import IMisdarService
 
@@ -38,7 +29,7 @@ class MisdarService(IMisdarService):
     def __init__(
             self,
             repository: IMisdarAttendanceRepo,
-            type_repository: IBaseRepo[MisdarTypeModel],
+            type_repository: IMisdarTypeRepo,
             indication_repository: ISoldierIndicationRepo,
             soldier_repository: ISoldierRepo,
             doh1_repository: IDoh1Repo,
@@ -91,8 +82,58 @@ class MisdarService(IMisdarService):
         )
 
     async def get_types(self) -> Sequence[MisdarTypeSchema]:
-        rows = await self._type_repository.get_all()
-        return [MisdarTypeSchema.model_validate(r) for r in rows]
+        rows = await self._type_repository.get_all_with_days()
+        result: list[MisdarTypeSchema] = []
+        for row in rows:
+            result.append(
+                MisdarTypeSchema(
+                    id=row.id,
+                    misdar_name=row.misdar_name,
+                    misdar_time=row.misdar_time,
+                    misdar_length=row.misdar_length,
+                    misdar_days=[d.misdar_day for d in row.misdar_days],
+                )
+            )
+        return result
+
+    async def create_type(self, request: CreateMisdarTypeRequest) -> MisdarTypeSchema:
+        created = await self._type_repository.create_with_days(
+            misdar_name=request.misdar_name,
+            misdar_time=request.misdar_time,
+            misdar_length=request.misdar_length,
+            misdar_days=request.misdar_days,
+        )
+        # created is always returned with days via repository method
+        assert created is not None
+        return MisdarTypeSchema(
+            id=created.id,
+            misdar_name=created.misdar_name,
+            misdar_time=created.misdar_time,
+            misdar_length=created.misdar_length,
+            misdar_days=[d.misdar_day for d in created.misdar_days],
+        )
+
+    async def get_type_by_id(self, misdar_type_id: int) -> Optional[MisdarTypeSchema]:
+        row = await self._type_repository.get_by_id_with_days(misdar_type_id)
+        if row is None:
+            return None
+        return MisdarTypeSchema(
+            id=row.id,
+            misdar_name=row.misdar_name,
+            misdar_time=row.misdar_time,
+            misdar_length=row.misdar_length,
+            misdar_days=[d.misdar_day for d in row.misdar_days],
+        )
+
+    async def update_type(self, misdar_type_id: int, request: UpdateMisdarTypeRequest, ) -> Optional[MisdarTypeSchema]:
+        updated = await self._type_repository.update(misdar_type_id, **request.model_dump())
+        if updated is None:
+            return None
+        return MisdarTypeSchema.model_validate(updated)
+
+    async def delete_type(self, misdar_type_id: int) -> bool:
+        # Any FK violations are expected to surface as IntegrityError in the router.
+        return await self._type_repository.delete(misdar_type_id)
 
     async def _record_scan(
             self,
