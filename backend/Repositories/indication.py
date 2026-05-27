@@ -12,10 +12,10 @@ from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndi
 
 
 class SoldierIndicationRepository(AbstractRepo[Indication], ISoldierIndicationRepo):
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
+    async def get_by_indication_type(self, indication_type: int) -> Sequence[Indication]:
         stmt = (
             select(Indication)
-            .where(Indication.indication_type == indication_type.id))
+            .where(Indication.indication_type == indication_type))
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
@@ -93,7 +93,7 @@ class IndicationTypeRepository(AbstractRepo[IndicationType], IIndicationTypeRepo
     async def update_with_misdars(
             self,
             entity_id: int,
-            indication_description: IndicationDescriptionEnum = None,
+            indication_description: Optional[IndicationDescriptionEnum],
             weekly_arrivals: Optional[int] = None,
             misdar_type_ids: Optional[list[int]] = None) -> Optional[IndicationType]:
         row = await self.get_by_id_with_mappings(entity_id)

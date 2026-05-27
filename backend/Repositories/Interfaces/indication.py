@@ -9,7 +9,7 @@ from core.enums import IndicationDescriptionEnum
 class ISoldierIndicationRepo(IBaseRepo[Indication]):
 
     @abstractmethod
-    async def get_by_indication_type(self, indication_type: IndicationType) -> Sequence[Indication]:
+    async def get_by_indication_type(self, indication_type: int) -> Sequence[Indication]:
         pass
 
     @abstractmethod
@@ -55,7 +55,7 @@ class IIndicationTypeRepo(IBaseRepo[IndicationType]):
             self,
             entity_id: int,
             *,
-            indication_description: Optional[IndicationDescriptionEnum] = None,
+            indication_description: Optional[IndicationDescriptionEnum],
             weekly_arrivals: Optional[int] = None,
             misdar_type_ids: Optional[list[int]] = None,
     ) -> Optional[IndicationType]:
