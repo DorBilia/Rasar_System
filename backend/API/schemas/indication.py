@@ -9,6 +9,23 @@ from core.enums import IndicationDescriptionEnum
 class IndicationType(BaseModel):
     id: int
     indication_description: IndicationDescriptionEnum
+    weekly_arrivals: int
+    misdar_type_ids: List[int]
+    model_config = ConfigDict(from_attributes=True)
+
+class CreateIndicationTypeRequest(BaseModel):
+    indication_description: IndicationDescriptionEnum
+    weekly_arrivals: int
+    misdar_type_ids: List[int] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UpdateIndicationTypeRequest(BaseModel):
+    indication_description: Optional[IndicationDescriptionEnum] = None
+    weekly_arrivals: Optional[int] = None
+    misdar_type_ids: Optional[List[int]] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 
