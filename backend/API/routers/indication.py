@@ -78,6 +78,7 @@ class IndicationSoldierRouter:
 
     @soldier_router.get("/all/{soldier_id}", response_model=List[SoldierIndicationWithDescription])
     async def get_by_soldier_id(self, soldier_id: int):
+        """The frontend will classify every indication as active/historical"""
         result = await self.service.get_all_for_soldier(soldier_id)
         return result
 
