@@ -1,11 +1,27 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence
+from typing import Sequence
 from API.schemas.indication import *
 
 
 class IIndicationService(ABC):
     @abstractmethod
     async def get_types(self) -> List[IndicationType]:
+        pass
+
+    @abstractmethod
+    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationType:
+        pass
+
+    @abstractmethod
+    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationType]:
+        pass
+
+    @abstractmethod
+    async def update_type(self, indication_type_id: int, request: UpdateIndicationTypeRequest) -> Optional[IndicationType]:
+        pass
+
+    @abstractmethod
+    async def delete_type(self, indication_type_id: int) -> bool:
         pass
 
 

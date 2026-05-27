@@ -1,18 +1,90 @@
 import uuid
-from Repositories.Interfaces.baseRepo import IBaseRepo
-from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
+from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.Interfaces.indication import *
 from db.models import Indication
+from Repositories.misdar import MisdarTypeRepository
+
+
+class IndicationTypeNotFoundError(Exception):
+    pass
+
+
+class MisdarTypeIdsNotFoundError(Exception):
+    pass
 
 
 class IndicationService(IIndicationService):
 
-    def __init__(self, type_repository: IBaseRepo[IndicationType]):
-        self.type_repository = type_repository
+    def __init__(
+            self,
+            type_repository: IIndicationTypeRepo,
+            misdar_type_repository: MisdarTypeRepository):
+
+        self._type_repository = type_repository
+        self._misdar_type_repository = misdar_type_repository
 
     async def get_types(self) -> List[IndicationType]:
-        result = await self.type_repository.get_all()
-        return [IndicationType.model_validate(r) for r in result]
+        result = await self._type_repository.get_all_with_mappings()
+        response: list[IndicationType] = []
+        for row in result:
+            response.append(
+                IndicationType(
+                    id=row.id,
+                    indication_description=row.indication_description,
+                    weekly_arrivals=row.weekly_arrivals,
+                    misdar_type_ids=[m.misdar_type_id for m in row.indication_mappings])
+            )
+        return response
+
+    async def create_type(self, request: CreateIndicationTypeRequest) -> IndicationType:
+
+        created = await self._type_repository.create_with_misdars(
+            indication_description=request.indication_description,
+            weekly_arrivals=request.weekly_arrivals,
+            misdar_type_ids=request.misdar_type_ids,
+        )
+        if created is None:
+            raise MisdarTypeIdsNotFoundError()
+
+        return IndicationType(
+            id=created.id,
+            indication_description=created.indication_description,
+            weekly_arrivals=created.weekly_arrivals,
+            misdar_type_ids=[m.misdar_type_id for m in created.indication_mappings],
+        )
+
+    async def get_type_by_id(self, indication_type_id: int) -> Optional[IndicationType]:
+        row = await self._type_repository.get_by_id_with_mappings(indication_type_id)
+        if row is None:
+            return None
+        return IndicationType(
+            id=row.id,
+            indication_description=row.indication_description,
+            weekly_arrivals=row.weekly_arrivals,
+            misdar_type_ids=[m.misdar_type_id for m in row.indication_mappings],
+        )
+
+    async def update_type(
+            self,
+            indication_type_id: int,
+            request: UpdateIndicationTypeRequest) -> Optional[IndicationType]:
+
+        updated = await self._type_repository.update_with_misdars(
+            indication_type_id,
+            indication_description=request.indication_description,
+            weekly_arrivals=request.weekly_arrivals,
+            misdar_type_ids=request.misdar_type_ids)
+        if updated is None:
+            return None
+
+        return IndicationType(
+            id=updated.id,
+            indication_description=updated.indication_description,
+            weekly_arrivals=updated.weekly_arrivals,
+            misdar_type_ids=[m.misdar_type_id for m in updated.indication_mappings])
+
+    async def delete_type(self, indication_type_id: int) -> bool:
+        return await self._type_repository.delete(indication_type_id)
 
 
 class SoldierIndicationService(ISoldierIndicationService):
@@ -147,4 +219,3 @@ class OrganizationIndicationService(IOrganizationIndicationService):
 
     async def delete(self, indication_uuid: str):
         return await self._repository.delete_by_uuid(indication_uuid)
-

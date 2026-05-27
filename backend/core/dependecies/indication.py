@@ -3,18 +3,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from Repositories.indication import SoldierIndicationRepository, IndicationTypeRepository, \
     OrganizationIndicationRepository
-from Repositories.Interfaces.indication import ISoldierIndicationRepo, IOrganizationIndicationRepo
+from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.indication import SoldierIndicationService, OrganizationIndicationService, IndicationService
 from Services.Interfaces.indication import ISoldierIndicationService, IOrganizationIndicationService
 
 from db.db import get_db
+from core.dependecies.misdar import get_misdar_type_repository
 
 
 async def get_soldier_indication_repository(db: AsyncSession = Depends(get_db)) -> ISoldierIndicationRepo:
     return SoldierIndicationRepository(db)
 
 
-async def get_indication_type_repository(db: AsyncSession = Depends(get_db)) -> IndicationTypeRepository:
+async def get_indication_type_repository(db: AsyncSession = Depends(get_db)) -> IIndicationTypeRepo:
     return IndicationTypeRepository(db)
 
 
@@ -24,8 +25,9 @@ async def get_organization_indication_repository(
 
 
 async def get_indication_service(
-        type_repository: IndicationTypeRepository = Depends(get_indication_type_repository)) -> IndicationService:
-    return IndicationService(type_repository)
+        type_repository: IIndicationTypeRepo = Depends(get_indication_type_repository),
+        misdar_type_repository=Depends(get_misdar_type_repository)) -> IndicationService:
+    return IndicationService(type_repository, misdar_type_repository)
 
 
 async def get_soldier_indication_service(
