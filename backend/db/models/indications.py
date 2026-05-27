@@ -32,7 +32,7 @@ class IndicationType(Base):
     )
 
     def __repr__(self) -> str:
-        return f"IndicationType(id={self.id!r})"
+        return f"IndicationTypeSchema(id={self.id!r})"
 
 
 class IndicationTypeMisdarType(Base):
