@@ -4,7 +4,6 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.enums import IndicationDescriptionEnum
 from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
 from db.models.misdar import MisdarType
 from Repositories.AbstractRepo import AbstractRepo
@@ -69,7 +68,7 @@ class IndicationTypeRepository(AbstractRepo[IndicationType], IIndicationTypeRepo
 
     async def create_with_misdars(
             self,
-            indication_description: IndicationDescriptionEnum,
+            indication_description: str,
             weekly_arrivals: int,
             misdar_type_ids: Optional[list[int]]) -> Optional[IndicationType]:
 
@@ -93,7 +92,7 @@ class IndicationTypeRepository(AbstractRepo[IndicationType], IIndicationTypeRepo
     async def update_with_misdars(
             self,
             entity_id: int,
-            indication_description: Optional[IndicationDescriptionEnum],
+            indication_description: Optional[str],
             weekly_arrivals: Optional[int] = None,
             misdar_type_ids: Optional[list[int]] = None) -> Optional[IndicationType]:
         updates = {"indication_description": indication_description,

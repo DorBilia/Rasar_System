@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import List
 
-from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Time, Float
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from core.enums import MisdarNameEnum
 
 __all__ = ["Branch", "Section", "Unit"]
 

@@ -4,11 +4,10 @@ from __future__ import annotations
 from datetime import date
 from typing import Optional
 
-from sqlalchemy import Boolean, Date, Enum as SAEnum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
-from core.enums import BeardStatementTypeEnum
 
 __all__ = ["BeardStatement", "BeardStatementType", "MedicalPtor", "MedicalPtorType"]
 
@@ -55,9 +54,7 @@ class BeardStatementType(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
-    type_name: Mapped[BeardStatementTypeEnum] = mapped_column(
-        SAEnum(BeardStatementTypeEnum, native_enum=False), nullable=False
-    )
+    type_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __repr__(self) -> str:
         return (

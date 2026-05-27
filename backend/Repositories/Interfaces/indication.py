@@ -3,7 +3,6 @@ from db.models.indications import Indication, IndicationType, OrganizationIndica
 from typing import Optional, Sequence, NamedTuple
 from datetime import date
 from abc import abstractmethod
-from core.enums import IndicationDescriptionEnum
 
 
 class ISoldierIndicationRepo(IBaseRepo[Indication]):
@@ -45,7 +44,7 @@ class IIndicationTypeRepo(IBaseRepo[IndicationType]):
     @abstractmethod
     async def create_with_misdars(
             self,
-            indication_description: IndicationDescriptionEnum,
+            indication_description: str,
             weekly_arrivals: int,
             misdar_type_ids: Optional[list[int]]) -> Optional[IndicationType]:
         pass
@@ -55,7 +54,7 @@ class IIndicationTypeRepo(IBaseRepo[IndicationType]):
             self,
             entity_id: int,
             *,
-            indication_description: Optional[IndicationDescriptionEnum],
+            indication_description: Optional[str],
             weekly_arrivals: Optional[int] = None,
             misdar_type_ids: Optional[list[int]] = None,
     ) -> Optional[IndicationType]:

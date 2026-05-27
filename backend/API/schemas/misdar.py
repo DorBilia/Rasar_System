@@ -3,12 +3,12 @@ from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
-from core.enums import MisdarNameEnum, DayOfWeek
+from core.enums import DayOfWeek
 
 
 class MisdarTypeSchema(BaseModel):
     id: int
-    misdar_name: MisdarNameEnum
+    misdar_name: str
     misdar_time: time
     misdar_length: float
     misdar_days: List[DayOfWeek]
@@ -16,7 +16,7 @@ class MisdarTypeSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class CreateMisdarTypeRequest(BaseModel):
-    misdar_name: MisdarNameEnum
+    misdar_name: str
     misdar_time: time
     misdar_length: float
     misdar_days: List[DayOfWeek]
@@ -25,7 +25,7 @@ class CreateMisdarTypeRequest(BaseModel):
 
 
 class UpdateMisdarTypeRequest(BaseModel):
-    misdar_name: Optional[MisdarNameEnum] = None
+    misdar_name: Optional[str] = None
     misdar_time: Optional[time] = None
     misdar_length: Optional[float] = None
     misdar_days: Optional[List[DayOfWeek]] = None

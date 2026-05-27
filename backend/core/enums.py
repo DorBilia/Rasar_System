@@ -48,61 +48,12 @@ class Doh1ValueEnum(str, Enum):
     AFTER_SERVICE = "לאחר תורנות/משמרת"
 
 
-class MisdarNameEnum(str, Enum):
-    MORNING = "בוקר"
-    LATE = "מאחרים"
-    MOKED = "מוקד"
-
-
 class ScanNote(str, Enum):
     SUCCESS = "successful"
     CONFLICT = "conflict with indication"
     SOLDIER_NOT_FOUND = "soldier does not exist"
     SOLDIER_INACTIVE = "soldier inactive"
     DOH1_NOT_PRESENT = "doh1 not present"
-
-
-class IndicationDescriptionEnum(str, Enum):
-    EXEMPT = "פטור"
-    PUNISHMENT = "עונש"
-    MOKED = "מוקד"
-    LATE_ARRIVAL = "מאחרים"
-    HONOR_MONTH = "חודש כבוד"
-    RECRUITMENT = "גיוס"
-
-
-class BirorTypeEnum(str, Enum):
-    DISCIPLINE = "הופעה ולבוש"
-    PERFORMANCE = "אי הגעה למסדרים"
-    BEARD = "אירוע משמעתי"
-
-
-class BirorResultEnum(str, Enum):
-    ACQUITTED = "זכאי"
-    PUNISHMENT_MISDARS = "עונש"
-    CANCEL_BEARD = "ביטול הצהרת זקן"
-    REPRIMAND = "נזיפה"
-    RAMAD_JUDGEMENT = "שיפוט רמ\"ד"
-    RAAN_JUDGEMENT = "שיפוט רע\"ן"
-    EDUCATIONAL_PUNISHMENT = "עונש חינוכי"
-
-
-class BeardStatementTypeEnum(str, Enum):
-    FULL_BEARD = "זקן מלא"
-    FREANCH_BEARD = "זקן צרפתי"
-    MOUSTACHE = "שפם"
-
-
-class GuardingTypeEnum(str, Enum):
-    GUARD = "לילה"
-    STANDBY = "שבת"
-    DUTY = "תורנות"
-
-
-class TaskAssignedByEnum(str, Enum):
-    RASAR = 'רס"ר'
-    MISDARI_TASK = "משימה מדורית"
-    OTHER = "אחר"
 
 
 class RoleNameEnum(str, Enum):
