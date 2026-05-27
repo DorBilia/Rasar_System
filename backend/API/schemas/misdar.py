@@ -6,9 +6,29 @@ from pydantic import BaseModel, ConfigDict
 from core.enums import MisdarNameEnum, DayOfWeek
 
 
-class MisdarType(BaseModel):
+class MisdarTypeSchema(BaseModel):
     id: int
     misdar_name: MisdarNameEnum
+    misdar_time: time
+    misdar_length: float
+    misdar_days: List[DayOfWeek]
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CreateMisdarTypeRequest(BaseModel):
+    misdar_name: MisdarNameEnum
+    misdar_time: time
+    misdar_length: float
+    misdar_days: List[DayOfWeek]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UpdateMisdarTypeRequest(BaseModel):
+    misdar_name: Optional[MisdarNameEnum] = None
+    misdar_time: Optional[time] = None
+    misdar_length: Optional[float] = None
+    misdar_days: Optional[List[DayOfWeek]] = None
 
     model_config = ConfigDict(from_attributes=True)
 
