@@ -13,10 +13,10 @@ class BirorRepository(AbstractRepo[Biror], IBirorRepo):
     def __init__(self, db: AsyncSession):
         super().__init__(db, Biror)
 
-    async def get_by_result(self, biror_result: str) -> Sequence[Biror]:
+    async def get_by_result(self, biror_result: int) -> Sequence[Biror]:
         stmt = (
             select(Biror)
-            .where(BirorResult.biror_result_description == biror_result)
+            .where(Biror.biror_result == biror_result)
             .options(selectinload(Biror.soldier))
         )
 
