@@ -6,6 +6,7 @@ from .biror import (
     get_biror_service,
     get_biror_type_repository,
     get_biror_type_service,
+    get_biror_result_service,
 )
 from .misdar import (
     get_misdar_attendance_repository,
@@ -43,6 +44,7 @@ __all__ = [
     "get_biror_result_repository",
     "get_biror_service",
     "get_biror_type_service",
+    "get_biror_result_service",
     # indication
     "get_soldier_indication_repository",
     "get_indication_type_repository",

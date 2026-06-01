@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from Repositories.biror import BirorRepository, BirorTypeRepository, BirorResultRepository
 from Repositories.Interfaces.biror import IBirorRepo
-from Services.biror import BirorService, BirorTypeService
-from Services.Interfaces.biror import IBirorService, IBirorTypeService
+from Services.biror import BirorResultService, BirorService, BirorTypeService
+from Services.Interfaces.biror import IBirorResultService, IBirorService, IBirorTypeService
 
 from db.db import get_db
 
@@ -23,11 +23,19 @@ async def get_biror_result_repository(db: AsyncSession = Depends(get_db)) -> Bir
 
 async def get_biror_service(
     repository: IBirorRepo = Depends(get_biror_repository),
+    result_repository: BirorResultRepository = Depends(get_biror_result_repository),
 ) -> IBirorService:
-    return BirorService(repository)
+    return BirorService(repository, result_repository)
 
 
 async def get_biror_type_service(
     repository: BirorTypeRepository = Depends(get_biror_type_repository),
 ) -> IBirorTypeService:
     return BirorTypeService(repository)
+
+
+async def get_biror_result_service(
+    repository: BirorResultRepository = Depends(get_biror_result_repository),
+    biror_repository: IBirorRepo = Depends(get_biror_repository),
+) -> IBirorResultService:
+    return BirorResultService(repository, biror_repository)

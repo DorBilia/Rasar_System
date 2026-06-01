@@ -24,6 +24,7 @@ app.include_router(misdar.router, prefix=settings.API_PREFIX)
 
 app.include_router(biror.biror_router, prefix=settings.API_PREFIX)
 app.include_router(biror.biror_type_router, prefix=settings.API_PREFIX)
+app.include_router(biror.biror_result_router, prefix=settings.API_PREFIX)
 
 
 async def main():
