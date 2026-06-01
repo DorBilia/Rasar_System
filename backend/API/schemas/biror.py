@@ -24,9 +24,9 @@ class CreateBirorRequest(BaseModel):
     soldier_id: int
     biror_type: int
     biror_date: date
-    biror_description: str
+    biror_description: Optional[str] = None
     comments: Optional[str] = None
-    biror_result: int
+    biror_result: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
