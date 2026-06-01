@@ -6,5 +6,5 @@ from abc import abstractmethod
 
 class IBirorRepo(IBaseRepo[Biror]):
     @abstractmethod
-    async def get_by_result(self, result: int) -> Sequence[Biror]:
+    async def get_by_type(self, biror_type: int) -> Sequence[Biror]:
         pass
