@@ -20,7 +20,8 @@ app.include_router(indication.organization_router, prefix=settings.API_PREFIX)
 
 app.include_router(auth.router, prefix=settings.API_PREFIX)
 
-app.include_router(misdar.router, prefix=settings.API_PREFIX)
+app.include_router(misdar.misdar_router, prefix=settings.API_PREFIX)
+app.include_router(misdar.misdar_types_router, prefix=settings.API_PREFIX)
 
 app.include_router(biror.biror_router, prefix=settings.API_PREFIX)
 app.include_router(biror.biror_type_router, prefix=settings.API_PREFIX)
