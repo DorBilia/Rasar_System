@@ -1,10 +1,29 @@
+import io
 import uuid
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
+import pandas as pd
+
 from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
     CreateSoldierRequest, Doh1Request
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.soldier import ISoldierService
+from core.utils import ExcelCols,excel_to_doh1
+
+async def _get_status_updates(db_soldiers, incoming_soldiers: List[int]) -> List[dict]:
+    status_updates = []
+    for soldier in db_soldiers:
+        if soldier.is_active:
+            if soldier.id not in incoming_soldiers:
+                status_updates.append({"id": soldier.id, "is_active": False})
+        else:
+            if soldier.id in incoming_soldiers:
+                status_updates.append({"id": soldier.id, "is_active": True})
+    return status_updates
+
+
+
+
 
 
 class SoldierService(ISoldierService):
@@ -64,4 +83,28 @@ class SoldierService(ISoldierService):
             doh1_date=request.doh1_date,
             doh1_value=request.doh1_value)
 
-        return result is not None;
+        return result is not None
+
+    async def handle_doh1_excel(self, file_bytes: bytes) -> bool:
+        buffer = io.BytesIO(file_bytes)
+
+        try:
+            df = pd.read_excel(buffer, engine='openpyxl')
+
+            df_clean = df.replace({pd.NA: None, float('nan'): None})
+            records = df_clean.to_dict(orient="records")
+
+            if not records:
+                raise Exception
+
+            incoming_soldier = [item[ExcelCols.ID] for item in records]
+            existing_soldiers = await self.soldier_repo.get_all()
+
+            updates = await _get_status_updates(existing_soldiers, incoming_soldier)
+
+            soldier_update = await self.soldier_repo.change_soldiers_status(updates)
+            doh1_creation = await self.doh1_repo.create_many(await excel_to_doh1(records))
+
+            return soldier_update
+        finally:
+            buffer.close()

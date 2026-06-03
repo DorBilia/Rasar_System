@@ -30,3 +30,7 @@ class ISoldierService(ABC):
     @abstractmethod
     async def add_doh1_manual(self, request: Doh1Request) -> bool:
         pass
+
+    @abstractmethod
+    async def handle_doh1_excel(self, file_bytes: bytes) -> bool:
+        pass

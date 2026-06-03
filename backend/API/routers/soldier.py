@@ -1,9 +1,8 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, UploadFile
 from fastapi_restful.cbv import cbv
 from typing import Sequence
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.util import await_only
 
 from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
     CreateSoldierRequest, Doh1Request
@@ -62,3 +61,15 @@ class Doh1Router:
         if not await self.service.add_doh1_manual(request):
             raise HTTPException(status_code=404, detail="Soldier not found")
         return None
+
+    @doh1_router.post("/upload-excel", status_code=status.HTTP_201_CREATED)
+    async def upload_excel(self, file: UploadFile):
+        file_bytes = await file.read()
+        try:
+            success = await self.service.handle_doh1_excel(file_bytes)
+            if not success:
+                raise HTTPException(status_code=500, detail="Upload failed")
+
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to parse Excel file: {str(e)}")
+
