@@ -1,8 +1,8 @@
 import uuid
 from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 from Services.Interfaces.indication import *
-from db.models import Indication
 from Repositories.Interfaces.misdar import IMisdarTypeRepo
+from utils import to_Indication_list
 
 
 class IndicationTypeNotFoundError(Exception):
@@ -110,7 +110,8 @@ class SoldierIndicationService(ISoldierIndicationService):
         created = await self._repository.create(**data)
         return SoldierIndicationResponse.model_validate(created)
 
-    async def get_by_indication_type(self, indication_type: IndicationTypeSchema) -> Sequence[SoldierIndicationResponse]:
+    async def get_by_indication_type(self, indication_type: IndicationTypeSchema) -> Sequence[
+        SoldierIndicationResponse]:
         indications_result = await self._repository.get_by_indication_type(indication_type.id)
         return [SoldierIndicationResponse.model_validate(r) for r in indications_result]
 
@@ -142,7 +143,6 @@ class SoldierIndicationService(ISoldierIndicationService):
         return [SoldierIndicationWithDescription.model_validate(i) for i in indications]
 
     async def create_many(self, requests: List[SoldierIndicationRequest]) -> List[SoldierIndicationResponse]:
-        to_add = []
         org_uuid = requests[0].organization_uuid
         org_object = None
 
@@ -151,16 +151,7 @@ class SoldierIndicationService(ISoldierIndicationService):
             if org_object is None:
                 return []
 
-        for request in requests:
-
-            indication = Indication(
-                soldier_id=request.soldier_id, indication_type=request.indication_type, start_date=request.start_date,
-                end_date=request.end_date, uuid=str(uuid.uuid4()))
-
-            if org_object is not None:
-                indication.organization_id = org_object.id
-
-            to_add.append(indication)
+        to_add = await to_Indication_list(requests, org_id=org_object.id)
 
         created = await self._repository.create_many(to_add)
 
@@ -198,6 +189,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         return OrganizationIndicationResponse.model_validate(row).model_copy(
             update={"additional_soldiers": list(soldier_ids)})
 
+    #TODO: find a way to make this operation (creating org. ind. and all of the soldiers ind.) atomic
     async def create(self, request: OrganizationIndicationRequest) -> OrganizationIndicationResponse:
         data = request.model_dump(exclude={"additional_soldiers"})
         data["uuid"] = str(uuid.uuid4())
