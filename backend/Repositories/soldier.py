@@ -1,6 +1,6 @@
 from datetime import date
-from sqlalchemy import select
-from typing import Optional, Sequence
+from sqlalchemy import select, bindparam, update
+from typing import Optional, Sequence, List
 from db.models.soldier import Soldier
 from Repositories.AbstractRepo import AbstractRepo
 from Repositories.Interfaces.soldier import ISoldierRepo
@@ -52,3 +52,13 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
         result = await self.db.execute(query)
         return result.scalars().all()
+
+    async def change_soldiers_status(self, soldiers: List[dict]) -> bool:
+        stmt = (
+            update(Soldier)
+            .where(Soldier.id == bindparam("id"))
+            .values(is_active=bindparam("is_active"))
+        )
+        result = await self.db.execute(stmt, soldiers)
+        await self.db.commit()
+        return result.rowcount > 0

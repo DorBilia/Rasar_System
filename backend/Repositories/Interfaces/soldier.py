@@ -2,7 +2,7 @@ from datetime import date
 
 from Repositories.Interfaces.baseRepo import IBaseRepo
 from db.models.soldier import Soldier
-from typing import Sequence, Optional
+from typing import Sequence, Optional, List
 from abc import abstractmethod
 
 
@@ -21,4 +21,8 @@ class ISoldierRepo(IBaseRepo[Soldier]):
             indication_type: Optional[int] = None,
             search_term: Optional[str] = None,
             limit: int = 50) -> Sequence[Soldier]:
+        pass
+
+    @abstractmethod
+    async def change_soldiers_status(self, soldiers: List[dict]) -> bool:
         pass
