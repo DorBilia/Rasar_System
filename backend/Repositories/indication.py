@@ -6,7 +6,6 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models.indications import Indication, IndicationType, IndicationTypeMisdarType, OrganizationIndication
-from db.models.misdar import MisdarType
 from Repositories.AbstractRepo import AbstractRepo
 from Repositories.Interfaces.indication import IIndicationTypeRepo, ISoldierIndicationRepo, IOrganizationIndicationRepo
 
