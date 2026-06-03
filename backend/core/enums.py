@@ -39,7 +39,7 @@ class ServiceTypeEnum(str, Enum):
 
 
 class Doh1ValueEnum(str, Enum):
-    PRESENT = "נוכח ביחידה"
+    PRESENT = "נמצא ביחידה"
     VACATION = "חופשה שנתית"
     SICK = "חופשת מחלה"
     OUTSIDE_SERVICE = "בתפקיד מחוץ ליחידה"
