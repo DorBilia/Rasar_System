@@ -54,11 +54,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
         return result.scalars().all()
 
     async def change_soldiers_status(self, soldiers: List[dict]) -> bool:
-        stmt = (
-            update(Soldier)
-            .where(Soldier.id == bindparam("id"))
-            .values(is_active=bindparam("is_active"))
-        )
+        stmt = update(Soldier)
         result = await self.db.execute(stmt, soldiers)
         await self.db.commit()
-        return result.rowcount > 0
+        return result is not None

@@ -170,6 +170,7 @@ class OrganizationIndicationService(IOrganizationIndicationService):
         self._repository = repository
         self._soldier_indication_service = soldier_indication_service
 
+    #TODO: figure out whether to show inactive soldiers
     async def get_all(self) -> Sequence[OrganizationIndicationMinimal]:
         org_indications = await self._repository.get_all_with_soldiers()
         result = []

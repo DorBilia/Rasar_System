@@ -8,7 +8,8 @@ from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldi
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.soldier import ISoldierService
-from core.utils import ExcelCols,excel_to_doh1
+from core.utils import ExcelCols, excel_to_doh1
+
 
 async def _get_status_updates(db_soldiers, incoming_soldiers: List[int]) -> List[dict]:
     status_updates = []
@@ -20,10 +21,6 @@ async def _get_status_updates(db_soldiers, incoming_soldiers: List[int]) -> List
             if soldier.id in incoming_soldiers:
                 status_updates.append({"id": soldier.id, "is_active": True})
     return status_updates
-
-
-
-
 
 
 class SoldierService(ISoldierService):
@@ -99,12 +96,12 @@ class SoldierService(ISoldierService):
 
             incoming_soldier = [item[ExcelCols.ID] for item in records]
             existing_soldiers = await self.soldier_repo.get_all()
-
+            doh1_records = await excel_to_doh1(records)
             updates = await _get_status_updates(existing_soldiers, incoming_soldier)
 
             soldier_update = await self.soldier_repo.change_soldiers_status(updates)
-            doh1_creation = await self.doh1_repo.create_many(await excel_to_doh1(records))
+            doh1_creation = await self.doh1_repo.create_many(doh1_records)
 
-            return soldier_update
+            return soldier_update and doh1_creation is not None
         finally:
             buffer.close()
