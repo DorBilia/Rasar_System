@@ -5,6 +5,7 @@ from typing import Optional
 from jwt import PyJWTError
 from starlette.authentication import AuthenticationError
 
+from API.schemas.admin import AdminCreateUserRequest, AdminUpdateUserRequest, AdminUserResponse
 from API.schemas.auth import AuthRequest, TokenResponse, UserResponse, AuthCredentials
 from core.enums import RoleNameEnum
 from core.security import create_access_token, generate_raw_refresh_token, hash_refresh_token, decode_access_token
@@ -71,7 +72,11 @@ class UserService(IUserService):
     async def refresh(self, refresh_token: str) -> TokenResponse:
         h = hash_refresh_token(refresh_token)
         current_token = await self.refresh_repo.get_by_hash(h)
-        if current_token is None or current_token.expires_at < _utcnow():
+        if current_token is None:
+            raise ValueError("invalid_refresh")
+
+        if current_token.expires_at < _utcnow():
+            await self.revoke(refresh_token)
             raise ValueError("invalid_refresh")
 
         await self.refresh_repo.delete_by_hash(h)
@@ -106,3 +111,76 @@ class UserService(IUserService):
             raise AuthenticationError()
 
         return UserResponse.model_validate(user)
+
+    async def verify_admin(self, creds: AuthCredentials) -> bool:
+        user = await self.authenticate_user(creds)
+        return user.role == RoleNameEnum.ADMIN
+
+    async def create_user(self, request: AdminCreateUserRequest) -> AdminUserResponse:
+        existing = await self.user_repo.get_by_email(request.email)
+        if existing is not None:
+            raise ValueError("user_exists")
+
+        await self.user_repo.create(
+            uuid=str(uuid.uuid4()),
+            email=request.email,
+            password_hash=hash_password(request.password),
+            role=request.role,
+            is_active=request.is_active,
+            created_at=date.today(),
+        )
+        created = await self.user_repo.get_by_email(request.email)
+        assert created is not None
+        return AdminUserResponse.model_validate(created)
+
+    async def update_user(
+        self,
+        user_uuid: str,
+        request: AdminUpdateUserRequest,
+        actor_uuid: str,
+    ) -> AdminUserResponse:
+        user = await self.user_repo.get_by_uuid(user_uuid)
+        if user is None:
+            raise ValueError("user_not_found")
+
+        if user_uuid == actor_uuid:
+            if request.role is not None and request.role != user.role:
+                raise ValueError("cannot_change_own_role")
+            if request.is_active is False:
+                raise ValueError("cannot_deactivate_self")
+
+        updates: dict = {}
+        if request.email is not None:
+            if request.email != user.email:
+                existing = await self.user_repo.get_by_email(request.email)
+                if existing is not None:
+                    raise ValueError("user_exists")
+            updates["email"] = request.email
+        if request.password is not None:
+            updates["password_hash"] = hash_password(request.password)
+        if request.role is not None:
+            updates["role"] = request.role
+        if request.is_active is not None:
+            updates["is_active"] = request.is_active
+
+        if not updates:
+            return AdminUserResponse.model_validate(user)
+
+        updated = await self.user_repo.update_by_uuid(user_uuid, **updates)
+        assert updated is not None
+        return AdminUserResponse.model_validate(updated)
+
+    async def delete_user(self, user_uuid: str, actor_uuid: str) -> bool:
+        if user_uuid == actor_uuid:
+            raise ValueError("cannot_delete_self")
+        return await self.user_repo.delete_by_uuid(user_uuid)
+
+    async def get_user_by_email(self, email: str) -> Optional[AdminUserResponse]:
+        user = await self.user_repo.get_by_email(email)
+        if user is None:
+            return None
+        return AdminUserResponse.model_validate(user)
+
+    async def get_users(self) -> list[AdminUserResponse]:
+        users = await self.user_repo.get_all()
+        return [AdminUserResponse.model_validate(user) for user in users]
