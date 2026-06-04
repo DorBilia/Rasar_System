@@ -37,6 +37,8 @@ from .soldier import (
 )
 from .user import get_user_repository, get_user_service
 
+from .auth import require_admin, get_current_user
+
 __all__ = [
     # biror
     "get_biror_repository",
@@ -72,4 +74,7 @@ __all__ = [
     # user
     "get_user_repository",
     "get_user_service",
+    # auth
+    "require_admin",
+    "get_current_user"
 ]

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 from settings import settings
 from db.db import create_tables
-from API.routers import soldier, indication, auth, misdar, biror
+from API.routers import soldier, indication, auth, misdar, biror, admin
 
 app = FastAPI(
     title="Rasar System API",
@@ -19,6 +19,7 @@ app.include_router(indication.soldier_router, prefix=settings.API_PREFIX)
 app.include_router(indication.organization_router, prefix=settings.API_PREFIX)
 
 app.include_router(auth.router, prefix=settings.API_PREFIX)
+app.include_router(admin.router, prefix=settings.API_PREFIX)
 
 app.include_router(misdar.misdar_router, prefix=settings.API_PREFIX)
 app.include_router(misdar.misdar_types_router, prefix=settings.API_PREFIX)
