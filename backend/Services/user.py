@@ -71,7 +71,7 @@ class UserService(IUserService):
     async def refresh(self, refresh_token: str) -> TokenResponse:
         h = hash_refresh_token(refresh_token)
         current_token = await self.refresh_repo.get_by_hash(h)
-        if current_token is None:
+        if current_token is None or current_token.expires_at < _utcnow():
             raise ValueError("invalid_refresh")
 
         await self.refresh_repo.delete_by_hash(h)
