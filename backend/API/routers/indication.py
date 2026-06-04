@@ -68,7 +68,6 @@ class IndicationSoldierRouter:
             raise HTTPException(status_code=500, detail="somthing went wrong")
         return result
 
-    # TODO: change this to search by id (int) or maybe use the uuid method on types
     @soldier_router.get("/{indication_uuid}", response_model=SoldierIndicationResponse)
     async def get_by_indication_uuid(self, indication_uuid: str):
         result = await self.service.get_by_uuid(indication_uuid)
