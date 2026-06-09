@@ -29,7 +29,7 @@ def generate_raw_refresh_token() -> str:
     return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("ascii").rstrip("=")
 
 
-def create_access_token(*, subject: str, role_member_name: str) -> tuple[str, int]:
+def create_access_token(*, subject: str, role_member_name: str) ->str:
     now = datetime.now(timezone.utc)
     exp = now + timedelta(seconds=settings.ACCESS_TOKEN_EXPIRES_SECONDS)
     claims = {
@@ -42,7 +42,7 @@ def create_access_token(*, subject: str, role_member_name: str) -> tuple[str, in
     token = jwt.encode(claims, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     if isinstance(token, bytes):
         token = token.decode("ascii")
-    return token, settings.ACCESS_TOKEN_EXPIRES_SECONDS
+    return token
 
 
 def decode_access_token(token: str) -> dict:

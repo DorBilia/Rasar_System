@@ -52,7 +52,7 @@ class UserService(IUserService):
 
     async def issue_tokens(self, user) -> TokenResponse:
         role_member_name = user.role.name
-        access, expires_in = create_access_token(subject=user.uuid, role_member_name=role_member_name)
+        access = create_access_token(subject=user.uuid, role_member_name=role_member_name)
         raw_refresh = generate_raw_refresh_token()
         h = hash_refresh_token(raw_refresh)
         exp = _utcnow() + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRES_SECONDS)
@@ -63,7 +63,6 @@ class UserService(IUserService):
 
         return TokenResponse(
             accessToken=access,
-            expiresIn=expires_in,
             refreshToken=raw_refresh,
             csrf_token=csrf_token)
 

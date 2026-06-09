@@ -48,14 +48,24 @@ class AuthRouter:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials",
             )
+        signed_csrf = sign_token(tokens.csrf_token)
 
         response.set_cookie(
             key=REFRESH_KEY,
             value=tokens.refreshToken,
             httponly=True,
-            secure=False,  # Change to True in production (for HTTPS)
+            secure=True, 
             samesite="lax",
             max_age=REFRESH_AGE
+        )
+
+        response.set_cookie(
+            key=CSRF_KEY,
+            value=signed_csrf,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=CSRF_AGE
         )
 
         return tokens
