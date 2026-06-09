@@ -1,3 +1,5 @@
+import hmac
+
 from passlib.context import CryptContext
 
 import base64
@@ -10,6 +12,7 @@ from settings import settings
 
 _pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
+SECRET_KEY = settings.CSRF_SECRET
 
 def hash_password(password: str) -> str:
     return _pwd_context.hash(password)
@@ -50,3 +53,24 @@ def decode_access_token(token: str) -> dict:
         options={"require": ["exp", "sub", "roles"]},
         issuer=settings.JWT_ISS,
     )
+
+
+def generate_csrf_token() -> str:
+    return secrets.token_hex(32)
+
+
+def sign_token(token: str) -> str:
+    signature = hmac.new(SECRET_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()
+    return f"{token}.{signature}"
+
+
+def verify_and_extract_signed_token(signed_value: str) -> str | None:
+    if not signed_value or "." not in signed_value:
+        return None
+
+    token, signature = signed_value.split(".", 1)
+    expected_signature = hmac.new(SECRET_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()
+
+    if hmac.compare_digest(signature, expected_signature):
+        return token
+    return None

@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRES_SECONDS: int
     REFRESH_TOKEN_EXPIRES_SECONDS: int
 
+    CSRF_SECRET: str
+    CSRF_TOKEN_EXPIRES_SECONDS: int
+
     @field_validator("ALLOWED_ORIGINS")
     def parse_allowed_origins(cls, v: str) -> List[str]:
         return v.split(",") if v else []
