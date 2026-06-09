@@ -24,6 +24,7 @@ class TokenResponse(BaseModel):
     refreshToken: str
     tokenType: str = "Bearer"
     expiresIn: int
+    csrf_token: str
 
     model_config = ConfigDict(from_attributes=True)
 

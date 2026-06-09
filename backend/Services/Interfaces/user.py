@@ -16,7 +16,7 @@ class IUserService(ABC):
         pass
 
     @abstractmethod
-    async def refresh(self, refresh_token: str) -> TokenResponse:
+    async def refresh(self, refresh_token: str, signed_csrf_token: str) -> TokenResponse:
         pass
 
     @abstractmethod
@@ -41,10 +41,10 @@ class IUserService(ABC):
 
     @abstractmethod
     async def update_user(
-        self,
-        user_uuid: str,
-        request: AdminUpdateUserRequest,
-        actor_uuid: str,
+            self,
+            user_uuid: str,
+            request: AdminUpdateUserRequest,
+            actor_uuid: str,
     ) -> AdminUserResponse:
         pass
 

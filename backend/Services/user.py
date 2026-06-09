@@ -8,7 +8,8 @@ from starlette.authentication import AuthenticationError
 from API.schemas.admin import AdminCreateUserRequest, AdminUpdateUserRequest, AdminUserResponse
 from API.schemas.auth import AuthRequest, TokenResponse, UserResponse, AuthCredentials
 from core.enums import RoleNameEnum
-from core.security import create_access_token, generate_raw_refresh_token, hash_refresh_token, decode_access_token
+from core.security import create_access_token, generate_raw_refresh_token, hash_refresh_token, decode_access_token, \
+    generate_csrf_token, verify_and_extract_signed_token
 from core.security import hash_password, verify_password
 from Repositories.Interfaces.refresh_token import IRefreshTokenRepo
 from Repositories.Interfaces.user import IUserRepo
@@ -49,17 +50,22 @@ class UserService(IUserService):
         assert created is not None
         return UserResponse.model_validate(created)
 
-    async def issue_token_pair(self, user) -> TokenResponse:
+    async def issue_tokens(self, user) -> TokenResponse:
         role_member_name = user.role.name
         access, expires_in = create_access_token(subject=user.uuid, role_member_name=role_member_name)
         raw_refresh = generate_raw_refresh_token()
         h = hash_refresh_token(raw_refresh)
         exp = _utcnow() + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRES_SECONDS)
+
         await self.refresh_repo.create(token_hash=h, user_uuid=user.uuid, expires_at=exp)
+
+        csrf_token = generate_csrf_token()
+
         return TokenResponse(
             accessToken=access,
             expiresIn=expires_in,
-            refreshToken=raw_refresh)
+            refreshToken=raw_refresh,
+            csrf_token=csrf_token)
 
     async def login(self, login: AuthRequest) -> Optional[TokenResponse]:
         user = await self.user_repo.get_by_email(login.email)
@@ -67,12 +73,12 @@ class UserService(IUserService):
             return None
         if not verify_password(login.password, user.password_hash):
             return None
-        return await self.issue_token_pair(user)
+        return await self.issue_tokens(user)
 
-    async def refresh(self, refresh_token: str) -> TokenResponse:
+    async def refresh(self, refresh_token: str, signed_csrf_token: str) -> TokenResponse:
         h = hash_refresh_token(refresh_token)
         current_token = await self.refresh_repo.get_by_hash(h)
-        if current_token is None:
+        if current_token is None or not verify_and_extract_signed_token(signed_csrf_token):
             raise ValueError("invalid_refresh")
         if current_token.expires_at < _utcnow():
             await self.revoke(refresh_token)
@@ -84,7 +90,7 @@ class UserService(IUserService):
         if user is None or not user.is_active:
             raise ValueError("invalid_refresh")
 
-        return await self.issue_token_pair(user)
+        return await self.issue_tokens(user)
 
     async def revoke(self, refresh_token: str) -> None:
         h = hash_refresh_token(refresh_token)
@@ -133,10 +139,10 @@ class UserService(IUserService):
         return AdminUserResponse.model_validate(created)
 
     async def update_user(
-        self,
-        user_uuid: str,
-        request: AdminUpdateUserRequest,
-        actor_uuid: str,
+            self,
+            user_uuid: str,
+            request: AdminUpdateUserRequest,
+            actor_uuid: str,
     ) -> AdminUserResponse:
         user = await self.user_repo.get_by_uuid(user_uuid)
         if user is None:

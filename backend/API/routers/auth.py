@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_restful.cbv import cbv
 from sqlalchemy.exc import IntegrityError
@@ -7,13 +7,17 @@ from starlette.authentication import AuthenticationError
 from API.schemas.auth import *
 from Services.Interfaces.user import IUserService
 from core.dependencies import get_user_service
+from security import sign_token
 from settings import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 security = HTTPBearer(auto_error=False)
 
-COOKIE_KEY = "refresh_token"
-COOKIE_AGE = settings.REFRESH_TOKEN_EXPIRES_SECONDS
+REFRESH_KEY = "refresh_token"
+REFRESH_AGE = settings.REFRESH_TOKEN_EXPIRES_SECONDS
+
+CSRF_KEY = "signed_csrf_token"
+CSRF_AGE = settings.CSRF_TOKEN_EXPIRES_SECONDS
 
 
 @cbv(router)
@@ -46,41 +50,58 @@ class AuthRouter:
             )
 
         response.set_cookie(
-            key=COOKIE_KEY,
+            key=REFRESH_KEY,
             value=tokens.refreshToken,
             httponly=True,
             secure=False,  # Change to True in production (for HTTPS)
             samesite="lax",
-            max_age=COOKIE_AGE
+            max_age=REFRESH_AGE
         )
 
         return tokens
 
     @router.post("/refresh", response_model=TokenResponse)
-    async def refresh(self, response: Response, refresh_token: str | None = Cookie(default=None)):
+    async def refresh(self, response: Response, refresh_token: str | None = Cookie(default=None),
+                      signed_csrf: str | None = Cookie(default=None, alias=CSRF_KEY),  # Read cookie
+                      csrf_token: str | None = Header(default=None)):
+
+        if not signed_csrf or not csrf_token:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF credentials missing")
+
         if not refresh_token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Refresh token missing from cookies")
         try:
-            new_tokens = await self.service.refresh(refresh_token)
+            new_tokens = await self.service.refresh(refresh_token, signed_csrf)
+            new_signed_csrf = sign_token(new_tokens.csrf_token)
 
             response.set_cookie(
-                key=COOKIE_KEY,
+                key=REFRESH_KEY,
                 value=new_tokens.refreshToken,
                 httponly=True,
                 secure=True,
                 samesite="lax",
-                max_age=COOKIE_AGE
+                max_age=REFRESH_AGE
+            )
+
+            response.set_cookie(
+                key=CSRF_KEY,
+                value=new_signed_csrf,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=CSRF_AGE
             )
             return new_tokens
 
         except ValueError as e:
             if str(e) == "invalid_refresh":
-                response.delete_cookie(key=COOKIE_KEY)
+                response.delete_cookie(key=REFRESH_KEY)
+                response.delete_cookie(key=CSRF_KEY)
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid or expired refresh token",
+                    detail="Invalid or expired refresh/csrf token",
                 )
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -89,8 +110,9 @@ class AuthRouter:
         if refresh_token:
             await self.service.revoke(refresh_token)
 
-        response.delete_cookie(key=COOKIE_KEY)
+        response.delete_cookie(key=REFRESH_KEY)
         return {"detail": "Logged out successfully"}
+
     @router.get("/me", response_model=UserResponse)
     async def me(self, creds: HTTPAuthorizationCredentials = Depends(security)):
         try:
