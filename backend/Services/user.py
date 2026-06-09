@@ -17,7 +17,7 @@ from settings import settings
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now()
 
 
 class UserService(IUserService):
@@ -74,7 +74,6 @@ class UserService(IUserService):
         current_token = await self.refresh_repo.get_by_hash(h)
         if current_token is None:
             raise ValueError("invalid_refresh")
-
         if current_token.expires_at < _utcnow():
             await self.revoke(refresh_token)
             raise ValueError("invalid_refresh")
