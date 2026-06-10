@@ -23,9 +23,13 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
             phone_number: Optional[str] = None,
             indication_type: Optional[int] = None,
             search_term: Optional[str] = None,  # could be a name or id
+            next_cursor_id: Optional[int] = None,
             limit: int = 50) -> Sequence[Soldier]:
 
-        query = select(Soldier).where(Soldier.is_active)
+        query = select(Soldier).where(Soldier.is_active).order_by(Soldier.id.asc()).limit(limit)
+
+        if next_cursor_id is not None:
+            query = query.where(Soldier.id > next_cursor_id)
 
         query_map = {unit: Soldier.unit == unit,
                      branch: Soldier.branch == branch,
@@ -47,8 +51,6 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
                 query = query.where(
                     Soldier.first_name.ilike(f"%{search_term}%") |
                     Soldier.last_name.ilike(f"%{search_term}%"))
-
-        query = query.limit(limit)
 
         result = await self.db.execute(query)
         return result.scalars().all()

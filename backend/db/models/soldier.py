@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Boolean
+from sqlalchemy import Date, Enum as SAEnum, ForeignKey, String, Boolean, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
@@ -17,7 +17,7 @@ __all__ = ["Doh1", "Soldier"]
 class Soldier(Base):
     __tablename__ = "soldiers"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
 
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -57,7 +57,9 @@ class Soldier(Base):
     def __repr__(self) -> str:
         return f"Soldier(id={self.id!r})"
 
-
+    __table_args__ = (
+        Index("idx_soldier_id", "id"),
+    )
 class Doh1(Base):
     __tablename__ = "doh1_records"
 

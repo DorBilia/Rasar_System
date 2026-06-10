@@ -20,6 +20,7 @@ class ISoldierRepo(IBaseRepo[Soldier]):
             phone_number: Optional[str] = None,
             indication_type: Optional[int] = None,
             search_term: Optional[str] = None,
+            next_cursor_id: Optional[int] = None,
             limit: int = 50) -> Sequence[Soldier]:
         pass
 
