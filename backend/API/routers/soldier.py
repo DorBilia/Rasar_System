@@ -4,8 +4,7 @@ from typing import Sequence
 
 from sqlalchemy.exc import IntegrityError
 
-from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
-    CreateSoldierRequest, Doh1Request
+from API.schemas.soldier import *
 from Services.Interfaces.soldier import ISoldierService
 
 from core.dependencies.soldier import get_soldier_service
@@ -19,7 +18,7 @@ doh1_router = APIRouter(prefix="/doh1", tags=["Doh1"])
 class SoldierRouter:
     service: ISoldierService = Depends(get_soldier_service)
 
-    @soldiers_router.post("/filter", response_model=Sequence[MinimalSoldier])
+    @soldiers_router.post("/filter", response_model=FilterSoldiersResponse)
     async def get_soldiers(self, request: FilterSoldiersRequest):
         return await self.service.get_all_filtered(request)
 

@@ -47,7 +47,15 @@ class BaseSoldierRequest(BaseModel):
 class FilterSoldiersRequest(BaseSoldierRequest):
     indication_type: Optional[int] = None
     search_term: Optional[str] = None
+    next_cursor_id: Optional[int] = None
     limit: int = 50
+
+
+class FilterSoldiersResponse(BaseModel):
+    soldiers: Optional[List[MinimalSoldier]] = None
+    next_cursor_id: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateSoldierRequest(BaseSoldierRequest):
