@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import select, bindparam, update
+from sqlalchemy import select, bindparam, update, String, cast
 from typing import Optional, Sequence, List
 from db.models.soldier import Soldier
 from Repositories.AbstractRepo import AbstractRepo
@@ -46,7 +46,7 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
 
         if search_term:
             if search_term.isdecimal():
-                query = query.where(Soldier.id.ilike(f"%{search_term}%"))
+                query = query.where(cast(Soldier.id, String).ilike(f"%{search_term}%"))
             else:
                 query = query.where(
                     Soldier.first_name.ilike(f"%{search_term}%") |
