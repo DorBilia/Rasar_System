@@ -3,8 +3,7 @@ import uuid
 from typing import Optional, Sequence, List
 import pandas as pd
 
-from API.schemas.soldier import MinimalSoldier, FilterSoldiersRequest, FullSoldier, UpdateSoldierRequest, \
-    CreateSoldierRequest, Doh1Request
+from API.schemas.soldier import *
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
 from Services.Interfaces.soldier import ISoldierService
@@ -43,7 +42,7 @@ class SoldierService(ISoldierService):
             return None
         return FullSoldier.model_validate(row)
 
-    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> Sequence[MinimalSoldier]:
+    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> FilterSoldiersResponse:
         rows = await self.soldier_repo.get_all_filtered(
             unit=filter_request.unit,
             branch=filter_request.branch,
@@ -54,8 +53,12 @@ class SoldierService(ISoldierService):
             phone_number=filter_request.phone_number,
             indication_type=filter_request.indication_type,
             search_term=filter_request.search_term,
+            next_cursor_id=filter_request.next_cursor_id,
             limit=filter_request.limit)
-        return [MinimalSoldier.model_validate(r) for r in rows]
+
+        next_id = rows[-1].id if rows else None
+        soldiers = [MinimalSoldier.model_validate(r) for r in rows]
+        return FilterSoldiersResponse(soldiers=soldiers, next_cursor_id=next_id)
 
     async def update_soldier(self, soldier_uuid: str, updates: UpdateSoldierRequest) -> Optional[MinimalSoldier]:
         payload = updates.model_dump(exclude_unset=True)

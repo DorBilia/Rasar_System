@@ -15,7 +15,7 @@ class ISoldierService(ABC):
         pass
 
     @abstractmethod
-    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> Sequence[MinimalSoldier]:
+    async def get_all_filtered(self, filter_request: FilterSoldiersRequest) -> FilterSoldiersResponse:
         """Gets all Active Soldiers according to a filter request"""
         pass
 
