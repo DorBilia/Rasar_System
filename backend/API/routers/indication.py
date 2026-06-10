@@ -26,6 +26,12 @@ class IndicationRouter:
     async def create_type(self, request: CreateIndicationTypeRequest):
         try:
             return await self.service.create_type(request)
+        except IntegrityError as e:
+            if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Foreign key violation: The referenced record does not exist or is still in use."
+                )
         except MisdarTypeIdsNotFoundError:
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="One or more misdar types not found")
         except IndicationTypeNotFoundError:
@@ -63,10 +69,18 @@ class IndicationSoldierRouter:
 
     @soldier_router.post("/create", response_model=SoldierIndicationResponse)
     async def create(self, request: SoldierIndicationRequest):
-        result = await self.service.create(request)
-        if result is None:
-            raise HTTPException(status_code=500, detail="somthing went wrong")
-        return result
+        try:
+            result = await self.service.create(request)
+
+            if result is None:
+                raise HTTPException(status_code=500, detail="somthing went wrong")
+            return result
+        except IntegrityError as e:
+            if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Foreign key violation: The referenced record does not exist or is still in use."
+                )
 
     @soldier_router.get("/{indication_uuid}", response_model=SoldierIndicationResponse)
     async def get_by_indication_uuid(self, indication_uuid: str):
@@ -95,10 +109,17 @@ class OrganizationSoldierRouter:
 
     @organization_router.post("/create", response_model=OrganizationIndicationResponse)
     async def create(self, request: OrganizationIndicationRequest):
-        result = await self.service.create(request)
-        if result is None:
-            raise HTTPException(status_code=500, detail="somthing went wrong")
-        return result
+        try:
+            result = await self.service.create(request)
+            if result is None:
+                raise HTTPException(status_code=500, detail="somthing went wrong")
+            return result
+        except IntegrityError as e:
+            if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Foreign key violation: The referenced record does not exist or is still in use."
+                )
 
     @organization_router.get("/", response_model=List[OrganizationIndicationMinimal])
     async def get_all(self):

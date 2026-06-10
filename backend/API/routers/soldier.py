@@ -26,8 +26,14 @@ class SoldierRouter:
     async def create(self, request: CreateSoldierRequest):
         try:
             return await self.service.create(request)
-        except IntegrityError:
-            raise HTTPException(status_code=409, detail="The soldier id you entered already exists")
+        except IntegrityError as e:
+            if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Foreign key violation: The referenced record does not exist or is still in use."
+                )
+            else:
+                raise HTTPException(status_code=409, detail="The soldier id you entered already exists")
 
     @soldiers_router.get("/{soldier_uuid}", response_model=FullSoldier)
     async def get_soldier_by_uuid(self, soldier_uuid: str):
