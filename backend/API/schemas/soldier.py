@@ -12,14 +12,14 @@ class BaseSoldier(BaseModel):
     last_name: str
     rank: RankEnum
     picture: Optional[str] = None
-    branch: int
-    section: int
+    branch: Optional[int] = None
+    section: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class CreateSoldierRequest(BaseSoldier):
-    unit: int
+    unit: Optional[int] = None
     discharge_date: Optional[date] = None
     service_type: Optional[ServiceTypeEnum] = None
     other_allocations: Optional[str] = None

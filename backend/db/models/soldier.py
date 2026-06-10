@@ -30,9 +30,9 @@ class Soldier(Base):
     discharge_date: Mapped[date] = mapped_column(Date, nullable=False)
     service_type: Mapped[ServiceTypeEnum] = mapped_column(SAEnum(ServiceTypeEnum, native_enum=False), nullable=False)
 
-    unit: Mapped[int] = mapped_column(ForeignKey("units.id", ondelete="RESTRICT"), nullable=False)
-    branch: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"), nullable=False)
-    section: Mapped[int] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"), nullable=False)
+    unit: Mapped[Optional[int]] = mapped_column(ForeignKey("units.id", ondelete="RESTRICT"))
+    branch: Mapped[Optional[int]] = mapped_column(ForeignKey("branches.id", ondelete="RESTRICT"))
+    section: Mapped[Optional[int]] = mapped_column(ForeignKey("sections.id", ondelete="RESTRICT"))
 
     other_allocations: Mapped[str] = mapped_column(String(255), nullable=True)
 
