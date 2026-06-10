@@ -36,6 +36,14 @@ from .soldier import (
     get_soldier_service,
 )
 from .user import get_user_repository, get_user_service
+from .organization import (
+    get_branch_repository,
+    get_branch_service,
+    get_section_repository,
+    get_section_service,
+    get_unit_repository,
+    get_unit_service,
+)
 
 from .auth import require_admin, get_current_user
 
@@ -74,6 +82,13 @@ __all__ = [
     # user
     "get_user_repository",
     "get_user_service",
+    # organization
+    "get_unit_repository",
+    "get_branch_repository",
+    "get_section_repository",
+    "get_unit_service",
+    "get_branch_service",
+    "get_section_service",
     # auth
     "require_admin",
     "get_current_user"
