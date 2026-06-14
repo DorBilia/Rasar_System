@@ -58,23 +58,13 @@ class AuthRouter:
             max_age=REFRESH_AGE
         )
 
-        response.set_cookie(
-            key=CSRF_KEY,
-            value=tokens.signed_csrf_token,
-            httponly=True,
-            secure=True,
-            samesite="lax",
-            max_age=CSRF_AGE
-        )
-
         return tokens
 
     @router.post("/refresh", response_model=TokenResponse)
     async def refresh(self, response: Response, refresh_token: str | None = Cookie(default=None),
-                      signed_csrf: str | None = Cookie(default=None, alias=CSRF_KEY),  # Read cookie
-                      csrf_token: str | None = Header(default=None)):
+                      signed_csrf: str | None = Cookie(default=None, alias=CSRF_KEY)):
 
-        if not signed_csrf or not csrf_token:
+        if not signed_csrf:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF credentials missing")
 
         if not refresh_token:
@@ -93,14 +83,6 @@ class AuthRouter:
                 max_age=REFRESH_AGE
             )
 
-            response.set_cookie(
-                key=CSRF_KEY,
-                value=new_tokens.signed_csrf_token,
-                httponly=True,
-                secure=True,
-                samesite="lax",
-                max_age=CSRF_AGE
-            )
             return new_tokens
 
         except ValueError as e:
