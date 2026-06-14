@@ -14,12 +14,14 @@ _pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 SECRET_KEY = settings.CSRF_SECRET
 
+
 def hash_password(password: str) -> str:
     return _pwd_context.hash(password)
 
 
 def verify_password(password: str, stored_hash: str) -> bool:
     return _pwd_context.verify(password, stored_hash)
+
 
 def hash_refresh_token(raw: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -29,7 +31,7 @@ def generate_raw_refresh_token() -> str:
     return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("ascii").rstrip("=")
 
 
-def create_access_token(*, subject: str, role_member_name: str) ->str:
+def create_access_token(*, subject: str, role_member_name: str) -> str:
     now = datetime.now(timezone.utc)
     exp = now + timedelta(seconds=settings.ACCESS_TOKEN_EXPIRES_SECONDS)
     claims = {
@@ -55,21 +57,20 @@ def decode_access_token(token: str) -> dict:
     )
 
 
-def generate_csrf_token() -> str:
-    return secrets.token_hex(32)
-
-
-def sign_token(token: str) -> str:
-    signature = hmac.new(SECRET_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()
+def generate_csrf_token(user_uuid: str) -> str:
+    token = secrets.token_hex(32)
+    signage = SECRET_KEY.encode() + user_uuid
+    signature = hmac.new(signage, token.encode(), hashlib.sha256).hexdigest()
     return f"{token}.{signature}"
 
 
-def verify_and_extract_signed_token(signed_value: str) -> str | None:
+def verify_and_extract_signed_token(signed_value: str, user_uuid: str) -> str | None:
     if not signed_value or "." not in signed_value:
         return None
 
     token, signature = signed_value.split(".", 1)
-    expected_signature = hmac.new(SECRET_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()
+    signage = SECRET_KEY.encode() + user_uuid
+    expected_signature = hmac.new(signage, token.encode(), hashlib.sha256).hexdigest()
 
     if hmac.compare_digest(signature, expected_signature):
         return token

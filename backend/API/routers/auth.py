@@ -48,7 +48,6 @@ class AuthRouter:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials",
             )
-        signed_csrf = sign_token(tokens.csrf_token)
 
         response.set_cookie(
             key=REFRESH_KEY,
@@ -61,7 +60,7 @@ class AuthRouter:
 
         response.set_cookie(
             key=CSRF_KEY,
-            value=signed_csrf,
+            value=tokens.signed_csrf_token,
             httponly=True,
             secure=True,
             samesite="lax",
@@ -84,7 +83,6 @@ class AuthRouter:
                 detail="Refresh token missing from cookies")
         try:
             new_tokens = await self.service.refresh(refresh_token, signed_csrf)
-            new_signed_csrf = sign_token(new_tokens.csrf_token)
 
             response.set_cookie(
                 key=REFRESH_KEY,
@@ -97,7 +95,7 @@ class AuthRouter:
 
             response.set_cookie(
                 key=CSRF_KEY,
-                value=new_signed_csrf,
+                value=new_tokens.signed_csrf_token,
                 httponly=True,
                 secure=True,
                 samesite="lax",

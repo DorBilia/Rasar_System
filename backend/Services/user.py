@@ -50,7 +50,7 @@ class UserService(IUserService):
         assert created is not None
         return UserResponse.model_validate(created)
 
-    async def issue_tokens(self, user) -> TokenResponse:
+    async def _issue_tokens(self, user:UserResponse) -> TokenResponse:
         role_member_name = user.role.name
         access = create_access_token(subject=user.uuid, role_member_name=role_member_name)
         raw_refresh = generate_raw_refresh_token()
@@ -59,12 +59,12 @@ class UserService(IUserService):
 
         await self.refresh_repo.create(token_hash=h, user_uuid=user.uuid, expires_at=exp)
 
-        csrf_token = generate_csrf_token()
+        signed_csrf_token = generate_csrf_token(user.uuid)
 
         return TokenResponse(
             accessToken=access,
             refreshToken=raw_refresh,
-            csrf_token=csrf_token)
+            signed_csrf_token=signed_csrf_token)
 
     async def login(self, login: AuthRequest) -> Optional[TokenResponse]:
         user = await self.user_repo.get_by_email(login.email)
@@ -72,12 +72,12 @@ class UserService(IUserService):
             return None
         if not verify_password(login.password, user.password_hash):
             return None
-        return await self.issue_tokens(user)
+        return await self._issue_tokens(UserResponse.model_validate(user))
 
     async def refresh(self, refresh_token: str, signed_csrf_token: str) -> TokenResponse:
         h = hash_refresh_token(refresh_token)
         current_token = await self.refresh_repo.get_by_hash(h)
-        if current_token is None or not verify_and_extract_signed_token(signed_csrf_token):
+        if current_token is None or not verify_and_extract_signed_token(signed_csrf_token, current_token.user_uuid):
             raise ValueError("invalid_refresh")
         if current_token.expires_at < _utcnow():
             await self.revoke(refresh_token)
@@ -89,7 +89,7 @@ class UserService(IUserService):
         if user is None or not user.is_active:
             raise ValueError("invalid_refresh")
 
-        return await self.issue_tokens(user)
+        return await self._issue_tokens(UserResponse.model_validate(user))
 
     async def revoke(self, refresh_token: str) -> None:
         h = hash_refresh_token(refresh_token)

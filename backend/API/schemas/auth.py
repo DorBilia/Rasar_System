@@ -23,7 +23,7 @@ class TokenResponse(BaseModel):
     accessToken: str
     refreshToken: str
     tokenType: str = "Bearer"
-    csrf_token: str
+    signed_csrf_token: str
 
     model_config = ConfigDict(from_attributes=True)
 

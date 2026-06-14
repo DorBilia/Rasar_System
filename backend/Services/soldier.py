@@ -1,8 +1,6 @@
 import io
 import uuid
-from typing import Optional, Sequence, List
 import pandas as pd
-
 from API.schemas.soldier import *
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
