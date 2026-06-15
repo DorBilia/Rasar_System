@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_restful.cbv import cbv
@@ -7,7 +9,6 @@ from starlette.authentication import AuthenticationError
 from API.schemas.auth import *
 from Services.Interfaces.user import IUserService
 from core.dependencies import get_user_service
-from security import sign_token
 from settings import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -61,8 +62,8 @@ class AuthRouter:
         return tokens
 
     @router.post("/refresh", response_model=TokenResponse)
-    async def refresh(self, response: Response, refresh_token: str | None = Cookie(default=None),
-                      signed_csrf: str | None = Cookie(default=None, alias=CSRF_KEY)):
+    async def refresh(self, response: Response, refresh_token: Annotated[str | None, Cookie()] = None,
+                      signed_csrf: Annotated[str | None, Header()] = None):
 
         if not signed_csrf:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF credentials missing")
@@ -96,7 +97,7 @@ class AuthRouter:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     @router.post("/revoke")
-    async def revoke(self, response: Response, refresh_token: str | None = Cookie(default=None)):  # Read from cookie
+    async def revoke(self, response: Response, refresh_token: Annotated[str | None, Cookie()] = None):
         if refresh_token:
             await self.service.revoke(refresh_token)
 
