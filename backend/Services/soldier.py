@@ -1,26 +1,53 @@
 import io
 import uuid
+from datetime import date
+
 import pandas as pd
+from API.schemas.indication import SoldierIndicationRequest
 from API.schemas.soldier import *
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
+from Services.Interfaces.indication import IIndicationService, ISoldierIndicationService
 from Services.Interfaces.soldier import ISoldierService
+from Services.indication import IndicationTypeNotFoundError
 from core.utils import ExcelCols, excel_to_doh1
 
+DEFAULT_SOLDIER_INDICATION_TYPE_ID = 0
 
 
 class SoldierService(ISoldierService):
     soldier_repo: ISoldierRepo
 
-    def __init__(self, soldier_repo: ISoldierRepo, doh1_repo: IDoh1Repo) -> None:
+    def __init__(
+        self,
+        soldier_repo: ISoldierRepo,
+        doh1_repo: IDoh1Repo,
+        indication_service: IIndicationService,
+        soldier_indication_service: ISoldierIndicationService,
+    ) -> None:
         self.soldier_repo = soldier_repo
         self.doh1_repo = doh1_repo
+        self._indication_service = indication_service
+        self._soldier_indication_service = soldier_indication_service
 
     async def create(self, soldier: CreateSoldierRequest) -> FullSoldier:
+        indication_type = await self._indication_service.get_type_by_id(DEFAULT_SOLDIER_INDICATION_TYPE_ID)
+        if indication_type is None:
+            raise IndicationTypeNotFoundError()
+
         data = soldier.model_dump()
         data.setdefault("is_active", True)
         data["uuid"] = str(uuid.uuid4())
         created = await self.soldier_repo.create(**data)
+
+        indication_request = SoldierIndicationRequest(
+            soldier_id=created.id,
+            indication_type=DEFAULT_SOLDIER_INDICATION_TYPE_ID,
+            start_date=date.today(),
+            end_date=created.discharge_date,
+        )
+        await self._soldier_indication_service.create(indication_request)
+
         return FullSoldier.model_validate(created)
 
     async def get_by_uuid(self, soldier_uuid: str) -> Optional[FullSoldier]:

@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from API.schemas.soldier import *
 from Services.Interfaces.soldier import ISoldierService
+from Services.indication import IndicationTypeNotFoundError
 
 from core.dependencies.soldier import get_soldier_service
 
@@ -26,6 +27,11 @@ class SoldierRouter:
     async def create(self, request: CreateSoldierRequest):
         try:
             return await self.service.create(request)
+        except IndicationTypeNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="indication type not found",
+            )
         except IntegrityError as e:
             if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
                 raise HTTPException(
