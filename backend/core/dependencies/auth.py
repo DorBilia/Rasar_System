@@ -8,6 +8,11 @@ from dependencies import get_user_service
 
 security = HTTPBearer()
 
+__all__ = [
+    "get_current_user",
+    "require_admin",
+]
+
 
 async def get_current_user(user_service: IUserService = Depends(get_user_service),
                            creds: HTTPAuthorizationCredentials = Depends(security)):

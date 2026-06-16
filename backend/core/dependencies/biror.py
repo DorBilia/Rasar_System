@@ -9,6 +9,15 @@ from Services.Interfaces.biror import IBirorResultService, IBirorService, IBiror
 from db.db import get_db
 
 
+__all__ = [
+    "get_biror_repository",
+    "get_biror_type_repository",
+    "get_biror_result_repository",
+    "get_biror_service",
+    "get_biror_type_service",
+    "get_biror_result_service",
+]
+
 async def get_biror_repository(db: AsyncSession = Depends(get_db)) -> IBirorRepo:
     return BirorRepository(db)
 

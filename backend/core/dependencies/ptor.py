@@ -9,6 +9,15 @@ from Services.Interfaces.ptor import IBeardStatementService, IMedicalPtorService
 from db.db import get_db
 
 
+__all__ = [
+    "get_beard_statement_repository",
+    "get_medical_ptor_repository",
+    "get_beard_statement_type_repository",
+    "get_beard_statement_service",
+    "get_medical_ptor_service",
+    "get_medical_ptor_type_repository",
+]
+
 async def get_beard_statement_repository(db: AsyncSession = Depends(get_db)) -> IBeardStatementRepo:
     return BeardStatementRepo(db)
 

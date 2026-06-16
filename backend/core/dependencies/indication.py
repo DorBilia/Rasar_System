@@ -9,6 +9,15 @@ from Services.Interfaces.indication import ISoldierIndicationService, IOrganizat
 from db.db import get_db
 
 
+__all__ = [
+    "get_soldier_indication_repository",
+    "get_indication_type_repository",
+    "get_organization_indication_repository",
+    "get_indication_service",
+    "get_soldier_indication_service",
+    "get_organization_indication_service",
+]
+
 async def get_soldier_indication_repository(db: AsyncSession = Depends(get_db)) -> ISoldierIndicationRepo:
     return SoldierIndicationRepository(db)
 

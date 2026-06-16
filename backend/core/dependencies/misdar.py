@@ -9,8 +9,13 @@ from Services.misdar import MisdarService
 from db.db import get_db
 from Repositories.Interfaces.doh1 import IDoh1Repo
 from Repositories.Interfaces.soldier import ISoldierRepo
-from .soldier import get_soldier_repository, get_doh1_repository
 
+
+__all__ = [
+    "get_misdar_attendance_repository",
+    "get_misdar_type_repository",
+    "get_misdar_attendance_service",
+]
 
 async def get_misdar_attendance_repository(db: AsyncSession = Depends(get_db)) -> IMisdarAttendanceRepo:
     return MisdarAttendanceRepository(db)
@@ -20,6 +25,7 @@ async def get_misdar_type_repository(db: AsyncSession = Depends(get_db)) -> IMis
     return MisdarTypeRepository(db)
 
 from .indication import get_soldier_indication_repository
+from .soldier import get_soldier_repository, get_doh1_repository
 
 async def get_misdar_attendance_service(
         attendance_repository: IMisdarAttendanceRepo = Depends(get_misdar_attendance_repository),

@@ -6,5 +6,9 @@ from Repositories.refresh_token import RefreshTokenRepository
 from db.db import get_db
 
 
+__all__ = [
+    "get_refresh_token_repository",
+]
+
 async def get_refresh_token_repository(db: AsyncSession = Depends(get_db)) -> IRefreshTokenRepo:
     return RefreshTokenRepository(db)

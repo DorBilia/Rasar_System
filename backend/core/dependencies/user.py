@@ -10,6 +10,11 @@ from Repositories.Interfaces.refresh_token import IRefreshTokenRepo
 from db.db import get_db
 from .refresh_token import get_refresh_token_repository
 
+__all__ = [
+    "get_user_repository",
+    "get_user_service",
+]
+
 async def get_user_repository(db: AsyncSession = Depends(get_db)) -> IUserRepo:
     return UserRepository(db)
 
