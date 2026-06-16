@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import select, bindparam, update, String, cast
+from sqlalchemy import select, bindparam, update, String, cast, or_, and_, case
 from typing import Optional, Sequence, List
 from db.models.soldier import Soldier
 from Repositories.AbstractRepo import AbstractRepo
@@ -55,8 +55,26 @@ class SoldierRepository(AbstractRepo[Soldier], ISoldierRepo):
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def change_soldiers_status(self, soldiers: List[dict]) -> bool:
-        stmt = update(Soldier)
-        result = await self.db.execute(stmt, soldiers)
+    async def change_soldiers_status(self, soldiers: List[int]) -> bool:
+        is_in_list = Soldier.id.in_(soldiers)
+        not_in_list = Soldier.id.notin_(soldiers)
+
+
+        new_active_state = case(
+            (is_in_list, True),
+            else_=False
+        )
+
+        needs_update_to_true = and_(is_in_list, Soldier.is_active == False)
+        needs_update_to_false = and_(not_in_list, Soldier.is_active == True)
+
+        stmt = (
+            update(Soldier)
+            .where(or_(needs_update_to_true, needs_update_to_false))
+            .values(is_active=new_active_state)
+        )
+
+        result = await self.db.execute(stmt)
         await self.db.commit()
+
         return result is not None

@@ -25,5 +25,5 @@ class ISoldierRepo(IBaseRepo[Soldier]):
         pass
 
     @abstractmethod
-    async def change_soldiers_status(self, soldiers: List[dict]) -> bool:
+    async def change_soldiers_status(self, soldiers: List[int]) -> bool:
         pass

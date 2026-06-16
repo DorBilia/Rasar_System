@@ -8,17 +8,6 @@ from Services.Interfaces.soldier import ISoldierService
 from core.utils import ExcelCols, excel_to_doh1
 
 
-async def _get_status_updates(db_soldiers, incoming_soldiers: List[int]) -> List[dict]:
-    status_updates = []
-    for soldier in db_soldiers:
-        if soldier.is_active:
-            if soldier.id not in incoming_soldiers:
-                status_updates.append({"id": soldier.id, "is_active": False})
-        else:
-            if soldier.id in incoming_soldiers:
-                status_updates.append({"id": soldier.id, "is_active": True})
-    return status_updates
-
 
 class SoldierService(ISoldierService):
     soldier_repo: ISoldierRepo
@@ -95,12 +84,10 @@ class SoldierService(ISoldierService):
             if not records:
                 raise Exception
 
-            incoming_soldier = [item[ExcelCols.ID] for item in records]
-            existing_soldiers = await self.soldier_repo.get_all()
+            incoming_soldiers = [item[ExcelCols.ID] for item in records]
             doh1_records = await excel_to_doh1(records)
-            updates = await _get_status_updates(existing_soldiers, incoming_soldier)
 
-            soldier_update = await self.soldier_repo.change_soldiers_status(updates)
+            soldier_update = await self.soldier_repo.change_soldiers_status(incoming_soldiers)
             doh1_creation = await self.doh1_repo.create_many(doh1_records)
 
             return soldier_update and doh1_creation is not None

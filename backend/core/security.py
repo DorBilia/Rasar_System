@@ -59,7 +59,7 @@ def decode_access_token(token: str) -> dict:
 
 def generate_csrf_token(user_uuid: str) -> str:
     token = secrets.token_hex(32)
-    signage = SECRET_KEY.encode() + user_uuid
+    signage = (SECRET_KEY+ user_uuid).encode()
     signature = hmac.new(signage, token.encode(), hashlib.sha256).hexdigest()
     return f"{token}.{signature}"
 
@@ -69,7 +69,7 @@ def verify_and_extract_signed_token(signed_value: str, user_uuid: str) -> str | 
         return None
 
     token, signature = signed_value.split(".", 1)
-    signage = SECRET_KEY.encode() + user_uuid
+    signage = (SECRET_KEY+ user_uuid).encode()
     expected_signature = hmac.new(signage, token.encode(), hashlib.sha256).hexdigest()
 
     if hmac.compare_digest(signature, expected_signature):
