@@ -224,7 +224,15 @@ class MisdarService(IMisdarService):
             doh1 = doh1_by_date.get(current_date)
 
             # Check whether the soldier is present
-            if doh1 is None or doh1.doh1_value != Doh1ValueEnum.PRESENT:
+            if doh1 is None:
+                result.append(
+                    AttendanceDay(
+                        date=current_date,
+                        base_status="no record",
+                        misdar_statuses=None))
+                continue
+                
+            elif doh1.doh1_value != Doh1ValueEnum.PRESENT:
                 result.append(
                     AttendanceDay(
                         date=current_date,
@@ -233,7 +241,7 @@ class MisdarService(IMisdarService):
                 continue
 
             misdar_statuses: list[MisdarAttendanceStatus] = []
-            weekday = DayOfWeek(current_date.isoweekday())
+            weekday = DayOfWeek((current_date.isoweekday() + 1) % 7) # modified so that sunday is 1
 
             # Check for every misdar on the specific day if the soldier can attend it and if so, check if he attended
             for misdar_type in misdar_types_by_weekday.get(weekday, []):
