@@ -92,7 +92,6 @@ class SoldierService(ISoldierService):
     async def add_doh1_manual(self, request: Doh1Request) -> bool:
 
         result = await self.doh1_repo.create(
-            uuid=str(uuid.uuid4()),
             soldier_id=request.soldier_id,
             doh1_date=request.doh1_date,
             doh1_value=request.doh1_value)
