@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, UploadFile
 from fastapi_restful.cbv import cbv
-from typing import Sequence
+from core.utils import enforce_size_limit
 
 from sqlalchemy.exc import IntegrityError
 
@@ -75,6 +75,9 @@ class Doh1Router:
 
     @doh1_router.post("/upload-excel", status_code=status.HTTP_201_CREATED)
     async def upload_excel(self, file: UploadFile):
+        if not await enforce_size_limit(file):
+            raise HTTPException(status_code=400, detail=f"File too large")
+
         file_bytes = await file.read()
         try:
             success = await self.service.handle_doh1_excel(file_bytes)

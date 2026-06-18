@@ -1,7 +1,6 @@
 import io
 import uuid
-from datetime import date
-
+import magic
 import pandas as pd
 from API.schemas.indication import SoldierIndicationRequest
 from API.schemas.soldier import *
@@ -13,17 +12,27 @@ from Services.indication import IndicationTypeNotFoundError
 from core.utils import ExcelCols, excel_to_doh1
 
 DEFAULT_SOLDIER_INDICATION_TYPE_ID = 0
+ALLOWED_EXCEL_MIMES = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx
+    "application/vnd.ms-excel"  # .xls
+]
+
+
+async def _verify_excel_file_type(header: bytes):
+    mime_type = magic.from_buffer(header, mime=True)
+
+    return mime_type in ALLOWED_EXCEL_MIMES
 
 
 class SoldierService(ISoldierService):
     soldier_repo: ISoldierRepo
 
     def __init__(
-        self,
-        soldier_repo: ISoldierRepo,
-        doh1_repo: IDoh1Repo,
-        indication_service: IIndicationService,
-        soldier_indication_service: ISoldierIndicationService,
+            self,
+            soldier_repo: ISoldierRepo,
+            doh1_repo: IDoh1Repo,
+            indication_service: IIndicationService,
+            soldier_indication_service: ISoldierIndicationService,
     ) -> None:
         self.soldier_repo = soldier_repo
         self.doh1_repo = doh1_repo
@@ -99,8 +108,12 @@ class SoldierService(ISoldierService):
         return result is not None
 
     async def handle_doh1_excel(self, file_bytes: bytes) -> bool:
-        buffer = io.BytesIO(file_bytes)
+        header = file_bytes[:2048]
 
+        if not await _verify_excel_file_type(header):
+            raise Exception("Invalid file type. Only Excel files are allowed")
+
+        buffer = io.BytesIO(file_bytes)
         try:
             df = pd.read_excel(buffer, engine='openpyxl')
 

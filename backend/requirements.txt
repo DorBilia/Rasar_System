@@ -16,3 +16,5 @@ python-multipart
 pandas
 openpyxl
 asyncpg
+python-magic
+defusedxml

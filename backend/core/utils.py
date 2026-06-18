@@ -1,9 +1,12 @@
 import uuid
 from typing import List, Optional
 
+from fastapi import UploadFile
+
 from API.schemas.indication import SoldierIndicationRequest
 from db.models import Doh1, Indication
 
+MAX_FILE_SIZE = 1024 * 1024 * 10 # 10Mb
 
 class ExcelCols:
     ID = "מס. אישי"
@@ -33,3 +36,12 @@ async def to_Indication_list(requests: List[SoldierIndicationRequest], org_id: O
         result.append(indication)
 
     return result
+
+async def enforce_size_limit(file: UploadFile):
+    file_size = 0
+    # Read in 8KB chunks
+    for chunk in file.file:
+        file_size += len(chunk)
+        if file_size > MAX_FILE_SIZE:
+            return False
+    return True
