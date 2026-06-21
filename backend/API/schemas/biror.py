@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
+# Biror Types
 class CreateBirorTypeRequest(BaseModel):
     biror_type_description: str
 
@@ -20,6 +21,7 @@ class UpdateBirorTypeRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# Biror
 class CreateBirorRequest(BaseModel):
     soldier_id: int
     biror_type: int
@@ -33,26 +35,6 @@ class CreateBirorRequest(BaseModel):
 
 class BirorSchema(CreateBirorRequest):
     uuid: str
-
-
-class CreateBirorResultRequest(BaseModel):
-    biror_uuid: str
-    biror_result_description: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class BirorResultSchema(BaseModel):
-    uuid: str
-    biror_result_description: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UpdateBirorResultRequest(BaseModel):
-    biror_result_description: Optional[str] = None
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class UpdateBirorRequest(BaseModel):

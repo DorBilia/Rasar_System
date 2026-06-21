@@ -1,14 +1,7 @@
 from abc import ABC, abstractmethod
-from API.schemas.biror import *
 from typing import List, Optional, Sequence
 
-
-class BirorResultNotFoundError(Exception):
-    pass
-
-
-class BirorNotFoundError(Exception):
-    pass
+from API.schemas.biror import *
 
 
 class IBirorService(ABC):
@@ -56,26 +49,4 @@ class IBirorTypeService(ABC):
 
     @abstractmethod
     async def delete(self, biror_type_id: int) -> bool:
-        pass
-
-
-class IBirorResultService(ABC):
-    @abstractmethod
-    async def get_all(self) -> List[BirorResultSchema]:
-        pass
-
-    @abstractmethod
-    async def get_by_uuid(self, biror_result_uuid: str) -> Optional[BirorResultSchema]:
-        pass
-
-    @abstractmethod
-    async def create(self, request: CreateBirorResultRequest) -> BirorResultSchema:
-        pass
-
-    @abstractmethod
-    async def update(self, biror_result_uuid: str, request: UpdateBirorResultRequest) -> Optional[BirorResultSchema]:
-        pass
-
-    @abstractmethod
-    async def delete(self, biror_result_uuid: str) -> bool:
         pass

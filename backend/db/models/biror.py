@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.db import Base
 
-__all__ = ["Biror", "BirorResult", "BirorType"]
+__all__ = ["Biror", "BirorType"]
 
 
 class BirorType(Base):
@@ -26,19 +26,6 @@ class BirorType(Base):
         return f"BirorType(id={self.id!r})"
 
 
-class BirorResult(Base):
-    __tablename__ = "biror_results"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
-    biror_result_description: Mapped[str] = mapped_column(String(255), nullable=False)
-
-    birors: Mapped[List["Biror"]] = relationship(back_populates="biror_result_ref")
-
-    def __repr__(self) -> str:
-        return f"BirorResult(id={self.id!r})"
-
-
 class Biror(Base):
     __tablename__ = "birors"
 
@@ -52,13 +39,12 @@ class Biror(Base):
         ForeignKey("biror_types.id", ondelete="RESTRICT"), nullable=False
     )
     biror_date: Mapped[date] = mapped_column(Date, nullable=False)
-    biror_description: Mapped[str] = mapped_column(Text)
-    comments: Mapped[Optional[str]] = mapped_column(Text)
-    biror_result: Mapped[int] = mapped_column(ForeignKey("biror_results.id", ondelete="RESTRICT"), nullable=True)
+    biror_description: Mapped[str] = mapped_column(Text, nullable=True)
+    comments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    biror_result: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     soldier: Mapped["Soldier"] = relationship(back_populates="birors")
     biror_type_ref: Mapped["BirorType"] = relationship(back_populates="birors")
-    biror_result_ref: Mapped["BirorResult"] = relationship(back_populates="birors")
 
     def __repr__(self) -> str:
         return f"Biror(id={self.id!r})"

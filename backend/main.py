@@ -26,7 +26,6 @@ app.include_router(misdar.misdar_types_router, prefix=settings.API_PREFIX)
 
 app.include_router(biror.biror_router, prefix=settings.API_PREFIX)
 app.include_router(biror.biror_type_router, prefix=settings.API_PREFIX)
-app.include_router(biror.biror_result_router, prefix=settings.API_PREFIX)
 
 app.include_router(organization.units_router, prefix=settings.API_PREFIX)
 app.include_router(organization.branches_router, prefix=settings.API_PREFIX)

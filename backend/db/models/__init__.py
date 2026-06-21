@@ -1,4 +1,4 @@
-from .biror import Biror, BirorResult, BirorType
+from .biror import Biror, BirorType
 from .duties import Guarding, Task
 from .ptor import BeardStatement, MedicalPtor
 from .indications import Indication, IndicationType, IndicationTypeMisdarType

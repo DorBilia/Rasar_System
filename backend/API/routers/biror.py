@@ -6,22 +6,11 @@ from sqlalchemy.exc import IntegrityError
 from starlette import status
 
 from API.schemas.biror import *
-from Services.Interfaces.biror import (
-    BirorNotFoundError,
-    BirorResultNotFoundError,
-    IBirorResultService,
-    IBirorService,
-    IBirorTypeService,
-)
-from core.dependencies.biror import (
-    get_biror_result_service,
-    get_biror_service,
-    get_biror_type_service,
-)
+from Services.Interfaces.biror import IBirorService, IBirorTypeService
+from core.dependencies.biror import get_biror_service, get_biror_type_service
 
 biror_router = APIRouter(prefix="/birors", tags=["Biror"])
 biror_type_router = APIRouter(prefix="/biror/types", tags=["BirorTypes"])
-biror_result_router = APIRouter(prefix="/biror/results", tags=["BirorResults"])
 
 
 @cbv(biror_type_router)
@@ -64,62 +53,17 @@ class BirorTypeRouter:
         return None
 
 
-@cbv(biror_result_router)
-class BirorResultRouter:
-    service: IBirorResultService = Depends(get_biror_result_service)
-
-    @biror_result_router.post("/", response_model=BirorResultSchema, status_code=status.HTTP_201_CREATED)
-    async def create(self, request: CreateBirorResultRequest):
-        try:
-            return await self.service.create(request)
-        except BirorNotFoundError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror not found")
-
-    @biror_result_router.get("/{biror_result_uuid}", response_model=BirorResultSchema)
-    async def get_by_uuid(self, biror_result_uuid: str):
-        row = await self.service.get_by_uuid(biror_result_uuid)
-        if row is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
-        return row
-
-    @biror_result_router.put("/{biror_result_uuid}", response_model=BirorResultSchema)
-    async def update(self, biror_result_uuid: str, request: UpdateBirorResultRequest):
-        row = await self.service.update(biror_result_uuid, request)
-        if row is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
-        return row
-
-    @biror_result_router.delete("/{biror_result_uuid}", status_code=status.HTTP_204_NO_CONTENT)
-    async def delete(self, biror_result_uuid: str):
-        try:
-            success = await self.service.delete(biror_result_uuid)
-        except IntegrityError:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="biror result is referenced and cannot be deleted",
-            )
-        if not success:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
-        return None
-
-
 @cbv(biror_router)
 class BirorRouter:
     service: IBirorService = Depends(get_biror_service)
 
     @biror_router.post("/create", response_model=BirorSchema, status_code=status.HTTP_201_CREATED)
     async def create(self, request: CreateBirorRequest):
-        try:
-            return await self.service.create(request)
-        except BirorResultNotFoundError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
+        return await self.service.create(request)
 
-    @biror_router.get("/result/{biror_type}", response_model=Sequence[BirorSchema])
+    @biror_router.get("/type/{biror_type}", response_model=Sequence[BirorSchema])
     async def get_by_biror_type(self, biror_type: int):
-        try:
-            return await self.service.get_by_biror_type(biror_type)
-        except BirorResultNotFoundError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
+        return await self.service.get_by_biror_type(biror_type)
 
     @biror_router.get("/soldier/{soldier_id}", response_model=Sequence[BirorSchema])
     async def get_for_soldier(self, soldier_id: int):
@@ -134,10 +78,7 @@ class BirorRouter:
 
     @biror_router.put("/{biror_uuid}", response_model=BirorSchema)
     async def update(self, biror_uuid: str, request: UpdateBirorRequest):
-        try:
-            row = await self.service.update(biror_uuid, request)
-        except BirorResultNotFoundError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror result not found")
+        row = await self.service.update(biror_uuid, request)
         if row is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="biror not found")
         return row
