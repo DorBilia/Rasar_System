@@ -14,7 +14,6 @@ soldiers_router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 doh1_router = APIRouter(prefix="/doh1", tags=["Doh1"])
 
 
-# TODO: decide whether to search by soldier uuid or soldier id
 @cbv(soldiers_router)
 class SoldierRouter:
     service: ISoldierService = Depends(get_soldier_service)
@@ -41,23 +40,23 @@ class SoldierRouter:
             else:
                 raise HTTPException(status_code=409, detail="The soldier id you entered already exists")
 
-    @soldiers_router.get("/{soldier_uuid}", response_model=FullSoldier)
-    async def get_soldier_by_uuid(self, soldier_uuid: str):
-        soldier = await self.service.get_by_uuid(soldier_uuid)
+    @soldiers_router.get("/{soldier_id}", response_model=FullSoldier)
+    async def get_soldier_by_id(self, soldier_id: int):
+        soldier = await self.service.get_by_id(soldier_id)
         if not soldier:
             raise HTTPException(status_code=404, detail="Soldier not found")
         return soldier
 
-    @soldiers_router.put("/{soldier_uuid}", response_model=MinimalSoldier)
-    async def update_soldier_indication(self, soldier_uuid: str, update_data: UpdateSoldierRequest) -> MinimalSoldier:
-        updated_soldier = await self.service.update_soldier(soldier_uuid, update_data)
+    @soldiers_router.put("/{soldier_id}", response_model=MinimalSoldier)
+    async def update_soldier(self, soldier_id: int, update_data: UpdateSoldierRequest) -> MinimalSoldier:
+        updated_soldier = await self.service.update_soldier(soldier_id, update_data)
         if not updated_soldier:
             raise HTTPException(status_code=404, detail="Update failed")
         return updated_soldier
 
-    @soldiers_router.delete("/{soldier_uuid}", status_code=status.HTTP_204_NO_CONTENT)
-    async def delete_soldier(self, soldier_uuid: str):
-        success = await self.service.delete_soldier(soldier_uuid)
+    @soldiers_router.delete("/{soldier_id}", status_code=status.HTTP_204_NO_CONTENT)
+    async def delete_soldier(self, soldier_id: int):
+        success = await self.service.delete_soldier(soldier_id)
         if not success:
             raise HTTPException(status_code=404, detail="Soldier not found")
         return None

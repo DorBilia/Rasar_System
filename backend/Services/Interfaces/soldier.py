@@ -11,7 +11,7 @@ class ISoldierService(ABC):
         pass
 
     @abstractmethod
-    async def get_by_uuid(self, soldier_uuid: str) -> Optional[FullSoldier]:
+    async def get_by_id(self, soldier_id: int) -> Optional[FullSoldier]:
         pass
 
     @abstractmethod
@@ -20,11 +20,11 @@ class ISoldierService(ABC):
         pass
 
     @abstractmethod
-    async def update_soldier(self, soldier_uuid: str, updates: UpdateSoldierRequest) -> Optional[MinimalSoldier]:
+    async def update_soldier(self, soldier_id: int, updates: UpdateSoldierRequest) -> Optional[MinimalSoldier]:
         pass
 
     @abstractmethod
-    async def delete_soldier(self, soldier_uuid: str) -> bool:
+    async def delete_soldier(self, soldier_id: int) -> bool:
         pass
 
     @abstractmethod

@@ -18,7 +18,6 @@ class Soldier(Base):
     __tablename__ = "soldiers"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
 
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
     last_name: Mapped[str] = mapped_column(String(255), nullable=False)

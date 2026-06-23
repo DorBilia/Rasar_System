@@ -59,8 +59,8 @@ class SoldierService(ISoldierService):
 
         return FullSoldier.model_validate(created)
 
-    async def get_by_uuid(self, soldier_uuid: str) -> Optional[FullSoldier]:
-        row = await self.soldier_repo.get_by_uuid(soldier_uuid)
+    async def get_by_id(self, soldier_id: int) -> Optional[FullSoldier]:
+        row = await self.soldier_repo.get_by_id(soldier_id)
         if row is None:
             return None
         return FullSoldier.model_validate(row)
@@ -83,20 +83,20 @@ class SoldierService(ISoldierService):
         soldiers = [MinimalSoldier.model_validate(r) for r in rows]
         return FilterSoldiersResponse(soldiers=soldiers, next_cursor_id=next_id)
 
-    async def update_soldier(self, soldier_uuid: str, updates: UpdateSoldierRequest) -> Optional[MinimalSoldier]:
+    async def update_soldier(self, soldier_id: int, updates: UpdateSoldierRequest) -> Optional[MinimalSoldier]:
         payload = updates.model_dump(exclude_unset=True)
         if not payload:
-            row = await self.soldier_repo.get_by_uuid(soldier_uuid)
+            row = await self.soldier_repo.get_by_id(soldier_id)
             if row is None:
                 return None
             return MinimalSoldier.model_validate(row)
-        row = await self.soldier_repo.update_by_uuid(soldier_uuid, **payload)
+        row = await self.soldier_repo.update(soldier_id, **payload)
         if row is None:
             return None
         return MinimalSoldier.model_validate(row)
 
-    async def delete_soldier(self, soldier_uuid: str) -> bool:
-        return await self.soldier_repo.delete_by_uuid(soldier_uuid)
+    async def delete_soldier(self, soldier_id: int) -> bool:
+        return await self.soldier_repo.delete(soldier_id)
 
     async def add_doh1_manual(self, request: Doh1Request) -> bool:
 
