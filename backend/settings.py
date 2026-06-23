@@ -4,15 +4,16 @@ from pydantic import field_validator
 
 
 class Settings(BaseSettings):
-    API_PREFIX: str = "/api"
+    IS_PROD: bool
 
-    DEBUG: bool = False
+    API_PREFIX: str
+
+    DEBUG: bool
 
     DATABASE_URL: str
 
-    ALLOWED_ORIGINS: str = ""
+    ALLOWED_ORIGINS: str
 
-    # JWT (HS256). Set JWT_SECRET to a long random string in production.
     JWT_SECRET: str
     JWT_ALGORITHM: str
     JWT_ISS: str

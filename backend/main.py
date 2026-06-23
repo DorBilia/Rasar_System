@@ -8,8 +8,9 @@ from API.routers import soldier, indication, auth, misdar, biror, admin, organiz
 app = FastAPI(
     title="Rasar System API",
     description="api to manage rasar system backend",
-    docs_url="/docs",
-    redoc_url="/redoc")
+    docs_url=None if settings.IS_PROD else "/docs",
+    redoc_url=None if settings.IS_PROD else "/redoc",
+    openapi_url=None if settings.IS_PROD else "/openapi.json")
 
 app.include_router(soldier.soldiers_router, prefix=settings.API_PREFIX)
 app.include_router(soldier.doh1_router, prefix=settings.API_PREFIX)

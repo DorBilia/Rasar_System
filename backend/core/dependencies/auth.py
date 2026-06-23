@@ -6,7 +6,7 @@ from API.schemas.auth import AuthCredentials
 from Services.Interfaces.user import IUserService
 from dependencies import get_user_service
 
-security = HTTPBearer()
+security = HTTPBearer(bearerFormat="JWT")
 
 __all__ = [
     "get_current_user",

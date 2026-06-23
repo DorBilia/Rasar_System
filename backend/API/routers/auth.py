@@ -12,7 +12,7 @@ from core.dependencies import get_user_service
 from settings import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-security = HTTPBearer(auto_error=False)
+security = HTTPBearer(bearerFormat="JWT")
 
 REFRESH_KEY = "refresh_token"
 REFRESH_AGE = settings.REFRESH_TOKEN_EXPIRES_SECONDS
