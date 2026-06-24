@@ -9,9 +9,6 @@ SUPPORTED_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp")
 
 @router.get("/{image_id}")
 def get_image(image_id: str):
-    if ".." in image_id or "/" in image_id or "\\" in image_id:
-        raise HTTPException(status_code=400, detail="Invalid ID format.")
-
     current_directory = Path(__file__).parent
 
     for ext in SUPPORTED_EXTENSIONS:
