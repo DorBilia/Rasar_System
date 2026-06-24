@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status, Depends, UploadFile
+import httpx
+from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, Response
 from fastapi_restful.cbv import cbv
 from core.utils import enforce_size_limit
 
@@ -12,6 +13,9 @@ from core.dependencies.soldier import get_soldier_service
 
 soldiers_router = APIRouter(prefix="/soldiers", tags=["Soldiers"])
 doh1_router = APIRouter(prefix="/doh1", tags=["Doh1"])
+
+TARGET_BASE_URL = "http://localhost:8001/images"
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 
 @cbv(soldiers_router)
@@ -61,6 +65,50 @@ class SoldierRouter:
             raise HTTPException(status_code=404, detail="Soldier not found")
         return None
 
+
+    @soldiers_router.get("/image/{soldier_id}")
+    async def fetch_remote_image(self, soldier_id: str):
+
+        if "/" in soldier_id or "\\" in soldier_id or ".." in soldier_id:
+            raise HTTPException(status_code=400, detail="Invalid image name format.")
+
+        target_url = f"{TARGET_BASE_URL}/{soldier_id}"
+
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            try:
+                async with client.stream("GET", target_url, timeout=5.0) as response:
+
+                    response.raise_for_status()
+
+                    content_type = response.headers.get("Content-Type", "")
+                    if not content_type.startswith("image/"):
+                        raise HTTPException(status_code=502, detail="Target did not return an image.")
+
+                    content_length = response.headers.get("Content-Length")
+                    if content_length and int(content_length) > MAX_IMAGE_BYTES:
+                        raise HTTPException(status_code=502, detail="Image header exceeds maximum allowed size.")
+
+                    image_data = bytearray()
+                    async for chunk in response.aiter_bytes(chunk_size=8192):
+                        image_data.extend(chunk)
+                        if len(image_data) > MAX_IMAGE_BYTES:
+                            raise HTTPException(
+                                status_code=502,
+                                detail="Image stream exceeded maximum allowed size."
+                            )
+
+                    return Response(content=bytes(image_data), media_type=content_type)
+
+            except httpx.HTTPStatusError as e:
+                raise HTTPException(
+                    status_code=e.response.status_code,
+                    detail=f"Remote server returned error: {e.response.status_code}"
+                )
+            except httpx.RequestError:
+                raise HTTPException(
+                    status_code=502,
+                    detail="Bad Gateway: Could not reach the internal image server."
+                )
 
 @cbv(doh1_router)
 class Doh1Router:
