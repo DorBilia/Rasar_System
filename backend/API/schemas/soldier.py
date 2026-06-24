@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 from core.enums import RankEnum, ServiceTypeEnum, Doh1ValueEnum
 
 
-class BaseSoldier(BaseModel):
+class MinimalSoldier(BaseModel):
     id: int
     first_name: str
     last_name: str
@@ -18,20 +18,12 @@ class BaseSoldier(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CreateSoldierRequest(BaseSoldier):
+class FullSoldier(MinimalSoldier):
     unit: Optional[int] = None
     discharge_date: Optional[date] = None
     service_type: Optional[ServiceTypeEnum] = None
     other_allocations: Optional[str] = None
     phone_number: Optional[str] = None
-
-
-class MinimalSoldier(BaseSoldier):
-    uuid: str
-
-
-class FullSoldier(CreateSoldierRequest):
-    uuid: str
 
 
 class BaseSoldierRequest(BaseModel):

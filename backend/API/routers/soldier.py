@@ -23,13 +23,13 @@ class SoldierRouter:
         return await self.service.get_all_filtered(request)
 
     @soldiers_router.post("/create", response_model=FullSoldier)
-    async def create(self, request: CreateSoldierRequest):
+    async def create(self, request: FullSoldier):
         try:
             return await self.service.create(request)
         except IndicationTypeNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="indication type not found",
+                detail="default indication not found",
             )
         except IntegrityError as e:
             if hasattr(e.orig, "sqlstate") and e.orig.sqlstate == "23503":
@@ -48,7 +48,7 @@ class SoldierRouter:
         return soldier
 
     @soldiers_router.put("/{soldier_id}", response_model=MinimalSoldier)
-    async def update_soldier(self, soldier_id: int, update_data: UpdateSoldierRequest) -> MinimalSoldier:
+    async def update_soldier(self, soldier_id: int, update_data: UpdateSoldierRequest):
         updated_soldier = await self.service.update_soldier(soldier_id, update_data)
         if not updated_soldier:
             raise HTTPException(status_code=404, detail="Update failed")

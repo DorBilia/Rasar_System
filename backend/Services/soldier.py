@@ -39,14 +39,13 @@ class SoldierService(ISoldierService):
         self._indication_service = indication_service
         self._soldier_indication_service = soldier_indication_service
 
-    async def create(self, soldier: CreateSoldierRequest) -> FullSoldier:
+    async def create(self, soldier: FullSoldier) -> FullSoldier:
         indication_type = await self._indication_service.get_type_by_id(DEFAULT_SOLDIER_INDICATION_TYPE_ID)
         if indication_type is None:
             raise IndicationTypeNotFoundError()
 
         data = soldier.model_dump()
         data.setdefault("is_active", True)
-        data["uuid"] = str(uuid.uuid4())
         created = await self.soldier_repo.create(**data)
 
         indication_request = SoldierIndicationRequest(

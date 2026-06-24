@@ -7,7 +7,7 @@ from API.schemas.soldier import *
 class ISoldierService(ABC):
 
     @abstractmethod
-    async def create(self, soldier: CreateSoldierRequest) -> FullSoldier:
+    async def create(self, soldier: FullSoldier) -> FullSoldier:
         pass
 
     @abstractmethod
